@@ -3,7 +3,7 @@
 [![C](https://img.shields.io/badge/Language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![Version](https://img.shields.io/badge/Version-2.1-green.svg)]()
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black.svg)](https://github.com/)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)]()
 [![Precision](https://img.shields.io/badge/Timing-Nanosecond%20Precision-red.svg)]()
 
 ## 📋 Índice
@@ -19,6 +19,8 @@
 9. [Arquivos de Saída](#-arquivos-de-saída)
 10. [Documentação Técnica](#-documentação-técnica)
 11. [Métricas Analisadas](#-métricas-analisadas)
+12. [Contribuição](#-contribuição)
+13. [Licença](#-licença)
 
 ## 🎯 Sobre o Projeto
 
@@ -50,564 +52,443 @@ A versão 2.1 introduz um revolucionário sistema de medição de tempo que **el
 
 O sistema agora ajusta automaticamente o número de execuções baseado no tamanho do conjunto:
 
-```
-📏 Conjuntos < 100 elementos    → 10 execuções (média estatística)
-📏 Conjuntos < 1.000 elementos  → 5 execuções  (boa precisão)
-📏 Conjuntos < 10.000 elementos → 3 execuções  (precisão adequada)
-📏 Conjuntos grandes            → 1 execução   (suficiente)
-```
+- **< 100 elementos**: 10 execuções → média estatística
+- **< 1.000 elementos**: 5 execuções → precisão balanceada  
+- **< 10.000 elementos**: 3 execuções → otimização de tempo
+- **≥ 10.000 elementos**: 1 execução → medição única suficiente
 
-#### **✅ Garantias da Nova Versão:**
-- ❌ **NUNCA MAIS** tempos zerados
-- ✅ **Precisão mínima**: 1 nanossegundo
-- ✅ **Medição robusta** para algoritmos ultrarrápidos
-- ✅ **Compatibilidade total** com sistemas antigos
-- ✅ **Médias estatísticas** para maior confiabilidade
+### 🔄 **Sistema Dual: Otimizada + Didática**
 
-### 🎮 **Nova Interface de Execução:**
+Implementação única que oferece **duas versões** de cada algoritmo:
 
-Agora o programa mostra informações mais detalhadas:
-
-```
-Executando 7 algoritmos com 100 elementos...
-(Usando 10 execucoes por algoritmo para maior precisao)
-+--------------------+-------------+-------------+-------------+
-| Algoritmo          | Tempo (s)   | Comparacoes | Trocas      |
-+--------------------+-------------+-------------+-------------+
-| Insertion Sort     |  0.000023   |        2475 |        1237 |
-| Quick Sort         |  0.000018   |        1843 |         876 |
-| Bubble Sort        |  0.000156   |        4950 |        2463 |
-+--------------------+-------------+-------------+-------------+
-Nota: Tempos, comparacoes e trocas sao medias de 10 execucoes
-```
+- **✅ Versão OTIMIZADA**: Máxima performance com otimizações avançadas
+- **📚 Versão NÃO OTIMIZADA**: Implementação didática para fins educacionais
 
 ## ✨ Características Principais
 
-### 🚀 **Interface Moderna**
-- Menu interativo limpo e intuitivo
-- Limpeza automática de tela para melhor experiência
-- Validação robusta de entrada do usuário
-- Feedback detalhado sobre operações
+### 🎯 **Interface e Usabilidade**
+- ✅ Menu interativo limpo e intuitivo
+- ✅ Execução automatizada de todos os testes
+- ✅ Feedback visual em tempo real
+- ✅ Limpeza automática da tela entre operações
 
-### 📊 **Análise Precisa**
-- Medição de tempo com precisão de **microssegundos**
-- Contagem exata de **comparações** e **trocas**
-- Análise automática de **estabilidade**
-- Métricas de eficiência relativa (operações por elemento)
+### 🔧 **Robustez Técnica**
+- ✅ **Algoritmos genéricos** compatíveis com qualquer tipo de dados
+- ✅ **Detecção automática** de caminhos de arquivos
+- ✅ **Sistema de fallback** para diferentes estruturas de projeto
+- ✅ **Tratamento robusto** de erros e casos extremos
 
-### 📁 **Organização Automática**
-- Criação automática de estrutura de diretórios
-- Separação de resultados por categoria
-- Nomenclatura consistente de arquivos
-- Relatórios em formato texto legível
+### 📊 **Análise Avançada**
+- ✅ **Medição de alta precisão** até nanossegundos
+- ✅ **Contagem precisa** de comparações e trocas
+- ✅ **Análise de estabilidade** com dados reais
+- ✅ **Rankings automáticos** por diferentes métricas
 
-### 🔧 **Implementação Técnica**
-- Algoritmos **genéricos** (funcionam com qualquer tipo de dados)
-- Uso de **ponteiros void** e funções de comparação
-- Tratamento robusto de **erros e casos extremos**
-- Código modular e bem documentado
+### 💾 **Organização de Dados**
+- ✅ **Salvamento automático** em estrutura organizada
+- ✅ **Compatibilidade multiplataforma** (Windows/Linux/macOS)
+- ✅ **Múltiplos formatos** de relatórios
+- ✅ **Backup automático** em diferentes locais
 
-## 🔢 Algoritmos Implementados
+## 🧮 Algoritmos Implementados
 
-| Algoritmo | Estabilidade | Melhor Caso | Caso Médio | Pior Caso | Espaço |
-|-----------|--------------|-------------|------------|-----------|---------|
-| **Insertion Sort** | ✅ Estável | O(n) | O(n²) | O(n²) | O(1) |
-| **Bubble Sort** | ✅ Estável | O(n) | O(n²) | O(n²) | O(1) |
-| **Selection Sort** | ❌ Não-Estável | O(n²) | O(n²) | O(n²) | O(1) |
-| **Shaker Sort** | ✅ Estável | O(n) | O(n²) | O(n²) | O(1) |
-| **Shell Sort** | ❌ Não-Estável | O(n log n) | O(n^1.25) | O(n²) | O(1) |
-| **Quick Sort** | ❌ Não-Estável | O(n log n) | O(n log n) | O(n²) | O(log n) |
-| **Heap Sort** | ❌ Não-Estável | O(n log n) | O(n log n) | O(n log n) | O(1) |
+| Algoritmo | Complexidade (Melhor) | Complexidade (Médio) | Complexidade (Pior) | Estável | Características |
+|-----------|----------------------|---------------------|-------------------|---------|-----------------|
+| **Insertion Sort** | O(n) | O(n²) | O(n²) | ✅ Sim | Eficiente para pequenos conjuntos |
+| **Bubble Sort** | O(n) | O(n²) | O(n²) | ✅ Sim | Algorítmo simples, didático |
+| **Selection Sort** | O(n²) | O(n²) | O(n²) | ❌ Não | Número fixo de trocas |
+| **Shaker Sort** | O(n) | O(n²) | O(n²) | ✅ Sim | Bubble sort bidirecional |
+| **Shell Sort** | O(n log n) | O(n^1.25) | O(n²) | ❌ Não | Insertion sort com incrementos |
+| **Quick Sort** | O(n log n) | O(n log n) | O(n²) | ❌ Não | Dividir para conquistar |
+| **Heap Sort** | O(n log n) | O(n log n) | O(n log n) | ❌ Não | Garantia de O(n log n) |
 
-### 📝 **Detalhes dos Algoritmos**
+### 🏆 **Características de Estabilidade**
 
-#### 🔸 **Insertion Sort**
-- **Quando usar**: Conjuntos pequenos (n < 50), dados parcialmente ordenados
-- **Vantagem**: Muito eficiente para pequenos datasets e dados quase ordenados
-- **Características**: In-place, estável, adaptativo
+```
+📝 ALGORITMOS ESTÁVEIS:
+   ✅ Insertion Sort  - Preserva ordem de elementos iguais
+   ✅ Bubble Sort     - Comparações adjacentes mantêm ordem
+   ✅ Shaker Sort     - Bubble Sort bidirecional estável
 
-#### 🔸 **Bubble Sort**  
-- **Quando usar**: Fins educacionais, detecção de dados já ordenados
-- **Vantagem**: Algorítmo mais simples conceptualmente
-- **Características**: In-place, estável, com otimização para dados ordenados
+⚠️  ALGORITMOS NÃO ESTÁVEIS:
+   ❌ Selection Sort  - Troca elementos distantes
+   ❌ Shell Sort      - Comparações com gap podem quebrar estabilidade
+   ❌ Quick Sort      - Particionamento pode reorganizar elementos iguais
+   ❌ Heap Sort       - Construção do heap quebra ordem original
+```
 
-#### 🔸 **Selection Sort**
-- **Quando usar**: Quando número de trocas deve ser minimizado
-- **Vantagem**: Máximo n-1 trocas, comportamento consistente
-- **Características**: In-place, não-estável, comparações fixas
-
-#### 🔸 **Shaker Sort (Cocktail Sort)**
-- **Quando usar**: Alternativa melhorada ao Bubble Sort
-- **Vantagem**: Elementos pequenos no final são movidos mais rapidamente
-- **Características**: In-place, estável, bidirecional
-
-#### 🔸 **Shell Sort**
-- **Quando usar**: Dados grandes onde Insertion Sort seria lento
-- **Vantagem**: Melhoria significativa sobre Insertion Sort
-- **Características**: In-place, não-estável, usa sequência de incrementos
-
-#### 🔸 **Quick Sort**
-- **Quando usar**: Conjuntos grandes, quando espaço é limitado
-- **Vantagem**: Excelente performance média, baixo uso de memória
-- **Características**: Divide-e-conquista, não-estável, recursivo
-
-#### 🔸 **Heap Sort**
-- **Quando usar**: Quando garantia de O(n log n) é necessária
-- **Vantagem**: Performance garantida em todos os casos
-- **Características**: In-place, não-estável, usa estrutura heap
-
-## 📂 Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 trabalho-po-1/
-├── 📁 include/
-│   └── sorts.h                 # Cabeçalho principal com todas as definições
-├── 📁 src/
-│   ├── algoritmos.c           # Implementações dos 7 algoritmos
-│   ├── analise.c              # Sistema de medição e relatórios
-│   ├── io.c                   # Funções de entrada/saída de dados
-│   └── utils.c                # Utilitários e interface do usuário
-├── 📁 data/                   # Arquivos de entrada para testes
-│   ├── alunos.txt            # Dados de alunos para teste de estabilidade
-│   ├── numeros_pequeno.txt   # Conjunto pequeno (100 elementos)
-│   ├── numeros_medio.txt     # Conjunto médio (1.000 elementos)
-│   ├── numeros_grande.txt    # Conjunto grande (10.000 elementos)
-│   ├── numeros_ordenados.txt # Dados já ordenados (melhor caso)
-│   ├── numeros_reversos.txt  # Dados em ordem reversa (pior caso)
-│   └── numeros_duplicados.txt # Dados com elementos repetidos
-├── 📁 output/                # Diretório de saída (criado automaticamente)
-│   ├── 📁 numeros/           # Arrays ordenados de números
-│   ├── 📁 alunos/            # Arrays ordenados de alunos
-│   └── 📁 relatorios/        # Relatórios de análise detalhados
-├── main.c                    # Programa principal com menu interativo
-├── CMakeLists.txt           # Configuração de compilação
-└── README.md                # Este arquivo
+├── 📁 data/                          # Conjuntos de dados de teste
+│   ├── 📄 alunos.txt                 # Dados estruturados (nome, data, bairro, cidade)
+│   ├── 📄 numeros_pequeno.txt        # ~100 elementos
+│   ├── 📄 numeros_medio.txt          # ~1.000 elementos  
+│   ├── 📄 numeros_grande.txt         # ~10.000 elementos
+│   ├── 📄 numeros_ordenados.txt      # Melhor caso (já ordenados)
+│   ├── 📄 numeros_reversos.txt       # Pior caso (ordem inversa)
+│   └── 📄 numeros_duplicados.txt     # Elementos repetidos
+│
+├── 📁 include/                       # Headers e definições
+│   └── 📄 sorts.h                    # API completa do sistema
+│
+├── 📁 src/                           # Código fonte modularizado
+│   ├── 📄 algoritmos.c               # Implementações dos algoritmos
+│   ├── 📄 analise.c                  # Sistema de medição e análise
+│   ├── 📄 io.c                       # Entrada/saída e funções de comparação
+│   └── 📄 utils.c                    # Utilitários e interface
+│
+├── 📁 output/                        # Resultados organizados automaticamente
+│   ├── 📁 numeros/                   # Arrays ordenados (números)
+│   ├── 📁 alunos/                    # Arrays ordenados (estruturas)
+│   ├── 📁 relatorios/                # Análises de performance
+│   └── 📄 analise_estabilidade.txt   # Relatório de estabilidade
+│
+├── 📄 main.c                         # Programa principal
+├── 📄 CMakeLists.txt                 # Configuração do CMake
+├── 📄 README.md                      # Este arquivo
+└── 📄 LICENSE                        # Licença MIT
 ```
 
-## 🔧 Compilação e Execução
+## 🛠️ Compilação e Execução
 
 ### **Pré-requisitos**
-- Compilador C (GCC, Clang, MSVC)
-- CMake 3.10 ou superior (opcional)
-- Sistema operacional: Windows, Linux, macOS
 
-### **Opção 1: Compilação com CMake (Recomendado)**
+- **Compilador C**: GCC, Clang, MSVC ou compatível
+- **CMake**: 3.10 ou superior (opcional)
+- **Sistema**: Windows, Linux, macOS
+
+### **Método 1: CMake (Recomendado)**
+
 ```bash
-mkdir build
-cd build
+# 1. Criar diretório de build
+mkdir build && cd build
+
+# 2. Configurar projeto
 cmake ..
-make
-./trabalho_po_1
+
+# 3. Compilar
+cmake --build .
+
+# 4. Executar
+./trabalho_po_1        # Linux/macOS
+trabalho_po_1.exe      # Windows
 ```
 
-### **Opção 2: Compilação Manual**
+### **Método 2: Compilação Direta**
+
 ```bash
-# Linux/macOS
-gcc -o programa main.c src/*.c -I include
+# GCC/Clang
+gcc -o trabalho_po_1 main.c src/*.c -Iinclude -std=c99
 
-# Windows
-gcc -o programa.exe main.c src/*.c -I include
+# MSVC (Windows)
+cl main.c src/*.c /Iinclude /Fe:trabalho_po_1.exe
 ```
 
-### **Opção 3: Visual Studio/CLion**
-- Abra o projeto no IDE
-- Configure CMake se necessário
-- Compile e execute (Ctrl+F5 / Shift+F10)
+### **Método 3: IDEs Compatíveis**
+
+- **CLion**: Abrir pasta do projeto
+- **Visual Studio**: Usar "Abrir Pasta"
+- **Code::Blocks**: Criar projeto e adicionar arquivos
+- **Dev-C++**: Compilação direta
 
 ## 📖 Manual de Uso
 
-### **🏠 Menu Principal**
-
-Ao executar o programa, você verá:
+### **1. Execução Principal**
 
 ```
 ================================================================
-              TRABALHO DE ALGORITMOS DE ORDENACAO              
-                     Programacao - 2025                        
-                    Estrutura Otimizada                        
+              TRABALHO DE ALGORITMOS DE ORDENAÇÃO              
+                    Programação Avançada - 2025                
+                Sistema Dual: Otimizada + Didática             
 ================================================================
 
-================================================================
                         MENU PRINCIPAL                         
 ================================================================
-  1. Testar algoritmos de ordenacao                            
-  2. Gerar relatorio completo de todos os testes               
+  1. Gerar relatório completo de todos os testes               
+     (Inclui análise de ambas as versões dos algoritmos)       
   0. Sair do programa                                           
 ================================================================
-Escolha uma opcao: 
 ```
 
-### **1️⃣ Teste Individual de Algoritmos**
+### **2. Processo Automatizado**
 
-Esta opção permite testar todos os algoritmos com um arquivo específico:
+O programa executa automaticamente:
 
-1. **Escolha o tipo de dados:**
-   - `1` para números inteiros
-   - `2` para dados de alunos
+#### **🔄 FASE 1: Versão Não Otimizada**
+- Testa todos os 6 conjuntos de números
+- Processa dados de alunos
+- Gera métricas detalhadas
 
-2. **Digite o nome do arquivo** (exemplo: `numeros_pequeno.txt`)
+#### **🔄 FASE 2: Versão Otimizada**
+- Repete todos os testes com versões otimizadas
+- Compara performance
+- Analisa diferenças de implementação
 
-3. **Visualize os resultados:**
-   - Tabela comparativa em tempo real
-   - Rankings por tempo, comparações e trocas
-   - Análise de estabilidade (para alunos)
+#### **🔄 FASE 3: Análise de Estabilidade**
+- Testes específicos com elementos duplicados
+- Verificação de ordem relativa
+- Relatório detalhado de estabilidade
 
-### **2️⃣ Relatório Completo Automatizado**
+#### **🔄 FASE 4: Relatório Final**
+- Consolidação de todos os resultados
+- Comparação entre versões
+- Índices de arquivos gerados
 
-Executa todos os testes disponíveis automaticamente:
+### **3. Tempo de Execução**
 
-- ✅ Testa **todos os arquivos de números** disponíveis
-- ✅ Testa **arquivo de alunos** se disponível  
-- ✅ Gera **relatórios detalhados** para cada teste
-- ✅ Executa **análise de estabilidade** automaticamente
-- ✅ Organiza **arquivos de saída** por categoria
-
-### **🎨 Interface Visual**
-
-- **Limpeza automática** da tela entre operações
-- **Tabelas formatadas** para fácil leitura
-- **Códigos de cores** conceituais (verde ✅ / vermelho ❌)
-- **Feedback em tempo real** sobre operações
-- **Validação de entrada** com mensagens claras
+⏱️ **Tempo estimado**: 2-5 minutos (dependendo do hardware)
+- Conjuntos pequenos: ~10 segundos
+- Conjuntos médios: ~30 segundos  
+- Conjuntos grandes: ~2 minutos
+- Análises extras: ~30 segundos
 
 ## 📊 Análise de Dados
 
-### **📈 Tipos de Dados Suportados**
+### **📈 Conjuntos de Teste Disponíveis**
 
-#### **🔢 Números Inteiros**
-- Arquivos formato texto, um número por linha
-- Suporte a números negativos e zeros
-- Detecção automática do tamanho do conjunto
+#### **Números Inteiros (6 conjuntos):**
 
-**Exemplo de arquivo:**
-```
-1507
-892  
-1234
-567
--42
-```
+| Arquivo | Elementos | Propósito | Características |
+|---------|-----------|-----------|-----------------|
+| `numeros_pequeno.txt` | ~100 | Algoritmos O(n²) | Execução rápida, boa para testes |
+| `numeros_medio.txt` | ~1.000 | Diferenciação | Mostra vantagens O(n log n) |
+| `numeros_grande.txt` | ~10.000 | Performance | Destaca algoritmos eficientes |
+| `numeros_ordenados.txt` | Variado | Melhor caso | Testa otimizações especiais |
+| `numeros_reversos.txt` | Variado | Pior caso | Força comportamento quadrático |
+| `numeros_duplicados.txt` | Variado | Estabilidade | Elementos repetidos |
 
-#### **👥 Dados de Alunos**
-- Formato CSV: `nome,data_nascimento,bairro,cidade`
-- Ordenação primária por **bairro**, secundária por **nome**
-- Ideal para demonstração de estabilidade
+#### **Dados Estruturados (1 conjunto):**
 
-**Exemplo de arquivo:**
-```
-João Silva,15/03/1995,Centro,São Paulo
-Maria Santos,22/07/1994,Vila Nova,São Paulo  
-Pedro Costa,10/01/1996,Centro,São Paulo
-```
+- **`alunos.txt`**: Estruturas com nome, data de nascimento, bairro e cidade
+- **Propósito**: Análise de estabilidade e ordenação por múltiplos critérios
+- **Formato**: CSV (nome,data,bairro,cidade)
 
-### **🔍 Cenários de Teste Incluídos**
+### **🎯 Estratégia de Análise**
 
-| Arquivo | Descrição | Propósito |
-|---------|-----------|-----------|
-| `numeros_pequeno.txt` | 100 elementos | Teste básico, comparação geral |
-| `numeros_medio.txt` | 1.000 elementos | Análise de escalabilidade |
-| `numeros_grande.txt` | 10.000 elementos | Performance com grandes volumes |
-| `numeros_ordenados.txt` | Dados já ordenados | Análise do melhor caso |
-| `numeros_reversos.txt` | Ordem reversa | Análise do pior caso |
-| `numeros_duplicados.txt` | Elementos repetidos | Comportamento com duplicatas |
-| `alunos.txt` | Dados estruturados | Análise de estabilidade |
+O sistema realiza **análise comparativa em 3 dimensões**:
 
-## 📤 Arquivos de Saída
+1. **⏱️ Temporal**: Tempo de execução com precisão de nanossegundos
+2. **🔢 Operacional**: Contagem de comparações e trocas
+3. **🎲 Comportamental**: Análise de estabilidade e casos extremos
 
-O sistema organiza automaticamente todos os resultados:
+## 📁 Arquivos de Saída
+
+O sistema organiza automaticamente todos os resultados na pasta `output/`:
 
 ### **📁 output/numeros/**
-Contém arrays ordenados de números por cada algoritmo:
-- `Insertion_Sort_numeros_numeros_pequeno.txt`
-- `Quick_Sort_numeros_numeros_grande.txt`
-- etc.
+
+Arrays de números ordenados por cada algoritmo:
+
+```
+Bubble_Sort_otimizada_numeros_pequeno.txt
+Bubble_Sort_nao_otimizada_numeros_pequeno.txt
+Insertion_Sort_otimizada_numeros_grande.txt
+Quick_Sort_otimizada_numeros_reversos.txt
+[... todos os algoritmos × todos os conjuntos × 2 versões]
+```
 
 ### **📁 output/alunos/**
-Contém dados de alunos ordenados:
-- `Bubble_Sort_alunos_alunos.txt`
-- `Heap_Sort_alunos_alunos.txt`
-- etc.
+
+Dados de alunos ordenados por bairro e nome:
+
+```
+Bubble_Sort_otimizada_alunos.txt
+Insertion_Sort_nao_otimizada_alunos.txt
+[... todos os algoritmos × 2 versões]
+```
 
 ### **📁 output/relatorios/**
-Relatórios detalhados de análise:
-- `relatorio_numeros_numeros_pequeno.txt`
-- `relatorio_alunos_alunos.txt`
-- etc.
 
-### **📄 Exemplo de Relatório**
+Análises detalhadas de performance:
 
 ```
-RELATORIO COMPLETO DE ANALISE - ALGORITMOS DE ORDENACAO
-=======================================================
-
-Data de Execucao: Aug 23 2025
-Tipo de Dados: numeros
-Tamanho do Conjunto: 1000 elementos
-
-METRICAS DETALHADAS POR ALGORITMO
-=================================
-
-Algoritmo: Quick Sort
-Complexidade Media: O(n log n)
-Estabilidade: NAO ESTAVEL
-Tempo de Execucao: 0.002341 segundos
-Numero de Comparacoes: 9.847
-Numero de Trocas: 2.934
-Comparacoes por Elemento: 9.85
-Trocas por Elemento: 2.93
----------------------------------------------------
-
-ANALISE COMPARATIVA
-===================
-
-MELHOR TEMPO: Quick Sort (0.002341 segundos)
-PIOR TEMPO: Bubble Sort (0.145623 segundos)
-
-MENOS COMPARACOES: Insertion Sort (4.521 comparacoes)
-MAIS COMPARACOES: Selection Sort (499.500 comparacoes)
+relatorio_numeros_otimizada_numeros_pequeno.txt
+relatorio_numeros_nao_otimizada_numeros_grande.txt
+relatorio_alunos_otimizada_alunos.txt
+relatorio_comparativo_final.txt
+[... relatórios por conjunto e versão]
 ```
 
-## 🔧 Documentação Técnica - Versão 2.1
+### **📄 output/analise_estabilidade.txt**
 
-### **🏗️ Arquitetura do Sistema Aprimorada**
+Relatório específico sobre estabilidade dos algoritmos.
 
-O sistema foi completamente redesenhado na versão 2.1 para incorporar medição de alta precisão e análise estatística avançada.
+## 🔧 Documentação Técnica
 
-#### **📋 sorts.h - Header Principal (v2.1)**
-- **Estruturas atualizadas** com suporte a medição de alta precisão
-- **Novos protótipos** para funções de timing multiplataforma
-- **Constantes expandidas** para diferentes tipos de medição
-- **Documentação Doxygen completa** com exemplos de uso
-- **Compatibilidade multiplataforma** definida via macros
+### **⚙️ Arquitetura do Sistema**
 
-#### **⚙️ algoritmos.c - Implementações dos Algoritmos**
-- **7 algoritmos genéricos** funcionando com qualquer tipo de dados
-- **Contadores automáticos** integrados para comparações e trocas
-- **Implementações otimizadas** seguindo literatura acadêmica
-- **Tratamento robusto de erros** com fallbacks seguros
-- **Funcionalidades específicas** por algoritmo preservadas
+#### **Modularização**
+- **`main.c`**: Interface principal e controle de fluxo
+- **`algoritmos.c`**: Implementações dual (otimizada/didática)  
+- **`analise.c`**: Sistema de medição de alta precisão
+- **`io.c`**: Entrada/saída robusta e funções de comparação
+- **`utils.c`**: Utilitários e gerenciamento de arquivos
 
-#### **📊 analise.c - Sistema de Medição de Alta Precisão (NOVO v2.1)**
-- **Sistema multiplataforma** de medição de tempo:
-  ```c
-  // Windows: QueryPerformanceCounter
-  // Linux/Unix: clock_gettime(CLOCK_MONOTONIC)  
-  // Fallback: gettimeofday()
-  ```
-- **Medição adaptativa inteligente**:
-  - Conjuntos < 100: 10 execuções para média estatística
-  - Conjuntos < 1.000: 5 execuções para boa precisão
-  - Conjuntos < 10.000: 3 execuções para precisão adequada
-  - Conjuntos grandes: 1 execução suficiente
-- **Eliminação completa de tempos zero** com garantia mínima de 1ns
-- **Análise estatística robusta** com cálculo de médias
-- **Geração automática de relatórios** com métricas detalhadas
+#### **Características Técnicas**
 
-#### **💾 io.c - Sistema de Entrada/Saída Robusto**
-- **Leitura multi-formato** com detecção automática de tipos
-- **Sistema de caminhos inteligente** que funciona independente do diretório
-- **Validação completa** de dados de entrada com tratamento de erros
-- **Salvamento organizado** por categoria e algoritmo
-- **Funções de comparação otimizadas** para diferentes tipos de dados
-
-#### **🎮 utils.c - Interface e Utilitários Melhorados**
-- **Menu interativo aprimorado** com limpeza automática de tela
-- **Validação robusta** de entrada do usuário
-- **Criação automática** de estrutura de diretórios
-- **Feedback inteligente** sobre operações em andamento
-- **Sistema de pausas** para melhor experiência do usuário
-
-#### **🚀 main.c - Controle Principal do Sistema**
-- **Loop principal otimizado** com tratamento de estados
-- **Coordenação inteligente** entre todos os módulos
-- **Gerenciamento de memória** automático e seguro
-- **Finalização elegante** com relatório de saída
-
-### **🔄 Fluxo de Execução Detalhado - v2.1**
-
-```
-1. 🟢 INICIALIZAÇÃO
-   ├─ Limpeza automática da tela
-   ├─ Verificação de sistema operacional
-   ├─ Inicialização de contadores globais
-   └─ Exibição do cabeçalho do programa
-
-2. 🔵 LOOP PRINCIPAL DO MENU
-   ├─ Apresentação das opções disponíveis
-   ├─ Validação robusta da entrada do usuário
-   ├─ Roteamento inteligente para funções específicas
-   └─ Controle de fluxo com tratamento de erros
-
-3. ⚡ PROCESSAMENTO DE ALTA PRECISÃO
-   ├─ Criação automática de diretórios de saída
-   ├─ Detecção do tamanho do conjunto de dados
-   ├─ Determinação automática do número de execuções
-   ├─ Execução com medição de nanossegundos
-   └─ Coleta de métricas estatísticas
-
-4. 📊 ANÁLISE E COLETA DE MÉTRICAS
-   ├─ Medição de tempo com precisão adaptativa
-   ├─ Contagem exata de comparações e trocas
-   ├─ Cálculo de médias estatísticas
-   ├─ Análise de estabilidade automática
-   └─ Normalização de métricas por elemento
-
-5. 📄 GERAÇÃO DE RELATÓRIOS
-   ├─ Criação de relatórios formatados em TXT
-   ├─ Salvamento de arrays ordenados por categoria
-   ├─ Análise comparativa automática
-   ├─ Rankings por diferentes métricas
-   └─ Documentação completa dos resultados
-
-6. 🎯 FEEDBACK E APRESENTAÇÃO
-   ├─ Tabelas formatadas em tempo real
-   ├─ Rankings interativos por diferentes critérios
-   ├─ Informações sobre precisão das medições
-   ├─ Status detalhado das operações
-   └─ Confirmação de salvamento de arquivos
-
-7. 🔄 CONTROLE DE LOOP
-   ├─ Pausa inteligente para leitura dos resultados
-   ├─ Limpeza automática da tela
-   ├─ Retorno ao menu principal
-   └─ Finalização elegante do programa
-```
-
-### **🧮 Sistema de Algoritmos Genéricos Avançado**
-
-Todos os algoritmos foram implementados usando uma arquitetura genérica revolucionária:
-
+##### **🎯 Algoritmos Genéricos**
 ```c
-// Interface unificada para todos os algoritmos
-void algoritmo_generico(void *arr, int n, size_t elem_size, CompareFn cmp)
+// Assinatura padrão - funciona com qualquer tipo
+void insertion_sort(void *arr, int n, size_t elem_size, CompareFn cmp);
+
+// Função de comparação personalizada
+typedef int (*CompareFn)(const void *a, const void *b);
 ```
 
-#### **✨ Vantagens da Arquitetura Genérica:**
-
-| Característica | Benefício | Implementação |
-|----------------|-----------|---------------|
-| **Reutilização** | Mesmo código para `int`, `Aluno`, qualquer tipo | Ponteiros `void*` + `size_t` |
-| **Manutenibilidade** | Uma implementação por algoritmo | Funções de comparação intercambiáveis |
-| **Extensibilidade** | Fácil adição de novos tipos | Sistema de callbacks padronizado |
-| **Precisão** | Contadores automáticos integrados | Wrappers transparentes |
-| **Performance** | Zero overhead na genericidade | Macros e inlining inteligente |
-
-#### **🔬 Sistema de Contagem Automática:**
-
+##### **⏱️ Sistema de Medição Avançado**
 ```c
-// Contadores globais thread-safe
-extern long long contador_comparacoes;
-extern long long contador_trocas;
+// Medição multiplataforma de alta precisão
+double obter_timestamp_precisao();
 
-// Wrapper automático para contagem de comparações
-int comparar_e_contar(const void *a, const void *b) {
-    contador_comparacoes++;  // Incremento automático
-    return funcao_comparacao_atual(a, b);
-}
-
-// Troca com contagem automática  
-void swap_elements(void *a, void *b, size_t elem_size) {
-    // Troca segura com buffer temporário
-    contador_trocas++;  // Registro automático da operação
-}
+// Medição adaptativa com múltiplas execuções
+double medir_tempo_multiplo(/* parâmetros */);
 ```
 
-### **⚡ Inovações Técnicas da Versão 2.1**
-
-#### **🎯 Sistema de Timing Multiplataforma:**
+##### **🔄 Sistema Dual**
 ```c
-double obter_timestamp_precisao() {
-    #ifdef _WIN32
-        // Windows: Hardware Performance Counter
-        static LARGE_INTEGER frequencia;
-        LARGE_INTEGER agora;
-        QueryPerformanceCounter(&agora);
-        return (double)agora.QuadPart / frequencia.QuadPart;
-        
-    #elif defined(_POSIX_C_SOURCE)
-        // Linux/Unix: Monotonic Clock
-        struct timespec tempo;
-        clock_gettime(CLOCK_MONOTONIC, &tempo);
-        return tempo.tv_sec + (tempo.tv_nsec / 1e9);
-        
-    #else
-        // Fallback: gettimeofday
-        struct timeval tempo;
-        gettimeofday(&tempo, NULL);
-        return tempo.tv_sec + (tempo.tv_usec / 1e6);
-    #endif
-}
+// Configuração global de versão
+extern int usar_versao_otimizada;
+void configurar_otimizacao(int otimizada);
+
+// Interfaces unificadas que alternam automaticamente
+void insertion_sort(/*...*/);  // Chama versão ativa
+void insertion_sort_optimized(/*...*/);  // Versão específica
+void insertion_sort_naive(/*...*/);      // Versão específica
 ```
 
-#### **📊 Medição Adaptativa Inteligente:**
+### **📊 Estruturas de Dados**
+
+#### **Informações de Algoritmo**
 ```c
-int determinar_num_execucoes(int tamanho_conjunto) {
-    if (tamanho_conjunto < 100)    return 10;  // Máxima precisão
-    if (tamanho_conjunto < 1000)   return 5;   // Boa precisão  
-    if (tamanho_conjunto < 10000)  return 3;   // Adequada
-    return 1;  // Suficiente para grandes conjuntos
-}
+typedef struct {
+    char nome[30];
+    char complexidade_melhor[15];
+    char complexidade_media[15]; 
+    char complexidade_pior[15];
+    int eh_estavel;
+    // Ponteiros de função...
+} AlgoritmoInfo;
 ```
 
-#### **🔍 Garantia de Precisão:**
+#### **Resultados de Performance**
 ```c
-// Nunca mais tempos zero!
-double tempo_decorrido = tempo_fim - tempo_inicio;
-return (tempo_decorrido > 0.0) ? tempo_decorrido : 0.000000001;  // 1ns mínimo
+typedef struct {
+    char algoritmo[30];
+    double tempo_execucao;      // Precisão de nanossegundos
+    int tamanho_dados;
+    char tipo_dados[20];
+    long long comparacoes;      // Contagem precisa
+    long long trocas;          // Contagem precisa
+} ResultadoTempo;
 ```
 
-### **📈 Fluxo de Dados e Processamento**
+## 📈 Métricas Analisadas
+
+### **1. ⏱️ Tempo de Execução**
+
+- **Precisão**: Até nanossegundos (dependente do hardware)
+- **Método**: Medição antes/depois com timestamps de alta resolução
+- **Adaptação**: Múltiplas execuções para algoritmos muito rápidos
+- **Garantia**: Nunca retorna zero (mínimo 1 microssegundo)
+
+### **2. 🔢 Número de Comparações**
+
+- **Contagem**: Interceptação transparente via wrapper
+- **Precisão**: Todas as comparações entre elementos
+- **Uso**: Análise da complexidade real vs teórica
+
+### **3. 🔄 Número de Trocas/Movimentações**
+
+- **Definição**: Qualquer movimentação de elementos
+- **Inclui**: Trocas diretas, deslocamentos, inserções
+- **Análise**: Overhead de movimentação de dados
+
+### **4. 🎯 Análise de Estabilidade**
+
+- **Teste**: Elementos com chaves iguais
+- **Verificação**: Preservação da ordem relativa original
+- **Casos**: Dados reais com alunos do mesmo bairro
+
+### **5. 📊 Rankings Automáticos**
+
+O sistema gera automaticamente rankings por:
+- **⚡ Tempo de execução** (mais rápido primeiro)
+- **🔢 Número de comparações** (menos comparações primeiro)
+- **🔄 Número de trocas** (menos movimentações primeiro)
+
+### **6. 📋 Relatórios Comparativos**
+
+- **Por conjunto**: Performance em cada tipo de dados
+- **Por algoritmo**: Comportamento em diferentes cenários  
+- **Por versão**: Otimizada vs Não Otimizada
+- **Consolidado**: Visão geral de todos os testes
+
+## 🤝 Contribuição
+
+### **Como Contribuir**
+
+1. **Fork** do repositório
+2. **Clone** sua fork localmente
+3. **Crie** uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
+4. **Commit** suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+5. **Push** para a branch (`git push origin feature/nova-funcionalidade`)
+6. **Abra** um Pull Request
+
+### **Áreas para Contribuição**
+
+- 🔬 **Novos algoritmos** (Merge Sort, Radix Sort, etc.)
+- 📊 **Novas métricas** (uso de memória, cache misses)
+- 🖥️ **Interface gráfica** (visualização em tempo real)
+- 📈 **Análises estatísticas** (desvio padrão, intervalos de confiança)
+- 🔧 **Otimizações** (paralelização, SIMD)
+
+### **Padrões de Código**
+
+- **Documentação**: Comentários em português, estilo Doxygen
+- **Nomenclatura**: snake_case para funções e variáveis
+- **Modularização**: Separação clara de responsabilidades
+- **Compatibilidade**: Código multiplataforma (Windows/Linux/macOS)
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT** - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ```
-[Entrada] → [Validação] → [Preparação] → [Execução Múltipla] → [Análise] → [Saída]
-    ↓            ↓            ↓               ↓                 ↓         ↓
- Arquivos    Formato      Cópias      Medição Precisa    Estatísticas  Relatórios
- de Dados    Correto      Seguras     + Contadores       + Rankings    + Arrays
+MIT License
+
+Copyright (c) 2025 Sistema de Análise de Algoritmos
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 ```
-
-### **🛡️ Robustez e Tratamento de Erros**
-
-- **Validação completa** de entrada em todos os níveis
-- **Fallbacks automáticos** para diferentes sistemas operacionais  
-- **Recuperação inteligente** de erros de I/O e memória
-- **Detecção automática** de formatos de arquivo
-- **Limpeza automática** de recursos alocados
 
 ---
 
-## 🎓 Conclusão Acadêmica
+## 📞 Contato e Suporte
 
-Este sistema oferece uma plataforma completa para **análise empírica** de algoritmos de ordenação, permitindo:
-
-- **Verificação prática** das complexidades teóricas
-- **Comparação objetiva** entre diferentes abordagens  
-- **Compreensão visual** do comportamento dos algoritmos
-- **Análise quantitativa** com métricas precisas
-- **Documentação automática** para relatórios acadêmicos
-
-### 🔍 **Insights Obtidos com Alta Precisão**
-
-- **Quick Sort** consistentemente mais rápido em conjuntos médios/grandes
-- **Insertion Sort** surpreendentemente eficiente para n < 100
-- **Shell Sort** mostra melhoria dramática sobre algoritmos O(n²)
-- **Heap Sort** oferece performance mais previsível que Quick Sort
-- **Bubble Sort** útil apenas para demonstrações educacionais
-- **Estabilidade** faz diferença crítica em dados estruturados
-
-### ⚡ **Vantagens da Versão 2.1**
-
-- 🎯 **100% de precisão** - nunca mais tempos zero
-- 📊 **Dados mais confiáveis** com médias estatísticas  
-- 🔬 **Análise científica** com múltiplas medições
-- 💻 **Compatibilidade total** com todos os sistemas
-- 📈 **Insights mais profundos** sobre algoritmos rápidos
+**📧 Para dúvidas acadêmicas**: Consulte a documentação nos comentários do código
+**🐛 Para reportar bugs**: Use as Issues do GitHub
+**💡 Para sugestões**: Pull Requests são bem-vindos
 
 ---
 
-**📧 Contato**: Sistema de Análise de Algoritmos  
-**📅 Data**: Agosto de 2025  
-**🔖 Versão**: 2.1  
-**📜 Licença**: [MIT](LICENSE)
+<div align="center">
 
----
+**🏆 Desenvolvido com foco em qualidade, precisão e usabilidade**
 
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-❤️-red.svg)]()
+[![C Programming](https://img.shields.io/badge/C-Programming-blue.svg)]()
+[![Academic Project](https://img.shields.io/badge/Academic-Project-green.svg)]()
+
+**⭐ Se este projeto foi útil para você, considere dar uma estrela!**
+
+</div>

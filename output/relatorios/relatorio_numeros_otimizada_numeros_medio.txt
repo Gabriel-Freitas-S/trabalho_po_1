@@ -1,0 +1,36 @@
+================================================================
+              RELATORIO DE DESEMPENHO - ALGORITMOS             
+================================================================
+
+Dados analisados: 7 conjuntos de teste
+
++----------------+----------------+-------------+----------+--------+
+| Algoritmo      | Tipo Dados     | Tempo (s)   | Compar.  | Trocas |
++----------------+----------------+-------------+----------+--------+
+| Insertion Sort | numeros        |  0.000294 |  6266200 | 6266800 |
+| Bubble Sort    | numeros        |  0.002729 | 12412200 | 6216800 |
+| Selection Sort | numeros        |  0.000406 | 12525000 |  49000 |
+| Shaker Sort    | numeros        |  0.002564 |  9462200 | 6216800 |
+| Shell Sort     | numeros        |  0.000065 |   622600 | 648500 |
+| Quick Sort     | numeros        |  0.000130 |   521600 | 255500 |
+| Heap Sort      | numeros        |  0.000189 |   740400 | 403100 |
++----------------+----------------+-------------+----------+--------+
+
+OBSERVACOES:
+- Tempos em segundos (precisao: microssegundos - 6 casas decimais)
+- Para algoritmos muito rapidos, foram executadas multiplas medicoes
+- Conjuntos < 1000 elementos: 100 execucoes para maior precisao
+- Conjuntos < 5000 elementos: 10 execucoes para maior precisao
+- Conjuntos < 10000 elementos: 3 execucoes para maior precisao
+- Conjuntos >= 10000 elementos: 1 execucao (suficientemente lenta)
+- Comparacoes e Trocas: valores absolutos
+- Dados ordenados por algoritmo
+
+COMPLEXIDADES TEORICAS:
+Bubble Sort:    O(n²) medio, O(n) melhor, O(n²) pior
+Insertion Sort: O(n²) medio, O(n) melhor, O(n²) pior
+Selection Sort: O(n²) todos os casos
+Quick Sort:     O(n log n) medio, O(n log n) melhor, O(n²) pior
+Heap Sort:      O(n log n) todos os casos
+Shell Sort:     O(n^1.25) medio (varia com incrementos)
+Shaker Sort:    O(n²) medio, O(n) melhor, O(n²) pior

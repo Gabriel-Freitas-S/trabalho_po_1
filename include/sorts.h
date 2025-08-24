@@ -7,27 +7,29 @@
  * @brief Definições, estruturas e protótipos para análise comparativa
  *        de algoritmos de ordenação
  * @version 2.1
- * @date 2025-08-23
+ * @date 2025-08-24
  * @author Sistema de Análise de Algoritmos
  *
  * Este arquivo contém todas as definições necessárias para a
  * implementação e análise de 7 algoritmos de ordenação diferentes,
- * com suporte para dados genéricos e métricas detalhadas.
+ * com suporte para dados genéricos e métricas detalhadas de performance.
  *
- * NOVA VERSÃO 2.1: Sistema de Medição de Alta Precisão
- * - Medição de tempo com precisão de nanossegundos
- * - Suporte multiplataforma (Windows/Linux/macOS)
- * - Medição adaptativa baseada no tamanho do conjunto
- * - Eliminação completa de tempos zerados
- * - Médias estatísticas para maior confiabilidade
+ * VERSÃO 2.1: Sistema de Medição de Alta Precisão e Análise Comparativa
+ * - Medição de tempo com precisão de nanossegundos multiplataforma
+ * - Suporte completo para Windows, Linux e macOS
+ * - Medição adaptativa baseada no tamanho do conjunto de dados
+ * - Eliminação completa de medições zeradas através de múltiplas execuções
+ * - Cálculo de médias estatísticas para maior confiabilidade dos resultados
+ * - Sistema dual com versões otimizadas e não otimizadas para comparação
  *
  * Características principais:
- * - Algoritmos genéricos que funcionam com qualquer tipo de dados
- * - Medição precisa de tempo, comparações e trocas
- * - Análise de estabilidade automática
- * - Geração de relatórios detalhados
- * - Organização automática de arquivos de saída
- * - Sistema de alta precisão para algoritmos rápidos
+ * - Algoritmos genéricos compatíveis com qualquer tipo de dados
+ * - Medição precisa de tempo, comparações e operações de troca
+ * - Análise automatizada de estabilidade com casos de teste reais
+ * - Geração de relatórios detalhados em múltiplos formatos
+ * - Organização automática de arquivos de saída por categoria
+ * - Sistema de alta precisão para algoritmos com execução muito rápida
+ * - Interface unificada que alterna entre versões otimizadas automaticamente
  *
  * ================================================================
  */
@@ -41,20 +43,61 @@
 #include <time.h>
 
 /* ================================================================
- * ESTRUTURAS DE DADOS
+ * CONFIGURAÇÕES DE OTIMIZAÇÃO E CONTROLE DE VERSÕES
  * ================================================================ */
 
 /**
+ * @brief Flag global para controlar uso de versões otimizadas
+ *
+ * Esta variável determina qual versão dos algoritmos será utilizada:
+ * - Valor 1: utiliza implementações otimizadas (máxima performance)
+ * - Valor 0: utiliza implementações não otimizadas (didáticas/comparativas)
+ *
+ * @note A alternância entre versões permite análise comparativa de
+ *       diferentes estratégias de implementação dos mesmos algoritmos
+ */
+extern int usar_versao_otimizada;
+
+/**
+ * @brief Configura o sistema para usar versão otimizada ou não otimizada
+ *
+ * Permite alternar dinamicamente entre as duas versões de implementação
+ * de todos os algoritmos, facilitando análises comparativas de performance.
+ *
+ * @param otimizada 1 para usar versões otimizadas, 0 para versões didáticas
+ */
+void configurar_otimizacao(int otimizada);
+
+/* ================================================================
+ * ESTRUTURAS DE DADOS E DEFINIÇÕES DE TIPOS
+ * ================================================================ */
+
+/**
+ * @typedef CompareFn
+ * @brief Ponteiro para função de comparação genérica
+ *
+ * Define o tipo de função utilizada para comparar elementos durante
+ * a ordenação. Segue o padrão da biblioteca padrão C (qsort), permitindo
+ * que os algoritmos trabalhem com qualquer tipo de dados de forma genérica.
+ *
+ * @param a Ponteiro para o primeiro elemento a ser comparado
+ * @param b Ponteiro para o segundo elemento a ser comparado
+ * @return Valor negativo se a < b, zero se a == b, valor positivo se a > b
+ */
+typedef int (*CompareFn)(const void *a, const void *b);
+
+/**
  * @struct Aluno
- * @brief Estrutura para representar dados de um aluno
+ * @brief Estrutura para representar dados acadêmicos de um estudante
  *
- * Contém informações pessoais do aluno utilizadas para demonstrar
- * ordenação por múltiplos critérios e análise de estabilidade.
+ * Contém informações pessoais e acadêmicas do aluno, utilizada para
+ * demonstrar ordenação por múltiplos critérios e análise de estabilidade
+ * dos algoritmos com dados reais estruturados.
  *
- * @var nome Nome completo do aluno (até 100 caracteres)
- * @var data_nascimento Data no formato DD/MM/AAAA
+ * @var nome Nome completo do estudante (máximo 99 caracteres + terminador)
+ * @var data_nascimento Data de nascimento no formato DD/MM/AAAA
  * @var bairro Bairro de residência (critério primário de ordenação)
- * @var cidade Cidade de residência
+ * @var cidade Cidade de residência (critério secundário quando aplicável)
  */
 typedef struct {
     char nome[100];
@@ -65,17 +108,18 @@ typedef struct {
 
 /**
  * @struct ResultadoTempo
- * @brief Estrutura para armazenar métricas de desempenho de algoritmos
+ * @brief Estrutura para armazenar métricas completas de performance
  *
- * Utilizada para coletar e organizar dados de performance dos
- * algoritmos de ordenação, incluindo tempo de execução e operações.
+ * Centraliza todas as métricas coletadas durante a execução dos algoritmos
+ * de ordenação, incluindo tempo de execução e contadores de operações.
+ * Utilizada para geração de relatórios detalhados e análises comparativas.
  *
- * @var algoritmo Nome do algoritmo testado
- * @var tempo_execucao Tempo de execução em segundos (precisão de microssegundos)
- * @var tamanho_dados Quantidade de elementos processados
+ * @var algoritmo Nome identificador do algoritmo testado
+ * @var tempo_execucao Tempo total de execução em segundos (precisão de nanossegundos)
+ * @var tamanho_dados Quantidade de elementos processados no teste
  * @var tipo_dados Tipo de dados processados ("numeros" ou "alunos")
- * @var comparacoes Número total de comparações realizadas
- * @var trocas Número total de trocas/movimentações realizadas
+ * @var comparacoes Número total de comparações realizadas durante a ordenação
+ * @var trocas Número total de trocas/movimentações de elementos realizadas
  */
 typedef struct {
     char algoritmo[30];
@@ -87,33 +131,21 @@ typedef struct {
 } ResultadoTempo;
 
 /**
- * @typedef CompareFn
- * @brief Ponteiro para função de comparação genérica
- *
- * Permite que os algoritmos trabalhem com qualquer tipo de dados,
- * seguindo o padrão da função qsort() da biblioteca padrão C.
- *
- * @param a Ponteiro para o primeiro elemento
- * @param b Ponteiro para o segundo elemento
- * @return Valor negativo se a < b, 0 se a == b, positivo se a > b
- */
-typedef int (*CompareFn)(const void *a, const void *b);
-
-/**
  * @struct AlgoritmoInfo
- * @brief Estrutura unificada com informações completas de um algoritmo
+ * @brief Estrutura unificada com metadados completos de um algoritmo
  *
- * Centraliza todas as informações e ponteiros de função necessários
- * para executar e analisar cada algoritmo de ordenação.
+ * Centraliza todas as informações teóricas e ponteiros de função necessários
+ * para executar e analisar cada algoritmo de ordenação. Permite tratamento
+ * uniforme de todos os algoritmos através de uma interface comum.
  *
- * @var nome Nome identificador do algoritmo
- * @var complexidade_melhor Complexidade no melhor caso (notação Big-O)
- * @var complexidade_media Complexidade no caso médio (notação Big-O)
- * @var complexidade_pior Complexidade no pior caso (notação Big-O)
- * @var eh_estavel Flag indicando se o algoritmo preserva ordem de elementos iguais
- * @var sort_fn Ponteiro para função de ordenação padrão (se aplicável)
- * @var quick_sort_fn Ponteiro para função Quick Sort (caso especial)
- * @var eh_quick Flag indicando se usa interface especial do Quick Sort
+ * @var nome Nome descritivo do algoritmo para exibição
+ * @var complexidade_melhor Complexidade temporal no melhor caso (notação Big-O)
+ * @var complexidade_media Complexidade temporal no caso médio (notação Big-O)
+ * @var complexidade_pior Complexidade temporal no pior caso (notação Big-O)
+ * @var eh_estavel Flag indicando se preserva a ordem relativa de elementos iguais
+ * @var sort_fn Ponteiro para função de ordenação padrão (interface unificada)
+ * @var quick_sort_fn Ponteiro específico para Quick Sort (interface especializada)
+ * @var eh_quick Flag indicando se utiliza interface especializada do Quick Sort
  */
 typedef struct {
     char nome[30];
@@ -260,6 +292,40 @@ void quick_sort(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp)
  * @param cmp Função de comparação
  */
 void heap_sort(void *arr, int n, size_t elem_size, CompareFn cmp);
+
+/* ================================================================
+ * PROTÓTIPOS DOS ALGORITMOS - VERSÕES NÃO OTIMIZADAS
+ * ================================================================ */
+
+/**
+ * @brief Versões não otimizadas dos algoritmos (didáticas)
+ */
+void insertion_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp);
+void bubble_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp);
+void selection_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp);
+void shaker_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp);
+void shell_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp);
+void quick_sort_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp);
+void heap_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp);
+
+/**
+ * @brief Versões otimizadas dos algoritmos (implementações originais)
+ */
+void insertion_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
+void bubble_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
+void selection_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
+void shaker_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
+void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
+void quick_sort_optimized(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp);
+void heap_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
+
+/**
+ * @brief Funções auxiliares otimizadas e não otimizadas
+ */
+void heapify_optimized(void *arr, int n, int i, size_t elem_size, CompareFn cmp);
+void heapify_naive(void *arr, int n, int i, size_t elem_size, CompareFn cmp);
+int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp);
+int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp);
 
 /* ================================================================
  * FUNÇÕES AUXILIARES DOS ALGORITMOS
@@ -683,5 +749,56 @@ void criar_diretorios_output();
  * Limpa a tela do terminal para melhor apresentação dos resultados.
  */
 void limpar_terminal();
+
+/**
+ * @brief Alterna entre versão otimizada e não otimizada dos algoritmos
+ */
+void alternar_versao_algoritmos();
+
+/**
+ * @brief Compara versões otimizada e não otimizada dos algoritmos
+ */
+void comparar_versoes();
+
+/**
+ * @brief Obtém opção do usuário com validação
+ */
+int obter_opcao_usuario();
+
+/**
+ * @brief Pausa o programa esperando o usuário pressionar Enter
+ */
+void pausar();
+
+/**
+ * @brief Executa todos os testes disponíveis
+ */
+void executar_relatorio_completo();
+
+/**
+ * @brief Executa todos os algoritmos com salvamento dos arrays ordenados
+ * @param dados Ponteiro para os dados a serem ordenados
+ * @param tamanho Número de elementos
+ * @param elem_size Tamanho de cada elemento em bytes
+ * @param cmp Função de comparação
+ * @param tipo_dados Tipo de dados ("numeros" ou "alunos")
+ * @param arquivo_base Nome base do arquivo
+ * @param versao Identificação da versão ("otimizada" ou "nao_otimizada")
+ */
+void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
+                                            const char* tipo_dados, const char* arquivo_base, const char* versao);
+
+/**
+ * @brief Gera relatório comparativo final das duas versões
+ */
+void gerar_relatorio_comparativo_final();
+
+/**
+ * @brief Gera relatório detalhado de performance
+ * @param resultados Array com os resultados dos testes
+ * @param num_resultados Número de resultados
+ * @param nome_arquivo Nome do arquivo de saída
+ */
+void gerar_relatorio_detalhado(ResultadoTempo resultados[], int num_resultados, const char* nome_arquivo);
 
 #endif // SORTS_H

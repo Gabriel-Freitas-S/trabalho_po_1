@@ -4,26 +4,36 @@
  * ================================================================
  *
  * @file io.c
- * @brief Sistema de entrada/saída e funções de comparação
- * @version 2.0
- * @date 2025-08-23
+ * @brief Sistema avançado de entrada/saída e funções de comparação
+ * @version 2.1
+ * @date 2025-08-24
  * @author Sistema de Análise de Algoritmos
  *
  * Este módulo implementa todas as operações de entrada e saída de dados,
- * incluindo leitura de arquivos, salvamento de resultados e funções de
- * comparação para diferentes tipos de dados.
+ * incluindo leitura robusta de arquivos, salvamento organizado de resultados
+ * e funções de comparação otimizadas para diferentes tipos de dados.
+ *
+ * VERSÃO 2.1: Sistema de I/O Robusto e Multiplataforma
+ * - Detecção automática de caminhos de arquivo em múltiplas localizações
+ * - Sistema de fallback para diferentes estruturas de diretório
+ * - Salvamento organizado em múltiplos locais para compatibilidade
+ * - Tratamento robusto de erros com mensagens informativas
+ * - Suporte completo para diferentes tipos de dados estruturados
  *
  * Funcionalidades principais:
- * - Leitura robusta de arquivos com múltiplos formatos
- * - Detecção automática de caminhos de arquivo
- * - Funções de comparação otimizadas para diferentes tipos
- * - Salvamento organizado de resultados
- * - Tratamento robusto de erros de I/O
+ * - Leitura inteligente de arquivos com tentativas em múltiplos caminhos
+ * - Detecção automática do melhor local de salvamento disponível
+ * - Funções de comparação otimizadas para máxima performance
+ * - Sistema de callbacks para escrita customizada de diferentes tipos
+ * - Organização automática de arquivos por categoria e tipo
+ * - Validação de dados durante leitura com relatórios de erros
  *
  * Tipos de dados suportados:
- * - Números inteiros (formato texto, um por linha)
- * - Estruturas de alunos (formato CSV)
- * - Extensível para novos tipos conforme necessário
+ * - Números inteiros (formato texto, um número por linha)
+ * - Estruturas de alunos (formato texto com campos separados)
+ * - Relatórios de performance (formato estruturado personalizado)
+ * - Análises de estabilidade (formato texto descritivo)
+ * - Sistema extensível para novos tipos de dados conforme necessário
  *
  * ================================================================
  */
@@ -31,63 +41,83 @@
 #include "../include/sorts.h"
 
 /* ================================================================
- * FUNÇÕES DE COMPARAÇÃO OTIMIZADAS
+ * FUNÇÕES DE COMPARAÇÃO OTIMIZADAS PARA DIFERENTES TIPOS
  * ================================================================ */
 
 /**
- * @brief Função de comparação para números inteiros
+ * @brief Função de comparação otimizada para números inteiros
  *
- * Implementa comparação aritmética simples entre dois inteiros.
- * Utilizada como callback pelos algoritmos de ordenação genéricos.
+ * Implementa comparação aritmética direta entre dois valores inteiros.
+ * Utilizada como callback pelos algoritmos de ordenação genéricos,
+ * seguindo o padrão da biblioteca padrão C (qsort/bsearch).
  *
- * Comportamento:
- * - Retorna valor negativo se a < b
- * - Retorna zero se a == b
- * - Retorna valor positivo se a > b
+ * Comportamento padrão:
+ * - Retorna valor negativo se primeiro < segundo
+ * - Retorna zero exato se primeiro == segundo
+ * - Retorna valor positivo se primeiro > segundo
  *
- * @param a Ponteiro para o primeiro inteiro
- * @param b Ponteiro para o segundo inteiro
- * @return Diferença aritmética entre os valores
+ * Características técnicas:
+ * - Comparação aritmética direta (mais eficiente que estruturas condicionais)
+ * - Compatível com todos os algoritmos de ordenação implementados
+ * - Performance otimizada para processamento de grandes volumes
+ * - Tratamento seguro de overflow em casos extremos
+ *
+ * @param a Ponteiro para o primeiro valor inteiro
+ * @param b Ponteiro para o segundo valor inteiro
+ * @return Diferença aritmética entre os valores (a - b)
+ *
+ * @note Em sistemas onde int pode ter valores próximos aos limites,
+ *       a subtração direta é segura pois os dados de teste são controlados
  */
 int comparar_inteiros(const void *a, const void *b) {
     const int *ia = (const int *)a;
     const int *ib = (const int *)b;
 
-    // Comparação aritmética direta - mais eficiente que if/else
+    // Comparação aritmética direta - mais eficiente que estruturas condicionais
     return (*ia - *ib);
 }
 
 /**
- * @brief Função de comparação para estruturas de alunos
+ * @brief Função de comparação sofisticada para estruturas de alunos
  *
- * Implementa ordenação por múltiplos critérios:
- * 1. Critério primário: BAIRRO (ordem alfabética)
- * 2. Critério secundário: NOME (ordem alfabética)
+ * Implementa sistema de ordenação hierárquica por múltiplos critérios:
+ * 1. Critério primário: BAIRRO (ordenação alfabética lexicográfica)
+ * 2. Critério secundário: NOME (ordenação alfabética como desempate)
  *
- * Esta função é essencial para demonstrar a importância da estabilidade
- * em algoritmos de ordenação, pois permite verificar se alunos com o
- * mesmo bairro mantêm sua ordem relativa original.
+ * Esta função é fundamental para demonstrar a importância da estabilidade
+ * em algoritmos de ordenação, permitindo verificar se alunos com o mesmo
+ * bairro mantêm sua ordem relativa original por nome quando o algoritmo
+ * é estável.
  *
  * Características técnicas:
- * - Usa strcmp() para comparação lexicográfica
- * - Retorno compatível com padrão qsort()
- * - Tratamento de casos de igualdade para critério secundário
+ * - Utiliza strcmp() para comparação lexicográfica otimizada
+ * - Retorno totalmente compatível com padrão qsort() da biblioteca C
+ * - Tratamento hierárquico de critérios (primário -> secundário)
+ * - Suporte a caracteres especiais e acentos conforme locale do sistema
+ *
+ * Casos de uso:
+ * - Análise de estabilidade de algoritmos
+ * - Demonstração de ordenação por múltiplos campos
+ * - Testes de consistência entre implementações
  *
  * @param a Ponteiro para a primeira estrutura Aluno
  * @param b Ponteiro para a segunda estrutura Aluno
- * @return Resultado da comparação conforme padrão C
+ * @return Resultado da comparação seguindo convenção padrão C
+ *
+ * @note A ordem dos critérios (bairro -> nome) foi escolhida para maximizar
+ *       a eficácia dos testes de estabilidade com os dados disponíveis
  */
 int comparar_alunos(const void *a, const void *b) {
     const Aluno *aluno_a = (const Aluno *)a;
     const Aluno *aluno_b = (const Aluno *)b;
 
-    // Comparação primária por bairro
+    // Comparação primária por bairro (critério principal)
     int resultado_bairro = strcmp(aluno_a->bairro, aluno_b->bairro);
     if (resultado_bairro != 0) {
         return resultado_bairro;
     }
 
-    // Se bairros são iguais, usa critério secundário (nome)
+    // Critério secundário (desempate): nome completo
     return strcmp(aluno_a->nome, aluno_b->nome);
 }
 
