@@ -1,0 +1,311 @@
+# ================================================================
+# GITIGNORE PARA PROJETO DE ALGORITMOS DE ORDENAÇÃO EM C
+# ================================================================
+#
+# Este arquivo define quais arquivos e diretórios devem ser ignorados
+# pelo Git para manter o repositório limpo e focado apenas no código
+# fonte e documentação essencial.
+#
+# Projeto: Sistema de Análise de Algoritmos de Ordenação
+# Linguagem: C
+# Build System: CMake
+# IDE: CLion
+# ================================================================
+
+# ================================================================
+# ARQUIVOS DE BUILD E COMPILAÇÃO
+# ================================================================
+
+# Diretórios de build do CMake
+cmake-build-*/
+build/
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+
+# Arquivos gerados pelo CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Arquivos de build do Ninja
+build.ninja
+rules.ninja
+.ninja_deps
+.ninja_log
+
+# Executáveis
+*.exe
+*.out
+*.app
+*.run
+trabalho_po_1
+trabalho_po_1.exe
+
+# Arquivos objeto e bibliotecas
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Arquivos de linking
+*.map
+*.exp
+*.ilk
+*.pdb
+
+# ================================================================
+# ARQUIVOS DE IDE E EDITOR
+# ================================================================
+
+# CLion / IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+cmake-build-*/
+
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Code::Blocks
+*.cbp
+*.layout
+*.depend
+
+# Dev-C++
+*.dev
+*.layout
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim/Neovim
+*.swp
+*.swo
+*~
+tags
+.vimrc.local
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ================================================================
+# ARQUIVOS DE SISTEMA OPERACIONAL
+# ================================================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ================================================================
+# ARQUIVOS DE FERRAMENTAS DE DESENVOLVIMENTO
+# ================================================================
+
+# Valgrind
+*.memcheck
+*.helgrind
+*.drd
+*.massif
+*.cachegrind
+*.callgrind
+
+# GDB
+.gdb_history
+core
+core.*
+vgcore.*
+
+# Profiling
+*.gcov
+*.gcno
+*.gcda
+gmon.out
+*.prof
+
+# Coverage reports
+coverage/
+*.info
+lcov.info
+
+# Static analysis
+cppcheck.xml
+scan-build-*/
+
+# ================================================================
+# ARQUIVOS DE TESTE E TEMPORÁRIOS
+# ================================================================
+
+# Arquivos de teste temporários
+test_output/
+temp/
+tmp/
+*.tmp
+*.temp
+*.log
+
+# Diretório de testes do CMake
+Testing/
+CTestTestfile.cmake
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# ================================================================
+# ARQUIVOS DE SAÍDA DO PROGRAMA (OPCIONAL)
+# ================================================================
+#
+# NOTA: Os arquivos de saída podem ser úteis para análise,
+# mas podem ser grandes. Descomente as linhas abaixo se quiser
+# ignorá-los no repositório.
+
+# Uncomment to ignore program output files:
+# output/
+# *.txt
+
+# Manter apenas alguns arquivos de exemplo de saída
+# output/relatorios/*.txt
+# output/numeros/*.txt
+# output/alunos/*.txt
+
+# ================================================================
+# ARQUIVOS ESPECÍFICOS DO PROJETO
+# ================================================================
+
+# Arquivos de configuração local (se houver)
+config.local
+settings.local
+
+# Arquivos grandes de teste (descomente se necessário)
+# data/numeros_muito_grande.txt
+
+# Arquivos de log específicos do aplicativo
+app.log
+debug.log
+error.log
+
+# ================================================================
+# DEPENDÊNCIAS E BIBLIOTECAS EXTERNAS
+# ================================================================
+
+# Diretórios de dependências (se usar gerenciadores de pacote)
+vcpkg_installed/
+conan/
+third_party/
+extern/
+dependencies/
+
+# ================================================================
+# DOCUMENTAÇÃO GERADA AUTOMATICAMENTE
+# ================================================================
+
+# Documentação Doxygen
+docs/html/
+docs/latex/
+docs/man/
+docs/xml/
+*.docset
+
+# LaTeX (se gerar documentação em LaTeX)
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+*.fdb_latexmk
+*.synctex.gz
+*.pdfsync
+
+# ================================================================
+# ARQUIVOS DE CONFIGURAÇÃO DE FERRAMENTAS
+# ================================================================
+
+# Git hooks personalizados
+.git/hooks/*
+!.git/hooks/*.sample
+
+# EditorConfig (manter se usar)
+# .editorconfig
+
+# Clang-format (manter se usar)
+# .clang-format
+
+# Clang-tidy (manter se usar)
+# .clang-tidy
+
+# ================================================================
+# FINAL DO ARQUIVO
+# ================================================================

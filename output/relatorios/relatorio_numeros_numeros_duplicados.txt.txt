@@ -1,0 +1,102 @@
+RELATORIO COMPLETO DE ANALISE - ALGORITMOS DE ORDENACAO
+=======================================================
+
+Data de Execucao: Aug 23 2025
+Tipo de Dados: numeros
+Tamanho do Conjunto: 500 elementos
+
+METRICAS DETALHADAS POR ALGORITMO
+=================================
+
+Algoritmo: Insertion Sort
+Complexidade Media: O(n²)
+Estabilidade: ESTAVEL
+Tempo de Execucao: 0.000000 segundos
+Numero de Comparacoes: 55717
+Numero de Trocas: 55662
+Comparacoes por Elemento: 111.43
+Trocas por Elemento: 111.32
+---------------------------------------------------
+
+Algoritmo: Bubble Sort
+Complexidade Media: O(n²)
+Estabilidade: ESTAVEL
+Tempo de Execucao: 0.003000 segundos
+Numero de Comparacoes: 123097
+Numero de Trocas: 55218
+Comparacoes por Elemento: 246.19
+Trocas por Elemento: 110.44
+---------------------------------------------------
+
+Algoritmo: Selection Sort
+Complexidade Media: O(n²)
+Estabilidade: NAO ESTAVEL
+Tempo de Execucao: 0.001000 segundos
+Numero de Comparacoes: 124750
+Numero de Trocas: 449
+Comparacoes por Elemento: 249.50
+Trocas por Elemento: 0.90
+---------------------------------------------------
+
+Algoritmo: Shaker Sort
+Complexidade Media: O(n²)
+Estabilidade: ESTAVEL
+Tempo de Execucao: 0.002000 segundos
+Numero de Comparacoes: 92619
+Numero de Trocas: 55218
+Comparacoes por Elemento: 185.24
+Trocas por Elemento: 110.44
+---------------------------------------------------
+
+Algoritmo: Shell Sort
+Complexidade Media: O(n^1.25)
+Estabilidade: NAO ESTAVEL
+Tempo de Execucao: 0.000000 segundos
+Numero de Comparacoes: 4467
+Numero de Trocas: 1934
+Comparacoes por Elemento: 8.93
+Trocas por Elemento: 3.87
+---------------------------------------------------
+
+Algoritmo: Quick Sort
+Complexidade Media: O(n log n)
+Estabilidade: NAO ESTAVEL
+Tempo de Execucao: 0.000000 segundos
+Numero de Comparacoes: 14103
+Numero de Trocas: 2043
+Comparacoes por Elemento: 28.21
+Trocas por Elemento: 4.09
+---------------------------------------------------
+
+Algoritmo: Heap Sort
+Complexidade Media: O(n log n)
+Estabilidade: NAO ESTAVEL
+Tempo de Execucao: 0.000000 segundos
+Numero de Comparacoes: 6986
+Numero de Trocas: 3681
+Comparacoes por Elemento: 13.97
+Trocas por Elemento: 7.36
+---------------------------------------------------
+
+ANALISE COMPARATIVA
+===================
+
+MELHOR TEMPO: Insertion Sort (0.000000 segundos)
+PIOR TEMPO: Bubble Sort (0.003000 segundos)
+
+MENOS COMPARACOES: Shell Sort (4467 comparacoes)
+MAIS COMPARACOES: Selection Sort (124750 comparacoes)
+
+MENOS TROCAS: Selection Sort (449 trocas)
+MAIS TROCAS: Insertion Sort (55662 trocas)
+
+ALGORITMOS ESTAVEIS:
+- Insertion Sort
+- Bubble Sort
+- Shaker Sort
+
+ALGORITMOS NAO ESTAVEIS:
+- Selection Sort
+- Shell Sort
+- Quick Sort
+- Heap Sort
