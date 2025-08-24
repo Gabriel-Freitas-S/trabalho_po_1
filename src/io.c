@@ -307,7 +307,7 @@ Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho) {
  * @brief Salva array de números inteiros em arquivo
  *
  * Escreve os números ordenados em arquivo texto, organizando automaticamente
- * na estrutura de diretórios apropriada (output/numeros/).
+ * na estrutura de diretórios apropriada. Agora salva em múltiplos locais.
  *
  * Formato de saída:
  * - Um número por linha
@@ -319,37 +319,7 @@ Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho) {
  * @param tamanho Número de elementos no array
  */
 void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho) {
-    // Múltiplos caminhos para garantir compatibilidade
-    const char* caminhos[] = {
-        "output/numeros/%s",
-        "../output/numeros/%s",
-        "../../output/numeros/%s"
-    };
-
-    char caminho_completo[MAX_PATH];
-    FILE* arquivo = NULL;
-
-    // Tenta salvar em cada caminho possível
-    for (int i = 0; i < 3; i++) {
-        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], caminho_arquivo);
-        arquivo = fopen(caminho_completo, "w");
-        if (arquivo) {
-            break;
-        }
-    }
-
-    if (!arquivo) {
-        printf("ERRO: Nao foi possivel criar arquivo %s\n", caminho_arquivo);
-        return;
-    }
-
-    // Escrita sequencial dos números
-    for (int i = 0; i < tamanho; i++) {
-        fprintf(arquivo, "%d\n", arr[i]);
-    }
-
-    fclose(arquivo);
-    printf("Numeros salvos em: %s\n", caminho_completo);
+    salvar_arquivo_multiplos_locais("numeros", caminho_arquivo, escrever_numeros_callback, arr, tamanho);
 }
 
 /**
@@ -357,6 +327,7 @@ void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho) {
  *
  * Escreve os dados de alunos ordenados em formato CSV, mantendo
  * o mesmo formato do arquivo de entrada para facilitar análise.
+ * Agora salva em múltiplos locais.
  *
  * Formato de saída:
  * nome,data_nascimento,bairro,cidade
@@ -366,37 +337,5 @@ void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho) {
  * @param tamanho Número de elementos no array
  */
 void salvar_alunos(const char* caminho_arquivo, Aluno arr[], int tamanho) {
-    const char* caminhos[] = {
-        "output/alunos/%s",
-        "../output/alunos/%s",
-        "../../output/alunos/%s"
-    };
-
-    char caminho_completo[MAX_PATH];
-    FILE* arquivo = NULL;
-
-    for (int i = 0; i < 3; i++) {
-        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], caminho_arquivo);
-        arquivo = fopen(caminho_completo, "w");
-        if (arquivo) {
-            break;
-        }
-    }
-
-    if (!arquivo) {
-        printf("ERRO: Nao foi possivel criar arquivo de alunos %s\n", caminho_arquivo);
-        return;
-    }
-
-    // Escrita em formato CSV
-    for (int i = 0; i < tamanho; i++) {
-        fprintf(arquivo, "%s,%s,%s,%s\n",
-                arr[i].nome,
-                arr[i].data_nascimento,
-                arr[i].bairro,
-                arr[i].cidade);
-    }
-
-    fclose(arquivo);
-    printf("Alunos salvos em: %s\n", caminho_completo);
+    salvar_arquivo_multiplos_locais("alunos", caminho_arquivo, escrever_alunos_callback, arr, tamanho);
 }

@@ -381,6 +381,46 @@ void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho);
 void salvar_alunos(const char* caminho_arquivo, Aluno arr[], int tamanho);
 
 /* ================================================================
+ * FUNÇÕES AUXILIARES DE SALVAMENTO
+ * ================================================================ */
+
+/**
+ * @brief Salva arquivo em múltiplos locais (cmake-build-debug/output e output/)
+ *
+ * Função auxiliar que tenta salvar o arquivo tanto no diretório de build
+ * quanto no diretório output do projeto raiz.
+ *
+ * @param subdir Subdiretório (numeros, alunos, relatorios)
+ * @param nome_arquivo Nome do arquivo a ser salvo
+ * @param conteudo_callback Função callback para escrever o conteudo
+ * @param dados Dados a serem escritos
+ * @param tamanho Tamanho dos dados
+ */
+void salvar_arquivo_multiplos_locais(const char* subdir, const char* nome_arquivo,
+                                   void (*conteudo_callback)(FILE*, void*, int),
+                                   void* dados, int tamanho);
+
+/**
+ * @brief Função callback para escrever números inteiros
+ */
+void escrever_numeros_callback(FILE* arquivo, void* dados, int tamanho);
+
+/**
+ * @brief Função callback para escrever alunos
+ */
+void escrever_alunos_callback(FILE* arquivo, void* dados, int tamanho);
+
+/**
+ * @brief Função callback para escrever relatórios
+ */
+void escrever_relatorio_callback(FILE* arquivo, void* dados, int tamanho);
+
+/**
+ * @brief Função callback para escrever análise de estabilidade
+ */
+void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho);
+
+/* ================================================================
  * FUNÇÕES DE MEDIÇÃO E ANÁLISE
  * ================================================================ */
 

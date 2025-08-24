@@ -448,151 +448,80 @@ void executar_todos_algoritmos(void *dados, int tamanho, size_t elem_size, Compa
 
 /**
  * Gera relatório de tempos em formato TXT com métricas completas
- * Organiza em subpasta de relatórios
+ * Organiza em subpasta de relatórios e salva em múltiplos locais
  */
+
+// Função callback para escrever relatórios - deve estar fora da função principal
+void escrever_relatorio_callback(FILE* arquivo, void* dados, int tamanho) {
+    ResultadoTempo* resultados = (ResultadoTempo*)dados;
+
+    // Cabeçalho do relatório
+    fprintf(arquivo, "================================================================\n");
+    fprintf(arquivo, "              RELATORIO DE DESEMPENHO - ALGORITMOS             \n");
+    fprintf(arquivo, "================================================================\n\n");
+    fprintf(arquivo, "Dados analisados: %d conjuntos de teste\n\n", tamanho);
+
+    // Tabela de resultados
+    fprintf(arquivo, "+----------------+----------------+--------+----------+--------+\n");
+    fprintf(arquivo, "| Algoritmo      | Tipo Dados     | Tempo  | Compar.  | Trocas |\n");
+    fprintf(arquivo, "+----------------+----------------+--------+----------+--------+\n");
+
+    for (int i = 0; i < tamanho; i++) {
+        fprintf(arquivo, "| %-14s | %-14s | %6.3f | %8lld | %6lld |\n",
+               resultados[i].algoritmo,
+               resultados[i].tipo_dados,
+               resultados[i].tempo_execucao,
+               resultados[i].comparacoes,
+               resultados[i].trocas);
+    }
+
+    fprintf(arquivo, "+----------------+----------------+--------+----------+--------+\n\n");
+
+    // Análises adicionais
+    fprintf(arquivo, "OBSERVACOES:\n");
+    fprintf(arquivo, "- Tempos em segundos (precisao: microssegundos)\n");
+    fprintf(arquivo, "- Comparacoes e Trocas: valores absolutos\n");
+    fprintf(arquivo, "- Dados ordenados por algoritmo\n\n");
+
+    fprintf(arquivo, "COMPLEXIDADES TEORICAS:\n");
+    fprintf(arquivo, "Bubble Sort:    O(n²) medio, O(n) melhor, O(n²) pior\n");
+    fprintf(arquivo, "Insertion Sort: O(n²) medio, O(n) melhor, O(n²) pior\n");
+    fprintf(arquivo, "Selection Sort: O(n²) todos os casos\n");
+    fprintf(arquivo, "Quick Sort:     O(n log n) medio, O(n log n) melhor, O(n²) pior\n");
+    fprintf(arquivo, "Heap Sort:      O(n log n) todos os casos\n");
+    fprintf(arquivo, "Shell Sort:     O(n^1.25) medio (varia com incrementos)\n");
+    fprintf(arquivo, "Shaker Sort:    O(n²) medio, O(n) melhor, O(n²) pior\n");
+}
+
 void gerar_relatorio_tempos(ResultadoTempo resultados[], int num_resultados, const char* arquivo_saida) {
-    // Possíveis caminhos para salvar o arquivo na pasta de relatórios
-    const char* caminhos[] = {
-        "output/relatorios/%s",
-        "../output/relatorios/%s",
-        "../../output/relatorios/%s"
-    };
+    // Usa a função auxiliar para salvar em múltiplos locais
+    salvar_arquivo_multiplos_locais("relatorios", arquivo_saida, escrever_relatorio_callback, resultados, num_resultados);
+}
 
-    char caminho_completo[MAX_PATH];
-    FILE* arquivo = NULL;
-    int caminho_usado = -1;
+/**
+ * Função callback para escrever análise de estabilidade
+ */
+void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho) {
+    AlgoritmoInfo* algoritmos = obter_info_algoritmos();
 
-    // Tenta cada caminho até conseguir criar o arquivo
-    for (int i = 0; i < 3; i++) {
-        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], arquivo_saida);
-        arquivo = fopen(caminho_completo, "w");
-        if (arquivo) {
-            caminho_usado = i;
-            printf("Relatorio salvo em: %s\n", caminho_completo);
-            break;
-        }
+    fprintf(arquivo, "ANALISE DE ESTABILIDADE - ALGORITMOS DE ORDENACAO\n");
+    fprintf(arquivo, "=================================================\n\n");
+
+    fprintf(arquivo, "DEFINICAO:\n");
+    fprintf(arquivo, "Um algoritmo e ESTAVEL se preserva a ordem relativa\n");
+    fprintf(arquivo, "de elementos com chaves iguais.\n\n");
+
+    fprintf(arquivo, "IMPORTANCIA:\n");
+    fprintf(arquivo, "Essencial quando ordenamos por multiplos criterios.\n");
+    fprintf(arquivo, "Ex: Ordenar alunos por bairro e manter ordem por nome.\n\n");
+
+    fprintf(arquivo, "RESUMO DOS ALGORITMOS:\n");
+    for (int i = 0; i < NUM_ALGORITMOS; i++) {
+        fprintf(arquivo, "%s %s: %s\n",
+                algoritmos[i].eh_estavel ? "[ESTAVEL]" : "[NAO ESTAVEL]",
+                algoritmos[i].nome,
+                algoritmos[i].eh_estavel ? "ESTAVEL" : "NAO ESTAVEL");
     }
-
-    if (!arquivo) {
-        printf("ERRO: Nao foi possivel criar relatorio %s\n", arquivo_saida);
-        printf("Tentou salvar em:\n");
-        for (int i = 0; i < 3; i++) {
-            snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], arquivo_saida);
-            printf("  - %s\n", caminho_completo);
-        }
-        return;
-    }
-
-    // Cabeçalho do relatório TXT
-    fprintf(arquivo, "RELATORIO COMPLETO DE ANALISE - ALGORITMOS DE ORDENACAO\n");
-    fprintf(arquivo, "=======================================================\n\n");
-
-    fprintf(arquivo, "Data de Execucao: %s", __DATE__);
-    fprintf(arquivo, "\nTipo de Dados: %s\n", resultados[0].tipo_dados);
-    fprintf(arquivo, "Tamanho do Conjunto: %d elementos\n\n", resultados[0].tamanho_dados);
-
-    AlgoritmoInfo* info_algoritmos = obter_info_algoritmos();
-
-    // Relatório detalhado por algoritmo
-    fprintf(arquivo, "METRICAS DETALHADAS POR ALGORITMO\n");
-    fprintf(arquivo, "=================================\n\n");
-
-    for (int i = 0; i < num_resultados; i++) {
-        // Encontra informação do algoritmo
-        const char* complexidade = "N/A";
-        int eh_estavel = 0;
-        for (int j = 0; j < NUM_ALGORITMOS; j++) {
-            if (strcmp(resultados[i].algoritmo, info_algoritmos[j].nome) == 0) {
-                complexidade = info_algoritmos[j].complexidade_media;
-                eh_estavel = info_algoritmos[j].eh_estavel;
-                break;
-            }
-        }
-
-        fprintf(arquivo, "Algoritmo: %s\n", resultados[i].algoritmo);
-        fprintf(arquivo, "Complexidade Media: %s\n", complexidade);
-        fprintf(arquivo, "Estabilidade: %s\n", eh_estavel ? "ESTAVEL" : "NAO ESTAVEL");
-        fprintf(arquivo, "Tempo de Execucao: %.6f segundos\n", resultados[i].tempo_execucao);
-        fprintf(arquivo, "Numero de Comparacoes: %lld\n", resultados[i].comparacoes);
-        fprintf(arquivo, "Numero de Trocas: %lld\n", resultados[i].trocas);
-
-        // Calcula eficiência relativa
-        if (resultados[i].tamanho_dados > 0) {
-            double comp_por_elemento = (double)resultados[i].comparacoes / resultados[i].tamanho_dados;
-            double trocas_por_elemento = (double)resultados[i].trocas / resultados[i].tamanho_dados;
-            fprintf(arquivo, "Comparacoes por Elemento: %.2f\n", comp_por_elemento);
-            fprintf(arquivo, "Trocas por Elemento: %.2f\n", trocas_por_elemento);
-        }
-
-        fprintf(arquivo, "---------------------------------------------------\n\n");
-    }
-
-    // Análise comparativa
-    fprintf(arquivo, "ANALISE COMPARATIVA\n");
-    fprintf(arquivo, "===================\n\n");
-
-    // Encontrar melhores e piores em cada categoria
-    int melhor_tempo = 0, pior_tempo = 0;
-    int melhor_comp = 0, pior_comp = 0;
-    int melhor_trocas = 0, pior_trocas = 0;
-
-    for (int i = 1; i < num_resultados; i++) {
-        if (resultados[i].tempo_execucao < resultados[melhor_tempo].tempo_execucao)
-            melhor_tempo = i;
-        if (resultados[i].tempo_execucao > resultados[pior_tempo].tempo_execucao)
-            pior_tempo = i;
-
-        if (resultados[i].comparacoes < resultados[melhor_comp].comparacoes)
-            melhor_comp = i;
-        if (resultados[i].comparacoes > resultados[pior_comp].comparacoes)
-            pior_comp = i;
-
-        if (resultados[i].trocas < resultados[melhor_trocas].trocas)
-            melhor_trocas = i;
-        if (resultados[i].trocas > resultados[pior_trocas].trocas)
-            pior_trocas = i;
-    }
-
-    fprintf(arquivo, "MELHOR TEMPO: %s (%.6f segundos)\n",
-            resultados[melhor_tempo].algoritmo, resultados[melhor_tempo].tempo_execucao);
-    fprintf(arquivo, "PIOR TEMPO: %s (%.6f segundos)\n\n",
-            resultados[pior_tempo].algoritmo, resultados[pior_tempo].tempo_execucao);
-
-    fprintf(arquivo, "MENOS COMPARACOES: %s (%lld comparacoes)\n",
-            resultados[melhor_comp].algoritmo, resultados[melhor_comp].comparacoes);
-    fprintf(arquivo, "MAIS COMPARACOES: %s (%lld comparacoes)\n\n",
-            resultados[pior_comp].algoritmo, resultados[pior_comp].comparacoes);
-
-    fprintf(arquivo, "MENOS TROCAS: %s (%lld trocas)\n",
-            resultados[melhor_trocas].algoritmo, resultados[melhor_trocas].trocas);
-    fprintf(arquivo, "MAIS TROCAS: %s (%lld trocas)\n\n",
-            resultados[pior_trocas].algoritmo, resultados[pior_trocas].trocas);
-
-    // Algoritmos estáveis
-    fprintf(arquivo, "ALGORITMOS ESTAVEIS:\n");
-    for (int i = 0; i < num_resultados; i++) {
-        for (int j = 0; j < NUM_ALGORITMOS; j++) {
-            if (strcmp(resultados[i].algoritmo, info_algoritmos[j].nome) == 0 &&
-                info_algoritmos[j].eh_estavel) {
-                fprintf(arquivo, "- %s\n", resultados[i].algoritmo);
-                break;
-            }
-        }
-    }
-
-    fprintf(arquivo, "\nALGORITMOS NAO ESTAVEIS:\n");
-    for (int i = 0; i < num_resultados; i++) {
-        for (int j = 0; j < NUM_ALGORITMOS; j++) {
-            if (strcmp(resultados[i].algoritmo, info_algoritmos[j].nome) == 0 &&
-                !info_algoritmos[j].eh_estavel) {
-                fprintf(arquivo, "- %s\n", resultados[i].algoritmo);
-                break;
-            }
-        }
-    }
-
-    fclose(arquivo);
-    printf("Relatorio completo gerado: %s\n", caminho_completo);
 }
 
 /**
@@ -647,9 +576,10 @@ void analisar_estabilidade() {
         }
     }
 
-    // Salva análise em arquivo
-    FILE* arquivo = fopen("output/analise_estabilidade.txt", "w");
-    if (arquivo) {
+    // Salva análise em arquivo usando a nova função de múltiplos locais
+    void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho) {
+        AlgoritmoInfo* algoritmos = obter_info_algoritmos();
+
         fprintf(arquivo, "ANALISE DE ESTABILIDADE - ALGORITMOS DE ORDENACAO\n");
         fprintf(arquivo, "=================================================\n\n");
 
@@ -668,8 +598,9 @@ void analisar_estabilidade() {
                     algoritmos[i].nome,
                     algoritmos[i].eh_estavel ? "ESTAVEL" : "NAO ESTAVEL");
         }
-
-        fclose(arquivo);
-        printf("\nAnalise completa salva em: output/analise_estabilidade.txt\n");
     }
+
+    // Salva em múltiplos locais (sem subdiretório específico para este arquivo)
+    salvar_arquivo_multiplos_locais("", "analise_estabilidade.txt", escrever_estabilidade_callback, NULL, 0);
+    printf("\nAnalise completa salva em multiplos locais\n");
 }

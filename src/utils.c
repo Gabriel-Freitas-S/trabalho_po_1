@@ -254,3 +254,77 @@ void pausar() {
     getchar(); // Limpa buffer
     getchar(); // Aguarda Enter
 }
+
+/* ================================================================
+ * FUNÇÕES AUXILIARES DE SALVAMENTO EM MÚLTIPLOS LOCAIS
+ * ================================================================ */
+
+/**
+ * @brief Função callback para escrever números inteiros
+ */
+void escrever_numeros_callback(FILE* arquivo, void* dados, int tamanho) {
+    int* arr = (int*)dados;
+    for (int i = 0; i < tamanho; i++) {
+        fprintf(arquivo, "%d\n", arr[i]);
+    }
+}
+
+/**
+ * @brief Função callback para escrever alunos
+ */
+void escrever_alunos_callback(FILE* arquivo, void* dados, int tamanho) {
+    Aluno* arr = (Aluno*)dados;
+    for (int i = 0; i < tamanho; i++) {
+        fprintf(arquivo, "%s,%s,%s,%s\n",
+                arr[i].nome,
+                arr[i].data_nascimento,
+                arr[i].bairro,
+                arr[i].cidade);
+    }
+}
+
+/**
+ * @brief Salva arquivo em múltiplos locais
+ *
+ * Salva tanto no diretório cmake-build-debug/output quanto no output/
+ * do projeto raiz para garantir que os arquivos estejam disponíveis
+ * em ambos os locais.
+ */
+void salvar_arquivo_multiplos_locais(const char* subdir, const char* nome_arquivo,
+                                   void (*conteudo_callback)(FILE*, void*, int),
+                                   void* dados, int tamanho) {
+    // Lista de todos os caminhos possíveis (build + projeto raiz)
+    const char* caminhos[] = {
+        "output/%s/%s",        // Diretório output do projeto
+        "../output/%s/%s",     // Caso esteja executando de subdiretório
+        "../../output/%s/%s",  // Caso esteja executando de cmake-build-debug
+        "cmake-build-debug/output/%s/%s" // Diretório de build (explícito)
+    };
+
+    char caminho_completo[MAX_PATH];
+    int arquivos_salvos = 0;
+
+    // Tenta salvar em todos os caminhos possíveis
+    for (int i = 0; i < 4; i++) {
+        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], subdir, nome_arquivo);
+
+        FILE* arquivo = fopen(caminho_completo, "w");
+        if (arquivo) {
+            conteudo_callback(arquivo, dados, tamanho);
+            fclose(arquivo);
+            printf("Arquivo salvo em: %s\n", caminho_completo);
+            arquivos_salvos++;
+        }
+    }
+
+    if (arquivos_salvos == 0) {
+        printf("ERRO: Nao foi possivel salvar o arquivo %s em nenhum local\n", nome_arquivo);
+        printf("Tentou salvar em:\n");
+        for (int i = 0; i < 4; i++) {
+            snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], subdir, nome_arquivo);
+            printf("  - %s\n", caminho_completo);
+        }
+    } else {
+        printf("Arquivo %s salvo com sucesso em %d local(is)\n", nome_arquivo, arquivos_salvos);
+    }
+}
