@@ -4,40 +4,23 @@
  * ================================================================
  *
  * @file utils.c
- * @brief Sistema de utilidades, interface de usuário e gerenciamento de diretórios
+ * @brief Funções utilitárias e informações dos algoritmos
  * @version 2.1
  * @date 2025-08-24
  * @author Sistema de Análise de Algoritmos
  *
- * Este módulo implementa todas as funções utilitárias do sistema, incluindo
- * interface de usuário, gerenciamento de diretórios, callbacks de escrita
- * e funcionalidades de suporte geral para o programa principal.
- *
- * VERSÃO 2.1: Sistema Utilitário Robusto e Multiplataforma
- * - Criação automática de estruturas de diretórios em múltiplos locais
- * - Interface de usuário limpa e informativa com feedback visual
- * - Sistema de callbacks flexível para diferentes tipos de dados
- * - Compatibilidade total entre Windows, Linux e macOS
- * - Gerenciamento inteligente de caminhos e estruturas de arquivos
- *
- * Funcionalidades principais:
- * - Gerenciamento automático de diretórios de saída organizados
- * - Interface de usuário com menus claros e informativos
- * - Sistema de callbacks para escrita personalizada de diferentes tipos
- * - Funções utilitárias multiplataforma (limpeza de terminal, etc.)
- * - Validação e tratamento robusto de entrada do usuário
- * - Sistema de salvamento em múltiplos locais para compatibilidade
- *
- * Estrutura de diretórios gerenciada:
- * - output/numeros/     - Arrays de números ordenados
- * - output/alunos/      - Dados de alunos ordenados
- * - output/relatorios/  - Relatórios de análise e performance
- * - Réplicas em cmake-build-debug/ para compatibilidade com IDEs
+ * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
+ * - Agora usa arquitetura modular com headers específicos
+ * - Funções utilitárias centralizadas e organizadas
+ * - Sistema de informações dos algoritmos
+ * - Funções de exibição e documentação
  *
  * ================================================================
  */
 
-#include "../include/sorts.h"
+#include "../include/sorts.h"  // Inclui toda a estrutura modular
+#include <stdio.h>   // Para printf e funções de I/O
+#include <string.h>  // Para manipulação de strings
 
 // Headers específicos por plataforma para operações de diretório
 #ifdef _WIN32
@@ -74,7 +57,7 @@
  * @note Esta função é chamada automaticamente no início do programa
  *       e falha silenciosamente se os diretórios já existem (comportamento desejado)
  */
-void criar_diretorios_output() {
+void criar_diretorios_output(void) {
     // Múltiplos caminhos base para máxima compatibilidade
     const char* caminhos_base[] = {
         "output",           // Diretório atual
@@ -85,7 +68,7 @@ void criar_diretorios_output() {
     // Subdiretórios especializados por tipo de dados
     const char* subdiretorios[] = {
         "/numeros",         // Arrays de números ordenados
-        "/alunos",          // Estruturas de alunos ordenadas
+        "/alunos",          // Estruturas de alunos ordenados
         "/relatorios"       // Relatórios de análise e performance
     };
 
@@ -242,7 +225,7 @@ void salvar_arquivo_multiplos_locais(const char* subdir, const char* nome_arquiv
  * - Windows: "cls" (command prompt padrão)
  * - Unix/Linux/macOS: "clear" (terminal padrão)
  */
-void limpar_terminal() {
+void limpar_terminal(void) {
 #ifdef _WIN32
     system("cls");    // Windows: Command Prompt
 #else
@@ -269,6 +252,24 @@ void copiar_array(const void *origem, void *destino, int tamanho, size_t elem_si
 }
 
 /* ================================================================
+ * DECLARAÇÕES ANTECIPADAS DAS FUNÇÕES AUXILIARES
+ * ================================================================ */
+
+// Funções de I/O que serão usadas
+int* ler_numeros(const char* caminho_arquivo, int* tamanho);
+Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho);
+
+// Funções de análise que serão usadas
+AlgoritmoInfo* obter_info_algoritmos(void);
+void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
+                                            const char* tipo_dados, const char* arquivo_base, const char* versao);
+void analisar_estabilidade(void);
+void gerar_relatorio_comparativo_final(void);
+
+// Função de comparação de alunos
+int comparar_alunos(const void *a, const void *b);
+
+/* ================================================================
  * INTERFACE DE USUÁRIO E MENUS
  * ================================================================ */
 
@@ -279,7 +280,7 @@ void copiar_array(const void *origem, void *destino, int tamanho, size_t elem_si
  * incluindo identificação do projeto, ano e características especiais
  * da implementação atual.
  */
-void imprimir_cabecalho() {
+void imprimir_cabecalho(void) {
     printf("================================================================\n");
     printf("              TRABALHO DE ALGORITMOS DE ORDENAÇÃO              \n");
     printf("                    Programação Avançada - 2025                \n");
@@ -294,24 +295,24 @@ void imprimir_cabecalho() {
  * sobre o que cada opção fará, incluindo informações sobre as duas
  * versões de algoritmos que serão testadas.
  */
-void imprimir_menu() {
+void imprimir_menu(void) {
     printf("\n================================================================\n");
     printf("                        MENU PRINCIPAL                         \n");
     printf("================================================================\n");
-    printf("  1. Gerar relatório completo de todos os testes               \n");
-    printf("     (Inclui análise de ambas as versões dos algoritmos)       \n");
+    printf("  1. Gerar relatorio completo de todos os testes               \n");
+    printf("     (Inclui analise de ambas as versoes dos algoritmos)       \n");
     printf("  0. Sair do programa                                           \n");
     printf("================================================================\n");
-    printf("O relatório completo incluirá análise de AMBAS as versões:     \n");
-    printf("  ✓ Versão OTIMIZADA (máxima performance, com melhorias)       \n");
-    printf("  ✓ Versão NÃO OTIMIZADA (didática, para fins comparativos)    \n");
+    printf("O relatorio completo incluira analise de AMBAS as versoes:     \n");
+    printf("  > Versao OTIMIZADA (maxima performance, com melhorias)       \n");
+    printf("  > Versao NAO OTIMIZADA (didatica, para fins comparativos)    \n");
     printf("================================================================\n");
-    printf("Todos os conjuntos de dados serão testados automaticamente:    \n");
-    printf("  • Arrays de números (6 conjuntos diferentes)                 \n");
-    printf("  • Dados de alunos (ordenação por múltiplos critérios)        \n");
-    printf("  • Análise completa de estabilidade dos algoritmos            \n");
+    printf("Todos os conjuntos de dados serao testados automaticamente:    \n");
+    printf("  - Arrays de numeros (6 conjuntos diferentes)                 \n");
+    printf("  - Dados de alunos (ordenacao por multiplos criterios)        \n");
+    printf("  - Analise completa de estabilidade dos algoritmos            \n");
     printf("================================================================\n");
-    printf("Escolha uma opção: ");
+    printf("Escolha uma opcao: ");
 }
 
 /**
@@ -331,32 +332,111 @@ void imprimir_menu() {
  * @note Esta função obtém dados da base de conhecimento centralizada
  *       e os apresenta em formato tabular legível
  */
-void exibir_info_algoritmos() {
+void exibir_info_algoritmos(void) {
+    /**
+     * FUNÇÃO EXIBIR_INFO_ALGORITMOS - EXPLICAÇÃO DIDÁTICA DETALHADA
+     *
+     * OBJETIVO: Esta função mostra uma tabela bonitinha com informações sobre todos
+     * os algoritmos de ordenação implementados no sistema.
+     *
+     * ANALOGIA: É como imprimir uma "tabela nutricional" dos algoritmos, mostrando
+     * as "calorias" (complexidade) e propriedades de cada um.
+     *
+     * O QUE A FUNÇÃO FAZ:
+     * 1. Busca informações sobre todos os algoritmos
+     * 2. Cria uma tabela bonita formatada
+     * 3. Mostra os dados de cada algoritmo linha por linha
+     * 4. Adiciona uma legenda explicativa no final
+     *
+     * CONCEITOS IMPORTANTES:
+     * - Big-O: É como medir a "velocidade" dos algoritmos
+     * - Estabilidade: Se preserva a ordem de elementos iguais
+     * - Melhor/Pior caso: Performance em diferentes situações
+     */
+
+    // PASSO 1: BUSCAR AS INFORMAÇÕES DOS ALGORITMOS
+    // Esta função vai buscar um "array" com informações de todos os algoritmos
+    // É como pegar uma "lista telefônica" com dados de cada algoritmo
     AlgoritmoInfo* algoritmos = obter_info_algoritmos();
 
-    printf("\n=== INFORMAÇÕES DOS ALGORITMOS IMPLEMENTADOS ===\n");
+    // PASSO 2: CRIAR CABEÇALHO BONITO
+    printf("\n=== INFORMACOES DOS ALGORITMOS IMPLEMENTADOS ===\n");
     printf("===============================================================================\n");
 
-    printf("+----------------+------------+------------+------------+------------+\n");
-    printf("| Algoritmo      | Melhor     | Médio      | Pior       | Estável    |\n");
-    printf("+----------------+------------+------------+------------+------------+\n");
+    // PASSO 3: CRIAR A TABELA - PARTE DO CABEÇALHO
+    // Estas linhas criam uma tabela "desenhada" com caracteres
+    // É como desenhar uma planilha no terminal usando + - e |
 
+    printf("+----------------+------------+------------+------------+------------+\n");
+    printf("| Algoritmo      | Melhor     | Medio      | Pior       | Estavel    |\n");
+    printf("+----------------+------------+------------+------------+------------+\n");
+    //       ^             ^            ^            ^            ^
+    //       |             |            |            |            |
+    //    Nome do        Melhor      Caso         Pior         É estável?
+    //   algoritmo        caso       médio        caso         (Sim/Não)
+
+    // PASSO 4: PREENCHER A TABELA COM DADOS DE CADA ALGORITMO
+    // Este loop "for" vai passar por CADA algoritmo na lista
+    // É como ler cada linha de uma planilha
     for (int i = 0; i < NUM_ALGORITMOS; i++) {
+        // A cada volta do loop, imprime uma linha da tabela
+        // O printf com "%-14s" significa: "imprima uma string alinhada à esquerda com 14 caracteres"
         printf("| %-14s | %-10s | %-10s | %-10s | %-10s |\n",
-               algoritmos[i].nome,
-               algoritmos[i].complexidade_melhor,
-               algoritmos[i].complexidade_media,
-               algoritmos[i].complexidade_pior,
-               algoritmos[i].eh_estavel ? "Sim" : "Não");
+               algoritmos[i].nome,                    // Nome: ex: "Bubble Sort"
+               algoritmos[i].complexidade_melhor,     // Melhor: ex: "O(n)"
+               algoritmos[i].complexidade_media,      // Média: ex: "O(n²)"
+               algoritmos[i].complexidade_pior,       // Pior: ex: "O(n²)"
+               algoritmos[i].eh_estavel ? "Sim" : "Não"); // Estável: testa se é 1 (Sim) ou 0 (Não)
+
+        // EXPLICAÇÃO DO OPERADOR TERNÁRIO (?:):
+        // algoritmos[i].eh_estavel ? "Sim" : "Não"
+        // É uma forma abreviada de escrever:
+        // if (algoritmos[i].eh_estavel == 1) {
+        //     printf("Sim");
+        // } else {
+        //     printf("Não");
+        // }
     }
 
+    // PASSO 5: FECHAR A TABELA
     printf("+----------------+------------+------------+------------+------------+\n");
-    printf("\nLEGENDA:\n");
-    printf("• Complexidades em notação Big-O (comportamento assintótico)\n");
-    printf("• Estável: preserva ordem relativa de elementos iguais\n");
-    printf("• Melhor caso: dados já ordenados ou estrutura favorável\n");
-    printf("• Pior caso: dados em ordem reversa ou estrutura desfavorável\n");
+
+    // PASSO 6: ADICIONAR LEGENDA EXPLICATIVA
+    // Como muita gente não entende os termos técnicos, a função explica tudo
+    printf("\nLEGENDA (Para quem nao entende os termos tecnicos):\n");
+    printf("- Complexidades em notacao Big-O:\n");
+    printf("  - E como medir quao 'lento' ou 'rapido' o algoritmo fica quando\n");
+    printf("    voce aumenta a quantidade de dados para ordenar\n");
+    printf("  - O(n) = cresce linear (dobra dados, dobra tempo)\n");
+    printf("  - O(n²) = cresce quadratico (dobra dados, tempo fica 4x maior)\n");
+    printf("  - O(n log n) = cresce quase linear (muito eficiente)\n");
+
+    printf("- Estavel: preserva ordem relativa de elementos iguais\n");
+    printf("  - Exemplo: se voce tem dois 'Joao' na lista, o que aparecia\n");
+    printf("    primeiro antes da ordenacao continuara primeiro depois\n");
+
+    printf("- Melhor caso: dados ja ordenados ou estrutura favoravel\n");
+    printf("  - Como organizar livros que ja estao quase no lugar certo\n");
+
+    printf("- Pior caso: dados em ordem reversa ou estrutura desfavoravel\n");
+    printf("  - Como organizar livros que estao completamente baguncados\n");
+
     printf("===============================================================================\n");
+
+    // EXEMPLO DE SAÍDA ESPERADA:
+    /*
+    +----------------+------------+------------+------------+------------+
+    | Algoritmo      | Melhor     | Médio      | Pior       | Estável    |
+    +----------------+------------+------------+------------+------------+
+    | Bubble Sort    | O(n)       | O(n²)      | O(n²)      | Sim        |
+    | Insertion Sort | O(n)       | O(n²)      | O(n²)      | Sim        |
+    | Selection Sort | O(n²)      | O(n²)      | O(n²)      | Não        |
+    | Quick Sort     | O(n log n) | O(n log n) | O(n²)      | Não        |
+    | Heap Sort      | O(n log n) | O(n log n) | O(n log n) | Não        |
+    | Shell Sort     | O(n)       | O(n^1.25)  | O(n²)      | Não        |
+    | Shaker Sort    | O(n)       | O(n²)      | O(n²)      | Sim        |
+    +----------------+------------+------------+------------+------------+
+    */
 }
 
 /**
@@ -372,7 +452,7 @@ void exibir_info_algoritmos() {
  *
  * @note Esta função serve principalmente para fins informativos e educacionais
  */
-void listar_arquivos_disponiveis() {
+void listar_arquivos_disponiveis(void) {
     printf("\n=== ARQUIVOS DE DADOS DISPONÍVEIS PARA TESTE ===\n");
     printf("================================================================\n");
 
@@ -422,22 +502,28 @@ void listar_arquivos_disponiveis() {
  * @note Retorna -1 para qualquer entrada que não seja um número inteiro válido,
  *       permitindo que a função chamadora trate adequadamente o erro
  */
-int obter_opcao_usuario() {
-    int opcao;
-    int resultado = scanf("%d", &opcao);
+int obter_opcao_usuario(void) {
+    char buffer[32];
 
-    // Limpa buffer de entrada para evitar loops infinitos
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) {
-        // Descarta caracteres extras no buffer
+    // Lê linha completa do usuário
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+        return -1; // Erro na leitura
     }
 
-    // Retorna -1 se a leitura falhou (entrada não numérica)
-    if (resultado != 1) {
-        return -1;
+    // Converte string para inteiro usando strtol para melhor tratamento de erros
+    char* endptr;
+    long opcao = strtol(buffer, &endptr, 10);
+
+    // Verifica se a conversão foi bem-sucedida e está dentro dos limites de int
+    if (*endptr != '\n' && *endptr != '\0') {
+        return -1; // Caracteres inválidos encontrados
     }
 
-    return opcao;
+    if (opcao < INT_MIN || opcao > INT_MAX) {
+        return -1; // Valor fora do range de int
+    }
+
+    return (int)opcao;
 }
 
 /**
@@ -452,7 +538,7 @@ int obter_opcao_usuario() {
  * - Limpeza automática do buffer de entrada
  * - Funciona mesmo com buffers contaminados de operações anteriores
  */
-void pausar() {
+void pausar(void) {
     printf("\nPressione ENTER para continuar...");
 
     // Limpa qualquer entrada pendente no buffer
@@ -492,7 +578,7 @@ void pausar() {
  * @note Esta função pode levar vários minutos para executar completamente,
  *       dependendo do hardware e do tamanho dos conjuntos de dados
  */
-void executar_relatorio_completo() {
+void executar_relatorio_completo(void) {
     printf("\n=== INICIANDO ANÁLISE COMPARATIVA COMPLETA ===\n");
     printf("Este processo testará AMBAS as versões de todos os algoritmos.\n");
     printf("Tempo estimado: 2-5 minutos (dependendo do hardware)\n\n");
@@ -586,7 +672,7 @@ void executar_relatorio_completo() {
     // Restaura configuração padrão
     configurar_otimizacao(1);
 
-    printf("\n=== ANÁLISE COMPLETA FINALIZADA COM SUCESSO ===\n");
+    printf("\n=== ANALISE COMPLETA FINALIZADA COM SUCESSO ===\n");
     printf("Verifique a pasta 'output/' para todos os resultados gerados.\n");
-    printf("Relatório comparativo final disponível em 'output/relatorios/'.\n");
+    printf("Relatorio comparativo final disponivel em 'output/relatorios/'.\n");
 }

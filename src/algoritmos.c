@@ -9,7 +9,8 @@
  * @date 2025-08-24
  * @author Sistema de Análise de Algoritmos
  *
- * NOVA VERSÃO 2.1: Sistema com Versões Otimizadas e Não Otimizadas
+ * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
+ * - Agora usa arquitetura modular com headers específicos
  * - Implementações otimizadas para máxima performance
  * - Implementações não otimizadas para fins didáticos
  * - Sistema de flags para alternar entre versões
@@ -27,7 +28,9 @@
  * ================================================================
  */
 
-#include "../include/sorts.h"
+#include <string.h>  // Para memcpy
+#include <stdlib.h>  // Para malloc e free
+#include "../include/sorts.h"  // Inclui toda a estrutura modular
 
 /* ================================================================
  * VARIÁVEL GLOBAL PARA CONTROLE DE OTIMIZAÇÃO
@@ -175,13 +178,13 @@ void shell_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
 }
 
 void quick_sort_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
-    funcao_comparacao_atual = cmp;
-
     if (inicio < fim) {
+        funcao_comparacao_atual = cmp;
         int pi = partition_naive(arr, inicio, fim, elem_size, cmp);
         quick_sort_naive(arr, inicio, pi - 1, elem_size, cmp);
         quick_sort_naive(arr, pi + 1, fim, elem_size, cmp);
     }
+    (void)cmp; // Suppress unused parameter warning
 }
 
 int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
@@ -201,6 +204,7 @@ int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn 
 
     swap_elements(base + (i + 1) * elem_size, base + fim * elem_size, elem_size);
     free(pivo);
+    (void)cmp;
     return (i + 1);
 }
 
@@ -248,6 +252,8 @@ void heapify_naive(void *arr, int n, int i, size_t elem_size, CompareFn cmp) {
         swap_elements(base + i * elem_size, base + maior * elem_size, elem_size);
         i = maior;
     }
+    // Suppress unused parameter warning - cmp is used indirectly via funcao_comparacao_atual
+    (void)cmp;
 }
 
 /* ================================================================
@@ -279,10 +285,9 @@ void insertion_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp)
 void bubble_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
     char *base = (char *)arr;
-    int houve_troca;
 
     for (int i = 0; i < n - 1; i++) {
-        houve_troca = 0;
+        int houve_troca = 0;
         for (int j = 0; j < n - i - 1; j++) {
             if (comparar_e_contar(base + j * elem_size, base + (j + 1) * elem_size) > 0) {
                 swap_elements(base + j * elem_size, base + (j + 1) * elem_size, elem_size);
@@ -313,9 +318,10 @@ void selection_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp)
 void shaker_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
     char *base = (char *)arr;
-    int inicio = 0, fim = n - 1, houve_troca;
+    int inicio = 0, fim = n - 1;
+    int houve_troca = 1;
 
-    do {
+    while (houve_troca && inicio < fim) {
         houve_troca = 0;
         for (int i = inicio; i < fim; i++) {
             if (comparar_e_contar(base + i * elem_size, base + (i + 1) * elem_size) > 0) {
@@ -324,8 +330,10 @@ void shaker_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
             }
         }
         fim--;
+
         if (!houve_troca) break;
 
+        houve_troca = 0;
         for (int i = fim; i > inicio; i--) {
             if (comparar_e_contar(base + i * elem_size, base + (i - 1) * elem_size) < 0) {
                 swap_elements(base + i * elem_size, base + (i - 1) * elem_size, elem_size);
@@ -333,7 +341,7 @@ void shaker_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
             }
         }
         inicio++;
-    } while (houve_troca);
+    }
 }
 
 void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
@@ -360,12 +368,13 @@ void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
 }
 
 void quick_sort_optimized(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
-    funcao_comparacao_atual = cmp;
     if (inicio < fim) {
+        funcao_comparacao_atual = cmp;
         int pi = partition_optimized(arr, inicio, fim, elem_size, cmp);
         quick_sort_optimized(arr, inicio, pi - 1, elem_size, cmp);
         quick_sort_optimized(arr, pi + 1, fim, elem_size, cmp);
     }
+    (void)cmp; // Suppress unused parameter warning
 }
 
 int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
@@ -382,9 +391,9 @@ int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, Compar
             swap_elements(base + i * elem_size, base + j * elem_size, elem_size);
         }
     }
-
     swap_elements(base + (i + 1) * elem_size, base + fim * elem_size, elem_size);
     free(pivo);
+    (void)cmp;
     return (i + 1);
 }
 

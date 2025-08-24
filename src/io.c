@@ -9,36 +9,26 @@
  * @date 2025-08-24
  * @author Sistema de Análise de Algoritmos
  *
- * Este módulo implementa todas as operações de entrada e saída de dados,
- * incluindo leitura robusta de arquivos, salvamento organizado de resultados
- * e funções de comparação otimizadas para diferentes tipos de dados.
- *
- * VERSÃO 2.1: Sistema de I/O Robusto e Multiplataforma
- * - Detecção automática de caminhos de arquivo em múltiplas localizações
+ * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
+ * - Agora usa arquitetura modular com headers específicos
+ * - Sistema de I/O robusto e multiplataforma
+ * - Detecção automática de caminhos em múltiplas localizações
  * - Sistema de fallback para diferentes estruturas de diretório
  * - Salvamento organizado em múltiplos locais para compatibilidade
- * - Tratamento robusto de erros com mensagens informativas
- * - Suporte completo para diferentes tipos de dados estruturados
- *
- * Funcionalidades principais:
- * - Leitura inteligente de arquivos com tentativas em múltiplos caminhos
- * - Detecção automática do melhor local de salvamento disponível
- * - Funções de comparação otimizadas para máxima performance
- * - Sistema de callbacks para escrita customizada de diferentes tipos
- * - Organização automática de arquivos por categoria e tipo
- * - Validação de dados durante leitura com relatórios de erros
- *
- * Tipos de dados suportados:
- * - Números inteiros (formato texto, um número por linha)
- * - Estruturas de alunos (formato texto com campos separados)
- * - Relatórios de performance (formato estruturado personalizado)
- * - Análises de estabilidade (formato texto descritivo)
- * - Sistema extensível para novos tipos de dados conforme necessário
  *
  * ================================================================
  */
 
-#include "../include/sorts.h"
+#include "../include/sorts.h"  // Inclui toda a estrutura modular
+#include <string.h>  // Para manipulação de strings
+#include <stdio.h>   // Para operações de arquivo
+#include <stdlib.h>  // Para alocação de memória
+#include <errno.h>   // Para códigos de erro
+#ifdef _WIN32
+    #include <direct.h>  // Para _mkdir no Windows
+#else
+    #include <sys/stat.h> // Para mkdir no Unix/Linux
+#endif
 
 /* ================================================================
  * FUNÇÕES DE COMPARAÇÃO OTIMIZADAS PARA DIFERENTES TIPOS
@@ -177,9 +167,16 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
 
     // Primeira passagem: contar número de elementos
     int count = 0;
-    int numero;
-    while (fscanf(arquivo, "%d", &numero) == 1) {
-        count++;
+    char linha[32];
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        char *endptr;
+        errno = 0;
+        long val = strtol(linha, &endptr, 10);
+
+        // Verifica se a conversão foi bem-sucedida
+        if (endptr != linha && errno == 0 && val >= INT_MIN && val <= INT_MAX) {
+            count++;
+        }
     }
 
     if (count == 0) {
@@ -198,12 +195,17 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
 
     // Segunda passagem: leitura efetiva dos dados
     rewind(arquivo);
-    for (int i = 0; i < count; i++) {
-        if (fscanf(arquivo, "%d", &numeros[i]) != 1) {
-            printf("ERRO: Falha na leitura do elemento %d\n", i + 1);
-            free(numeros);
-            fclose(arquivo);
-            return NULL;
+    int indice_valido = 0;
+
+    while (fgets(linha, sizeof(linha), arquivo) && indice_valido < count) {
+        char *endptr;
+        errno = 0;
+        long val = strtol(linha, &endptr, 10);
+
+        // Verifica se a conversão foi bem-sucedida e está dentro dos limites
+        if (endptr != linha && errno == 0 && val >= INT_MIN && val <= INT_MAX) {
+            numeros[indice_valido] = (int)val;
+            indice_valido++;
         }
     }
 
@@ -368,4 +370,19 @@ void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho) {
  */
 void salvar_alunos(const char* caminho_arquivo, Aluno arr[], int tamanho) {
     salvar_arquivo_multiplos_locais("alunos", caminho_arquivo, escrever_alunos_callback, arr, tamanho);
+}
+
+/* ================================================================
+ * FUNÇÕES AUXILIARES E CALLBACKS
+ * ================================================================ */
+
+/**
+ * @brief Cria diretório se não existir
+ */
+void criar_diretorio_se_necessario(const char* caminho) {
+    #ifdef _WIN32
+        _mkdir(caminho);
+    #else
+        mkdir(caminho, 0755);
+    #endif
 }

@@ -9,40 +9,21 @@
  * @date 2025-08-24
  * @author Sistema de Análise de Algoritmos
  *
- * Este módulo implementa toda a infraestrutura de análise de performance
- * dos algoritmos de ordenação, incluindo medição precisa de tempo, contagem
- * de operações, análise de estabilidade e geração de relatórios detalhados.
- *
- * VERSÃO 2.1: Sistema de Medição de Alta Precisão Multiplataforma
- * - Medição de tempo com precisão de nanossegundos usando funções nativas do SO
- * - Suporte otimizado para Windows (QueryPerformanceCounter)
- * - Suporte nativo para Linux/Unix (clock_gettime com CLOCK_MONOTONIC)
- * - Fallback automático para gettimeofday() em sistemas não compatíveis
+ * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
+ * - Agora usa arquitetura modular com headers específicos
+ * - Sistema de medição de alta precisão multiplataforma
+ * - Suporte otimizado para Windows e Linux/Unix
  * - Medição robusta para algoritmos com execução muito rápida
- * - Detecção automática da melhor função de timing disponível no sistema
- * - Eliminação completa de medições zeradas através de estratégias adaptativas
- *
- * Funcionalidades principais:
- * - Medição precisa de tempo usando funções de alta resolução do sistema
- * - Execução automatizada de todos os algoritmos em lotes (batch processing)
- * - Geração de relatórios comparativos em formato texto estruturado
  * - Análise detalhada de estabilidade com casos de teste reais
- * - Rankings automáticos por diferentes métricas de performance
- * - Salvamento organizado de resultados categorizados por tipo
- * - Estratégia de múltiplas execuções para maior precisão estatística
- *
- * Métricas analisadas:
- * - Tempo de execução (precisão até nanossegundos dependendo do sistema)
- * - Número total de comparações realizadas entre elementos
- * - Número total de trocas/movimentações de elementos
- * - Análise de estabilidade usando dados reais com elementos duplicados
- * - Eficiência relativa (operações por elemento processado)
- * - Comparação de performance entre versões otimizadas e não otimizadas
  *
  * ================================================================
  */
 
-#include "../include/sorts.h"
+#include "../include/sorts.h"  // Inclui toda a estrutura modular
+#include <string.h>  // Para strftime, snprintf, strcpy, memcpy
+#include <time.h>    // Para time, localtime
+#include <stdio.h>   // Para printf, fprintf, FILE
+#include <stdlib.h>  // Para malloc, free
 
 // Headers específicos para medição de alta precisão por plataforma
 #ifdef _WIN32
@@ -52,6 +33,21 @@
     #include <time.h>
     #include <sys/time.h>
 #endif
+
+/* ================================================================
+ * DECLARAÇÕES ANTECIPADAS DAS FUNÇÕES AUXILIARES
+ * ================================================================ */
+
+// Funções auxiliares para medição de tempo
+int determinar_num_execucoes(int tamanho_conjunto);
+void gerar_relatorio_tempos(ResultadoTempo resultados[], int num_resultados, const char* arquivo_saida);
+void escrever_relatorio_callback(FILE* arquivo, void* dados, int tamanho);
+void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho);
+AlgoritmoInfo* obter_info_algoritmos(void);
+void analisar_estabilidade(void);
+void gerar_relatorio_comparativo_final(void);
+void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
+                                            const char* tipo_dados, const char* arquivo_base, const char* versao);
 
 /* ================================================================
  * SISTEMA DE MEDIÇÃO DE TEMPO DE ALTA PRECISÃO MULTIPLATAFORMA
@@ -76,36 +72,50 @@
  * @note Esta implementação é thread-safe e utiliza inicialização lazy
  *       para otimizar performance em medições repetitivas
  */
-double obter_timestamp_precisao() {
+double obter_timestamp_precisao(void) {
     #ifdef _WIN32
         // Windows: Utiliza QueryPerformanceCounter para máxima precisão
-        static LARGE_INTEGER frequencia;
+        static LARGE_INTEGER frequencia = {{0}};
         static int inicializado = 0;
 
         // Inicialização lazy thread-safe (executada apenas uma vez)
         if (!inicializado) {
-            QueryPerformanceFrequency(&frequencia);
-            inicializado = 1;
+            if (QueryPerformanceFrequency(&frequencia) && frequencia.QuadPart != 0) {
+                inicializado = 1;
+            } else {
+                // Fallback para GetTickCount se QueryPerformanceFrequency falhar
+                return (double)GetTickCount() / 1000.0;
+            }
         }
 
         LARGE_INTEGER agora;
-        QueryPerformanceCounter(&agora);
-
-        return (double)agora.QuadPart / (double)frequencia.QuadPart;
+        if (QueryPerformanceCounter(&agora)) {
+            return (double)agora.QuadPart / (double)frequencia.QuadPart;
+        } else {
+            return (double)GetTickCount() / 1000.0;
+        }
 
     #elif defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L
         // Linux/Unix: Utiliza clock_gettime() para precisão de nanossegundos
         struct timespec tempo;
-        clock_gettime(CLOCK_MONOTONIC, &tempo);
-
-        return (double)tempo.tv_sec + (double)tempo.tv_nsec / 1000000000.0;
+        if (clock_gettime(CLOCK_MONOTONIC, &tempo) == 0) {
+            return (double)tempo.tv_sec + (double)tempo.tv_nsec / 1000000000.0;
+        } else {
+            // Fallback para gettimeofday se clock_gettime falhar
+            struct timeval tv;
+            gettimeofday(&tv, NULL);
+            return (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+        }
 
     #else
         // Fallback: gettimeofday() para compatibilidade com sistemas antigos
         struct timeval tempo;
-        gettimeofday(&tempo, NULL);
-
-        return (double)tempo.tv_sec + (double)tempo.tv_usec / 1000000.0;
+        if (gettimeofday(&tempo, NULL) == 0) {
+            return (double)tempo.tv_sec + (double)tempo.tv_usec / 1000000.0;
+        } else {
+            // Fallback final usando time() se tudo mais falhar
+            return (double)time(NULL);
+        }
     #endif
 }
 
@@ -132,13 +142,30 @@ double obter_timestamp_precisao() {
 double medir_tempo_ordenacao(void (*sort_fn)(void*, int, size_t, CompareFn),
                             void *arr, int n, size_t elem_size, CompareFn cmp) {
 
+    // Validação de parâmetros
+    if (!sort_fn || !arr || !cmp || n <= 0 || elem_size == 0) {
+        return 0.000001; // Tempo mínimo para parâmetros inválidos
+    }
+
     // Estratégia adaptativa baseada no tamanho do conjunto
     int num_execucoes = determinar_num_execucoes(n);
 
     if (num_execucoes > 1) {
         // Para conjuntos pequenos/rápidos: múltiplas execuções para maior precisão
         double tempo_total = 0.0;
-        void *dados_backup = malloc(n * elem_size);
+
+        // Verifica overflow na multiplicação
+        size_t total_size = (size_t)n * elem_size;
+        if (total_size / elem_size != (size_t)n) {
+            // Overflow detectado - usa medição única
+            double tempo_inicio = obter_timestamp_precisao();
+            sort_fn(arr, n, elem_size, cmp);
+            double tempo_fim = obter_timestamp_precisao();
+            double tempo_decorrido = tempo_fim - tempo_inicio;
+            return (tempo_decorrido > 0.0) ? tempo_decorrido : 0.000001;
+        }
+
+        void *dados_backup = malloc(total_size);
 
         if (!dados_backup) {
             // Fallback para medição única se falhar alocação
@@ -199,12 +226,29 @@ double medir_tempo_ordenacao(void (*sort_fn)(void*, int, size_t, CompareFn),
 double medir_tempo_quick_sort(void (*quick_fn)(void*, int, int, size_t, CompareFn),
                             void *arr, int n, size_t elem_size, CompareFn cmp) {
 
+    // Validação de parâmetros
+    if (!quick_fn || !arr || !cmp || n <= 0 || elem_size == 0) {
+        return 0.000001; // Tempo mínimo para parâmetros inválidos
+    }
+
     int num_execucoes = determinar_num_execucoes(n);
 
     if (num_execucoes > 1) {
         // Múltiplas execuções para conjuntos pequenos
         double tempo_total = 0.0;
-        void *dados_backup = malloc(n * elem_size);
+
+        // Verifica overflow na multiplicação
+        size_t total_size = (size_t)n * elem_size;
+        if (total_size / elem_size != (size_t)n) {
+            // Overflow detectado - usa medição única
+            double tempo_inicio = obter_timestamp_precisao();
+            quick_fn(arr, 0, n - 1, elem_size, cmp);
+            double tempo_fim = obter_timestamp_precisao();
+            double tempo_decorrido = tempo_fim - tempo_inicio;
+            return (tempo_decorrido > 0.0) ? tempo_decorrido : 0.000001;
+        }
+
+        void *dados_backup = malloc(total_size);
 
         if (!dados_backup) {
             // Fallback para medição única
@@ -300,6 +344,11 @@ double medir_tempo_multiplo(void (*sort_fn)(void*, int, size_t, CompareFn),
  * @return Número recomendado de execuções
  */
 int determinar_num_execucoes(int tamanho_conjunto) {
+    // Validação de entrada
+    if (tamanho_conjunto <= 0) {
+        return 1;
+    }
+
     if (tamanho_conjunto < 100) {
         return 10;  // Conjuntos muito pequenos: 10 execuções
     } else if (tamanho_conjunto < 1000) {
@@ -331,7 +380,7 @@ int determinar_num_execucoes(int tamanho_conjunto) {
  *
  * @return Ponteiro para array estático com dados dos algoritmos
  */
-AlgoritmoInfo* obter_info_algoritmos() {
+AlgoritmoInfo* obter_info_algoritmos(void) {
     // Array estático - mantém dados entre chamadas
     static AlgoritmoInfo algoritmos[NUM_ALGORITMOS] = {
         {
@@ -585,6 +634,7 @@ void escrever_relatorio_callback(FILE* arquivo, void* dados, int tamanho) {
 void gerar_relatorio_tempos(ResultadoTempo resultados[], int num_resultados, const char* arquivo_saida) {
     // Usa a função auxiliar para salvar em múltiplos locais
     salvar_arquivo_multiplos_locais("relatorios", arquivo_saida, escrever_relatorio_callback, resultados, num_resultados);
+    printf("Relatorio de tempos salvo: %s\n", arquivo_saida);
 }
 
 /**
@@ -601,6 +651,10 @@ void gerar_relatorio_detalhado(ResultadoTempo resultados[], int num_resultados, 
  * Função callback para escrever análise de estabilidade
  */
 void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho) {
+    // Suprime warnings de parâmetros não utilizados
+    (void)dados;
+    (void)tamanho;
+    
     AlgoritmoInfo* algoritmos = obter_info_algoritmos();
 
     fprintf(arquivo, "ANALISE DE ESTABILIDADE - ALGORITMOS DE ORDENACAO\n");
@@ -626,7 +680,7 @@ void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho) {
 /**
  * Análise detalhada de estabilidade
  */
-void analisar_estabilidade() {
+void analisar_estabilidade(void) {
     printf("\n=== ANALISE DE ESTABILIDADE DOS ALGORITMOS ===\n");
     printf("===============================================\n");
 
@@ -820,18 +874,20 @@ void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t e
 /**
  * @brief Gera relatório comparativo final das duas versões
  */
-void gerar_relatorio_comparativo_final() {
+void gerar_relatorio_comparativo_final(void) {
     printf("\n=== GERANDO RELATORIO COMPARATIVO FINAL ===\n");
 
     // Esta função seria chamada após todos os testes
     // Por agora, vamos criar um arquivo indicando que ambas as versões foram testadas
 
-    const char* caminhos[] = {"output/relatorios/%s", "../output/relatorios/%s", "../../output/relatorios/%s"};
     char caminho_completo[MAX_PATH];
-    const char* nome_arquivo = "relatorio_comparativo_final.txt";
+    static const char* nome_arquivo = "relatorio_comparativo_final.txt";
 
+    // Tenta salvar em múltiplos diretórios possíveis
+    const char* diretorios[] = {"output/relatorios/", "../output/relatorios/", "../../output/relatorios/"};
+    
     for (int i = 0; i < 3; i++) {
-        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], nome_arquivo);
+        snprintf(caminho_completo, sizeof(caminho_completo), "%s%s", diretorios[i], nome_arquivo);
         FILE* arquivo = fopen(caminho_completo, "w");
         if (arquivo) {
             fprintf(arquivo, "====================================================\n");
