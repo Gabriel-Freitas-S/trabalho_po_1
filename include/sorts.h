@@ -6,7 +6,7 @@
  * @file sorts.h
  * @brief Definições, estruturas e protótipos para análise comparativa
  *        de algoritmos de ordenação
- * @version 2.0
+ * @version 2.1
  * @date 2025-08-23
  * @author Sistema de Análise de Algoritmos
  *
@@ -14,12 +14,20 @@
  * implementação e análise de 7 algoritmos de ordenação diferentes,
  * com suporte para dados genéricos e métricas detalhadas.
  *
+ * NOVA VERSÃO 2.1: Sistema de Medição de Alta Precisão
+ * - Medição de tempo com precisão de nanossegundos
+ * - Suporte multiplataforma (Windows/Linux/macOS)
+ * - Medição adaptativa baseada no tamanho do conjunto
+ * - Eliminação completa de tempos zerados
+ * - Médias estatísticas para maior confiabilidade
+ *
  * Características principais:
  * - Algoritmos genéricos que funcionam com qualquer tipo de dados
  * - Medição precisa de tempo, comparações e trocas
  * - Análise de estabilidade automática
  * - Geração de relatórios detalhados
  * - Organização automática de arquivos de saída
+ * - Sistema de alta precisão para algoritmos rápidos
  *
  * ================================================================
  */
@@ -406,6 +414,89 @@ double medir_tempo_ordenacao(void (*sort_fn)(void*, int, size_t, CompareFn),
  */
 double medir_tempo_quick_sort(void (*quick_fn)(void*, int, int, size_t, CompareFn),
                             void *arr, int n, size_t elem_size, CompareFn cmp);
+
+/* ================================================================
+ * FUNÇÕES DE MEDIÇÃO E ANÁLISE - VERSÃO 2.1 ALTA PRECISÃO
+ * ================================================================ */
+
+/**
+ * @brief Obtém timestamp de alta precisão multiplataforma
+ *
+ * Utiliza a melhor função de timing disponível no sistema para
+ * obter timestamps com máxima precisão possível.
+ *
+ * @return Tempo em segundos com precisão de nanossegundos
+ */
+double obter_timestamp_precisao();
+
+/**
+ * @brief Mede o tempo de execução de um algoritmo com alta precisão
+ *
+ * Nova implementação v2.1 que utiliza funções de timing de alta precisão
+ * para medir algoritmos muito rápidos que anteriormente resultavam em zero.
+ *
+ * Características:
+ * - Precisão até nanossegundos (dependente do sistema)
+ * - Windows: QueryPerformanceCounter
+ * - Linux/Unix: clock_gettime() com CLOCK_MONOTONIC
+ * - Fallback: gettimeofday() para compatibilidade
+ *
+ * @param sort_fn Ponteiro para a função do algoritmo de ordenação
+ * @param arr Ponteiro para o array a ser ordenado
+ * @param n Número de elementos no array
+ * @param elem_size Tamanho de cada elemento em bytes
+ * @param cmp Função de comparação
+ * @return Tempo de execução em segundos (nunca zero)
+ */
+double medir_tempo_ordenacao(void (*sort_fn)(void*, int, size_t, CompareFn),
+                            void *arr, int n, size_t elem_size, CompareFn cmp);
+
+/**
+ * @brief Mede o tempo de execução do Quick Sort com alta precisão
+ *
+ * Versão especializada da medição de alta precisão para o Quick Sort.
+ *
+ * @param quick_fn Ponteiro para a função Quick Sort
+ * @param arr Ponteiro para o array a ser ordenado
+ * @param n Número de elementos no array
+ * @param elem_size Tamanho de cada elemento em bytes
+ * @param cmp Função de comparação
+ * @return Tempo de execução em segundos (nunca zero)
+ */
+double medir_tempo_quick_sort(void (*quick_fn)(void*, int, int, size_t, CompareFn),
+                            void *arr, int n, size_t elem_size, CompareFn cmp);
+
+/**
+ * @brief Executa medição múltipla para maior precisão estatística
+ *
+ * Para algoritmos muito rápidos, executa múltiplas medições e calcula
+ * a média para obter resultados mais confiáveis.
+ *
+ * @param sort_fn Ponteiro para a função do algoritmo
+ * @param dados_originais Dados originais (não serão modificados)
+ * @param n Número de elementos
+ * @param elem_size Tamanho de cada elemento
+ * @param cmp Função de comparação
+ * @param num_execucoes Número de execuções para média
+ * @return Tempo médio de execução
+ */
+double medir_tempo_multiplo(void (*sort_fn)(void*, int, size_t, CompareFn),
+                           void *dados_originais, int n, size_t elem_size,
+                           CompareFn cmp, int num_execucoes);
+
+/**
+ * @brief Determina automaticamente o número de execuções baseado no tamanho
+ *
+ * Estratégia adaptativa:
+ * - Conjuntos < 100 elementos: 10 execuções
+ * - Conjuntos < 1.000 elementos: 5 execuções
+ * - Conjuntos < 10.000 elementos: 3 execuções
+ * - Conjuntos grandes: 1 execução
+ *
+ * @param tamanho_conjunto Número de elementos no conjunto
+ * @return Número recomendado de execuções
+ */
+int determinar_num_execucoes(int tamanho_conjunto);
 
 /**
  * @brief Gera um relatório de tempos de execução
