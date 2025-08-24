@@ -2,7 +2,7 @@
 
 [![C](https://img.shields.io/badge/Language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![Version](https://img.shields.io/badge/Version-2.0-green.svg)]()
-[![License](https://img.shields.io/badge/License-Academic-yellow.svg)]()
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## 📋 Índice
 
@@ -436,8 +436,6 @@ Este sistema oferece uma plataforma completa para **análise empírica** de algo
 **📧 Contato**: Sistema de Análise de Algoritmos  
 **📅 Data**: Agosto de 2025  
 **🔖 Versão**: 2.0  
-**📜 Licença**: Uso Acadêmico
+**📜 Licença**: [MIT](LICENSE)
 
 ---
-
-*"A medição precisa é o fundamento de toda ciência."* - Lord Kelvin
