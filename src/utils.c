@@ -585,12 +585,18 @@ void executar_relatorio_completo(void) {
 
     // Lista de arquivos de números para teste automatizado
     const char* arquivos_numeros[] = {
-        "numeros_pequeno.txt",
-        "numeros_medio.txt",
-        "numeros_grande.txt",
-        "numeros_ordenados.txt",
-        "numeros_reversos.txt",
-        "numeros_duplicados.txt"
+        "numeros_aleatorios_500.txt",
+        "numeros_aleatorios_5000.txt",
+        "numeros_aleatorios_10000.txt",
+        "numeros_aleatorios_50000.txt",
+        "numeros_crescentes_500.txt",
+        "numeros_crescentes_5000.txt",
+        "numeros_crescentes_10000.txt",
+        "numeros_crescentes_50000.txt",
+        "numeros_decrescentes_500.txt",
+        "numeros_decrescentes_5000.txt",
+        "numeros_decrescentes_10000.txt",
+        "numeros_decrescentes_50000.txt"
     };
 
     printf("FASE 1: Testando versão NÃO OTIMIZADA (didática)\n");
@@ -598,7 +604,7 @@ void executar_relatorio_completo(void) {
     configurar_otimizacao(0); // Usa versões não otimizadas
 
     // Testa todos os conjuntos de números com versão não otimizada
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 12; i++) {
         printf("\nTestando arquivo: %s\n", arquivos_numeros[i]);
 
         int tamanho;
@@ -631,7 +637,7 @@ void executar_relatorio_completo(void) {
     configurar_otimizacao(1); // Usa versões otimizadas
 
     // Testa todos os conjuntos de números com versão otimizada
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 12; i++) {
         printf("\nTestando arquivo: %s\n", arquivos_numeros[i]);
 
         int tamanho;

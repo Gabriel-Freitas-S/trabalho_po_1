@@ -165,25 +165,27 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
         return NULL;
     }
 
-    // Primeira passagem: contar número de elementos
-    int count = 0;
+    // Lê a primeira linha para obter o número de elementos
     char linha[32];
-    while (fgets(linha, sizeof(linha), arquivo)) {
-        char *endptr;
-        errno = 0;
-        long val = strtol(linha, &endptr, 10);
-
-        // Verifica se a conversão foi bem-sucedida
-        if (endptr != linha && errno == 0 && val >= INT_MIN && val <= INT_MAX) {
-            count++;
-        }
-    }
-
-    if (count == 0) {
+    if (!fgets(linha, sizeof(linha), arquivo)) {
         printf("ERRO: Arquivo vazio ou formato invalido\n");
         fclose(arquivo);
         return NULL;
     }
+
+    // Converte a primeira linha para obter a contagem de elementos
+    char *endptr;
+    errno = 0;
+    long count_from_file = strtol(linha, &endptr, 10);
+
+    // Verifica se a conversão foi bem-sucedida
+    if (endptr == linha || errno != 0 || count_from_file < 0 || count_from_file > INT_MAX) {
+        printf("ERRO: Formato de cabecalho invalido\n");
+        fclose(arquivo);
+        return NULL;
+    }
+
+    int count = (int)count_from_file;
 
     // Alocação dinâmica para o array de números
     int* numeros = malloc(count * sizeof(int));
@@ -193,8 +195,7 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
         return NULL;
     }
 
-    // Segunda passagem: leitura efetiva dos dados
-    rewind(arquivo);
+    // Leitura dos dados (agora sem a primeira linha que já foi lida)
     int indice_valido = 0;
 
     while (fgets(linha, sizeof(linha), arquivo) && indice_valido < count) {
@@ -210,7 +211,15 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
     }
 
     fclose(arquivo);
-    *tamanho = count;
+
+    // Verifica se o número de elementos lidos corresponde ao declarado no cabeçalho
+    if (indice_valido != count) {
+        printf("AVISO: Numero de elementos lidos (%d) difere do declarado no cabecalho (%d)\n",
+               indice_valido, count);
+        // Ainda assim, retornamos os elementos que conseguimos ler
+    }
+
+    *tamanho = indice_valido;
     return numeros;
 }
 
