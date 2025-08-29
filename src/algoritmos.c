@@ -1,64 +1,115 @@
 /**
- * ================================================================
- * TRABALHO DE ALGORITMOS DE ORDENAÇÃO - IMPLEMENTAÇÕES
- * ================================================================
+ * ==============================================================
+ * SISTEMA DE ANÁLISE DE ALGORITMOS DE ORDENAÇÃO - IMPLEMENTAÇÕES
+ * ==============================================================
  *
  * @file algoritmos.c
- * @brief Implementação de 7 algoritmos de ordenação com análise de performance
+ * @brief Implementação dos 7 algoritmos de ordenação com medição de performance
  * @version 2.1
  * @date 2025-08-24
- * @author Sistema de Análise de Algoritmos
  *
- * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
- * - Agora usa arquitetura modular com headers específicos
- * - Implementações otimizadas para máxima performance
- * - Implementações não otimizadas para fins didáticos
- * - Sistema de flags para alternar entre versões
- * - Comparação automática entre as implementações
+ * Este arquivo contém a implementação completa dos algoritmos de ordenação
+ * utilizados no sistema. Cada algoritmo possui duas versões:
+ *
+ * 1. Versão não otimizada: Implementação didática e mais clara
+ * 2. Versão otimizada: Implementação com foco em performance
  *
  * Algoritmos implementados:
- * 1. Insertion Sort - Ordenação por inserção (estável)
- * 2. Bubble Sort - Ordenação por bolha (estável)
- * 3. Selection Sort - Ordenação por seleção (não-estável)
- * 4. Shaker Sort - Ordenação cocktail (estável)
- * 5. Shell Sort - Ordenação por incrementos (não-estável)
- * 6. Quick Sort - Ordenação por particionamento (não-estável)
- * 7. Heap Sort - Ordenação por heap (não-estável)
+ * - Insertion Sort: Ordenação por inserção (estável)
+ * - Bubble Sort: Ordenação por bolha (estável)
+ * - Selection Sort: Ordenação por seleção (não-estável)
+ * - Shaker Sort: Ordenação cocktail (estável)
+ * - Shell Sort: Ordenação por incrementos (não-estável)
+ * - Quick Sort: Ordenação por particionamento (não-estável)
+ * - Heap Sort: Ordenação por heap (não-estável)
  *
- * ================================================================
+ * O sistema de contadores globais permite a análise precisa do número
+ * de comparações e trocas realizadas por cada algoritmo.
+ *
+ * ==============================================================
  */
 
 #include <string.h>  // Para memcpy
 #include <stdlib.h>  // Para malloc e free
 #include "../include/sorts.h"  // Inclui toda a estrutura modular
 
-/* ================================================================
- * VARIÁVEL GLOBAL PARA CONTROLE DE OTIMIZAÇÃO
- * ================================================================ */
+/* ==============================================================
+ * VARIÁVEIS DE CONTROLE E CONFIGURAÇÃO
+ * ============================================================== */
 
+/**
+ * @brief Controla qual versão dos algoritmos será utilizada
+ *
+ * Quando definida como 1, o sistema usa as versões otimizadas.
+ * Quando definida como 0, usa as versões não otimizadas (didáticas).
+ */
 int usar_versao_otimizada = 1;
 
+/**
+ * @brief Configura o uso de versões otimizadas ou didáticas
+ *
+ * @param otimizada 1 para ativar otimizações, 0 para versão didática
+ */
 void configurar_otimizacao(int otimizada) {
     usar_versao_otimizada = otimizada;
 }
 
-/* ================================================================
- * VARIÁVEIS GLOBAIS PARA MÉTRICAS DE PERFORMANCE
- * ================================================================ */
+/* ==============================================================
+ * CONTADORES GLOBAIS PARA MÉTRICAS DE PERFORMANCE
+ * ============================================================== */
 
+/**
+ * @brief Contador global de comparações realizadas
+ *
+ * Registra o número total de comparações entre elementos durante
+ * a execução de um algoritmo de ordenação.
+ */
 long long contador_comparacoes = 0;
+
+/**
+ * @brief Contador global de trocas realizadas
+ *
+ * Registra o número total de trocas (swaps) entre elementos durante
+ * a execução de um algoritmo de ordenação.
+ */
 long long contador_trocas = 0;
+
+/**
+ * @brief Armazena a função de comparação atualmente em uso
+ *
+ * Utilizada para registrar comparações sem modificar a função original.
+ */
 static CompareFn funcao_comparacao_atual = NULL;
 
-/* ================================================================
+/* ==============================================================
  * FUNÇÕES AUXILIARES
- * ================================================================ */
+ * ============================================================== */
 
+/**
+ * @brief Compara dois elementos e conta a comparação
+ *
+ * Esta função é uma camada sobre a função de comparação original,
+ * responsável por incrementar o contador de comparações.
+ *
+ * @param a Primeiro elemento a ser comparado
+ * @param b Segundo elemento a ser comparado
+ * @return Resultado da comparação entre a e b
+ */
 int comparar_e_contar(const void *a, const void *b) {
     contador_comparacoes++;
     return funcao_comparacao_atual(a, b);
 }
 
+/**
+ * @brief Troca dois elementos de lugar na memória
+ *
+ * Realiza a troca dos valores de dois elementos, atualizando o
+ * contador de trocas.
+ *
+ * @param a Ponteiro para o primeiro elemento
+ * @param b Ponteiro para o segundo elemento
+ * @param elem_size Tamanho em bytes de cada elemento
+ */
 void swap_elements(void *a, void *b, size_t elem_size) {
     char *temp = malloc(elem_size);
     if (!temp) return;
@@ -71,9 +122,9 @@ void swap_elements(void *a, void *b, size_t elem_size) {
     free(temp);
 }
 
-/* ================================================================
+/* ==============================================================
  * IMPLEMENTAÇÕES NÃO OTIMIZADAS (DIDÁTICAS)
- * ================================================================ */
+ * ============================================================== */
 
 void insertion_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
@@ -256,9 +307,9 @@ void heapify_naive(void *arr, int n, int i, size_t elem_size, CompareFn cmp) {
     (void)cmp;
 }
 
-/* ================================================================
+/* ==============================================================
  * IMPLEMENTAÇÕES OTIMIZADAS
- * ================================================================ */
+ * ============================================================== */
 
 void insertion_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
@@ -405,7 +456,7 @@ void heap_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
 
     for (int i = n - 1; i >= 0; i--) {
         swap_elements(arr, (char*)arr + i * elem_size, elem_size);
-        heapify_optimized(arr, i, 0, elem_size, cmp);
+        heapify_optimized(arr, n, 0, elem_size, cmp);
     }
 }
 
@@ -427,9 +478,9 @@ void heapify_optimized(void *arr, int n, int i, size_t elem_size, CompareFn cmp)
     }
 }
 
-/* ================================================================
+/* ==============================================================
  * INTERFACES UNIFICADAS - ALTERNAM ENTRE VERSÕES
- * ================================================================ */
+ * ============================================================== */
 
 void insertion_sort(void *arr, int n, size_t elem_size, CompareFn cmp) {
     if (usar_versao_otimizada) {

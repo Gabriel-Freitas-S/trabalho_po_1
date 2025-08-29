@@ -23,7 +23,7 @@
 #include <string.h>  // Para manipulação de strings
 #include <stdio.h>   // Para operações de arquivo
 #include <stdlib.h>  // Para alocação de memória
-#include <errno.h>   // Para códigos de erro
+
 #ifdef _WIN32
     #include <direct.h>  // Para _mkdir no Windows
 #else
@@ -140,18 +140,18 @@ int comparar_alunos(const void *a, const void *b) {
  */
 int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
     // Lista de caminhos possíveis para encontrar o arquivo
-    const char* caminhos[] = {
-        "data/%s",           // Diretório padrão de dados
-        "../data/%s",        // Um nível acima (cmake-build-debug)
-        "../../data/%s",     // Dois níveis acima
-        "%s"                 // Arquivo no diretório atual
-    };
 
     char caminho_completo[MAX_PATH];
     FILE* arquivo = NULL;
 
     // Tentativa de abertura em múltiplos caminhos
     for (int i = 0; i < 4; i++) {
+        const char* caminhos[] = {
+            "data/%s",           // Diretório padrão de dados
+            "../data/%s",        // Um nível acima (cmake-build-debug)
+            "../../data/%s",     // Dois níveis acima
+            "%s"                 // Arquivo no diretório atual
+        };
         snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], caminho_arquivo);
         arquivo = fopen(caminho_completo, "r");
         if (arquivo) {
@@ -239,17 +239,17 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
  */
 Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho) {
     // Mesmo sistema de múltiplos caminhos usado para números
-    const char* caminhos[] = {
-        "data/%s",
-        "../data/%s",
-        "../../data/%s",
-        "%s"
-    };
 
     char caminho_completo[MAX_PATH];
     FILE* arquivo = NULL;
 
     for (int i = 0; i < 4; i++) {
+        const char* caminhos[] = {
+            "data/%s",
+            "../data/%s",
+            "../../data/%s",
+            "%s"
+        };
         snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], caminho_arquivo);
         arquivo = fopen(caminho_completo, "r");
         if (arquivo) {

@@ -1,34 +1,27 @@
 /**
- * ================================================================
- * TRABALHO DE ALGORITMOS DE ORDENAÇÃO - HEADER PRINCIPAL
- * ================================================================
+ * ==============================================================
+ * SISTEMA DE ANÁLISE DE ALGORITMOS DE ORDENAÇÃO - HEADER PRINCIPAL
+ * ==============================================================
  *
  * @file sorts.h
- * @brief Header principal que inclui todos os módulos do sistema
+ * @brief Header principal que unifica todos os módulos do sistema
  * @version 2.1
  * @date 2025-08-24
- * @author Sistema de Análise de Algoritmos
  *
- * VERSÃO 2.1 - ARQUITETURA MODULAR:
- * Este arquivo agora é o ponto de entrada principal que inclui todos
- * os módulos especializados do sistema, proporcionando melhor organização
- * e manutenibilidade do código.
+ * Este header funciona como ponto central de integração de todos os
+ * componentes do sistema. Ao incluí-lo, todos os módulos necessários
+ * são automaticamente adicionados na sequência correta, seguindo
+ * o princípio de arquitetura modular para melhor organização e
+ * manutenção do código.
  *
- * MÓDULOS INCLUÍDOS:
- * - tipos.h: Estruturas de dados e definições de tipos
- * - algoritmos.h: Protótipos dos algoritmos de ordenação
+ * Módulos integrados:
+ * - tipos.h: Definição de estruturas de dados e tipos personalizados
+ * - algoritmos.h: Implementação dos algoritmos de ordenação
  * - analise.h: Funções de medição e análise de performance
- * - io.h: Funções de entrada e saída de dados
- * - utils.h: Funções utilitárias e de comparação
+ * - io.h: Funções de entrada/saída e interface com usuário
+ * - utils.h: Funções utilitárias e auxiliares
  *
- * BENEFÍCIOS DA MODULARIZAÇÃO:
- * - Código mais organizado e fácil de manter
- * - Compilação mais eficiente (apenas módulos necessários)
- * - Melhor separação de responsabilidades
- * - Facilita trabalho em equipe
- * - Headers específicos para diferentes funcionalidades
- *
- * ================================================================
+ * ==============================================================
  */
 
 #ifndef SORTS_H

@@ -59,26 +59,26 @@
  */
 void criar_diretorios_output(void) {
     // Múltiplos caminhos base para máxima compatibilidade
-    const char* caminhos_base[] = {
-        "output",           // Diretório atual
-        "../output",        // Um nível acima (para cmake-build-debug)
-        "../../output"      // Dois níveis acima (para estruturas aninhadas)
-    };
 
     // Subdiretórios especializados por tipo de dados
-    const char* subdiretorios[] = {
-        "/numeros",         // Arrays de números ordenados
-        "/alunos",          // Estruturas de alunos ordenados
-        "/relatorios"       // Relatórios de análise e performance
-    };
 
     // Criação da estrutura completa em todos os locais possíveis
     for (int i = 0; i < 3; i++) {
+        const char* caminhos_base[] = {
+            "output",           // Diretório atual
+            "../output",        // Um nível acima (para cmake-build-debug)
+            "../../output"      // Dois níveis acima (para estruturas aninhadas)
+        };
         // Cria diretório base principal
         MKDIR(caminhos_base[i]);
 
         // Cria cada subdiretório especializado
         for (int j = 0; j < 3; j++) {
+            const char* subdiretorios[] = {
+                "/numeros",         // Arrays de números ordenados
+                "/alunos",          // Estruturas de alunos ordenados
+                "/relatorios"       // Relatórios de análise e performance
+            };
             char caminho_completo[MAX_PATH];
             snprintf(caminho_completo, sizeof(caminho_completo),
                     "%s%s", caminhos_base[i], subdiretorios[j]);
@@ -175,17 +175,17 @@ void salvar_arquivo_multiplos_locais(const char* subdir, const char* nome_arquiv
                                    void* dados, int tamanho) {
 
     // Múltiplos caminhos base para tentar salvamento
-    const char* caminhos_base[] = {
-        "output",           // Diretório atual
-        "../output",        // Um nível acima
-        "../../output"      // Dois níveis acima
-    };
 
     char caminho_completo[MAX_PATH];
     FILE* arquivo = NULL;
 
     // Tenta salvar em cada local possível até conseguir
     for (int i = 0; i < 3; i++) {
+        const char* caminhos_base[] = {
+            "output",           // Diretório atual
+            "../output",        // Um nível acima
+            "../../output"      // Dois níveis acima
+        };
         if (strlen(subdir) > 0) {
             // Com subdiretório especializado
             snprintf(caminho_completo, sizeof(caminho_completo),
@@ -261,13 +261,10 @@ Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho);
 
 // Funções de análise que serão usadas
 AlgoritmoInfo* obter_info_algoritmos(void);
-void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
-                                            const char* tipo_dados, const char* arquivo_base, const char* versao);
+
 void analisar_estabilidade(void);
 void gerar_relatorio_comparativo_final(void);
 
-// Função de comparação de alunos
-int comparar_alunos(const void *a, const void *b);
 
 /* ================================================================
  * INTERFACE DE USUÁRIO E MENUS

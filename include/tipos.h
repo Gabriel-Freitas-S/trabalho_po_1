@@ -1,18 +1,19 @@
 /**
- * ================================================================
+ * ==============================================================
  * TIPOS E ESTRUTURAS DE DADOS - DEFINIÇÕES FUNDAMENTAIS
- * ================================================================
+ * ==============================================================
  *
  * @file tipos.h
  * @brief Definições de tipos, estruturas de dados e constantes do sistema
  * @version 2.1
  * @date 2025-08-24
- * @author Sistema de Análise de Algoritmos
  *
- * Este arquivo contém todas as definições de tipos, estruturas e constantes
- * usadas em todo o sistema. Separado do sorts.h para melhor organização.
+ * Este arquivo contém as definições de tipos e estruturas usadas em
+ * todo o sistema de análise de algoritmos. A separação dessas definições
+ * em um arquivo próprio facilita a manutenção e permite que outras partes
+ * do sistema utilizem estruturas padronizadas.
  *
- * ================================================================
+ * ==============================================================
  */
 
 #ifndef TIPOS_H
@@ -21,31 +22,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* ================================================================
+/* ==============================================================
  * DEFINIÇÕES DE TIPOS E PONTEIROS PARA FUNÇÕES
- * ================================================================ */
+ * ============================================================== */
 
 /**
- * TYPEDEF COMPAREFN - PONTEIRO PARA FUNÇÃO DE COMPARAÇÃO
+ * @brief Ponteiro para função de comparação entre dois elementos
  *
- * EXPLICAÇÃO DIDÁTICA:
- * Um "ponteiro para função" é como um "controle remoto genérico"
- * que pode controlar diferentes aparelhos (funções).
+ * Define um tipo para funções de comparação que recebem dois ponteiros void*
+ * e retornam um valor inteiro que indica a relação entre eles:
+ * - Valor negativo: primeiro elemento é menor que o segundo
+ * - Zero: elementos são iguais
+ * - Valor positivo: primeiro elemento é maior que o segundo
  *
- * Permite que os algoritmos trabalhem com qualquer tipo de dados,
- * desde que seja fornecida a função de comparação apropriada.
+ * Esta abordagem permite que os algoritmos de ordenação funcionem com
+ * qualquer tipo de dado, desde que seja fornecida uma função de comparação
+ * apropriada para esse tipo.
+ *
+ * @param a Ponteiro para o primeiro elemento
+ * @param b Ponteiro para o segundo elemento
+ * @return Inteiro que representa a relação entre os elementos
  */
 typedef int (*CompareFn)(const void *a, const void *b);
 
-/* ================================================================
+/* ==============================================================
  * ESTRUTURAS DE DADOS
- * ================================================================ */
+ * ============================================================== */
 
 /**
- * STRUCT ALUNO - ESTRUTURA PARA DADOS DE ESTUDANTE
+ * @brief Estrutura para armazenamento de dados de alunos
  *
- * Estrutura para testar algoritmos com dados "reais" ao invés
- * de apenas números. Permite ordenar por diferentes critérios.
+ * Esta estrutura representa um registro de estudante com informações
+ * pessoais e é usada para testar os algoritmos com dados complexos,
+ * permitindo ordenação por diferentes critérios (nome, data, localidade).
  */
 typedef struct {
     char nome[100];           // Nome completo do aluno
@@ -55,10 +64,11 @@ typedef struct {
 } Aluno;
 
 /**
- * STRUCT RESULTADOTEMPO - MÉTRICAS DE PERFORMANCE
+ * @brief Estrutura para armazenamento de métricas de performance
  *
  * Armazena todas as informações sobre o desempenho de um algoritmo
- * durante sua execução, incluindo tempo, comparações e trocas.
+ * durante sua execução, permitindo análise detalhada e comparativa
+ * entre diferentes métodos de ordenação.
  */
 typedef struct {
     char algoritmo[30];      // Nome do algoritmo testado
@@ -70,10 +80,12 @@ typedef struct {
 } ResultadoTempo;
 
 /**
- * STRUCT ALGORITMOINFO - "CARTEIRA DE IDENTIDADE" DE UM ALGORITMO
+ * @brief "Carteira de identidade" de um algoritmo de ordenação
  *
- * Contém todas as informações sobre um algoritmo, incluindo
- * complexidades e ponteiros para suas implementações.
+ * Esta estrutura contém todas as informações relevantes sobre um algoritmo,
+ * incluindo suas complexidades de tempo e ponteiros para suas implementações
+ * específicas. Facilita a comparação e seleção de algoritmos com base em
+ * características desejadas para a ordenação de dados.
  */
 typedef struct {
     char nome[30];                    // Nome para exibição
@@ -88,34 +100,43 @@ typedef struct {
     int eh_quick;                     // Flag: é Quick Sort? 1=Sim, 0=Não
 } AlgoritmoInfo;
 
-/* ================================================================
+/* ==============================================================
  * CONFIGURAÇÕES E CONSTANTES
- * ================================================================ */
+ * ============================================================== */
 
 /**
- * FLAG GLOBAL PARA CONTROLAR OTIMIZAÇÕES
+ * @brief Flag global para controlar otimizações
  *
- * Controla se o programa usa versões otimizadas (1) ou didáticas (0)
- * dos algoritmos.
+ * Esta variável controla se o programa deve usar versões otimizadas (1) ou
+ * didáticas (0) dos algoritmos de ordenação. Versões otimizadas são mais
+ * eficientes, enquanto as didáticas são mais lentas, mas podem ser mais
+ * fáceis de entender e depurar.
  */
 extern int usar_versao_otimizada;
 
 /**
- * CONTADORES GLOBAIS PARA MÉTRICAS
+ * @brief Contadores globais para métricas de desempenho
  *
- * Variáveis globais para contar operações durante a execução
- * dos algoritmos.
+ * Estas variáveis são usadas para contar o número de operações realizadas
+ * durante a execução dos algoritmos, como comparações e trocas. Os valores
+ * são armazenados globalmente para permitir o acesso e análise posterior
+ * após a execução dos algoritmos.
  */
 extern long long contador_comparacoes;
 extern long long contador_trocas;
 
-/* ================================================================
+/* ==============================================================
  * FUNÇÕES DE CONFIGURAÇÃO
- * ================================================================ */
+ * ============================================================== */
 
 /**
- * @brief Configura se deve usar versões otimizadas ou não
- * @param otimizada 1 para usar versões otimizadas, 0 para versões didáticas
+ * @brief Configurações de otimização do sistema
+ *
+ * Esta função permite ao usuário escolher entre versões otimizadas ou
+ * didáticas dos algoritmos de ordenação. A configuração é feita através
+ * da passagem de um parâmetro inteiro que define o modo desejado.
+ *
+ * @param otimizada 1 para ativar versões otimizadas, 0 para versões didáticas
  */
 void configurar_otimizacao(int otimizada);
 

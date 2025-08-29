@@ -46,8 +46,6 @@ void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho);
 AlgoritmoInfo* obter_info_algoritmos(void);
 void analisar_estabilidade(void);
 void gerar_relatorio_comparativo_final(void);
-void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
-                                            const char* tipo_dados, const char* arquivo_base, const char* versao);
 
 /* ================================================================
  * SISTEMA DE MEDIÇÃO DE TEMPO DE ALTA PRECISÃO MULTIPLATAFORMA
@@ -306,7 +304,7 @@ double medir_tempo_quick_sort(void (*quick_fn)(void*, int, int, size_t, CompareF
  * @return Tempo médio de execução
  */
 double medir_tempo_multiplo(void (*sort_fn)(void*, int, size_t, CompareFn),
-                           void *dados_originais, int n, size_t elem_size,
+                           const void *dados_originais, int n, size_t elem_size,
                            CompareFn cmp, int num_execucoes) {
     if (num_execucoes < 1) num_execucoes = 1;
 
@@ -315,7 +313,7 @@ double medir_tempo_multiplo(void (*sort_fn)(void*, int, size_t, CompareFn),
 
     if (!dados_copia) {
         // Fallback para medição única se falhar alocação
-        return medir_tempo_ordenacao(sort_fn, dados_originais, n, elem_size, cmp);
+        return medir_tempo_ordenacao(sort_fn, (void*)dados_originais, n, elem_size, cmp);
     }
 
     for (int i = 0; i < num_execucoes; i++) {
@@ -422,7 +420,7 @@ AlgoritmoInfo* obter_info_algoritmos(void) {
 /**
  * Executa todos os algoritmos e gera análises com contagem de comparações e trocas
  */
-void executar_todos_algoritmos(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
+void executar_todos_algoritmos(const void *dados, int tamanho, size_t elem_size, CompareFn cmp,
                               const char* tipo_dados, const char* arquivo_base) {
     AlgoritmoInfo* algoritmos = obter_info_algoritmos();
     ResultadoTempo resultados[NUM_ALGORITMOS];
@@ -650,7 +648,7 @@ void gerar_relatorio_detalhado(ResultadoTempo resultados[], int num_resultados, 
 /**
  * Função callback para escrever análise de estabilidade
  */
-void escrever_estabilidade_callback(FILE* arquivo, void* dados, int tamanho) {
+void escrever_estabilidade_callback(FILE* arquivo, void*  dados, int tamanho) {
     // Suprime warnings de parâmetros não utilizados
     (void)dados;
     (void)tamanho;
@@ -741,7 +739,7 @@ void analisar_estabilidade(void) {
  * resultados ordenados quanto os relatórios de performance, incluindo
  * a identificação da versão (otimizada/não otimizada).
  */
-void executar_todos_algoritmos_com_salvamento(void *dados, int tamanho, size_t elem_size, CompareFn cmp,
+void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, size_t elem_size, CompareFn cmp,
                                             const char* tipo_dados, const char* arquivo_base, const char* versao) {
     AlgoritmoInfo* algoritmos = obter_info_algoritmos();
     ResultadoTempo resultados[NUM_ALGORITMOS];
@@ -884,9 +882,9 @@ void gerar_relatorio_comparativo_final(void) {
     static const char* nome_arquivo = "relatorio_comparativo_final.txt";
 
     // Tenta salvar em múltiplos diretórios possíveis
-    const char* diretorios[] = {"output/relatorios/", "../output/relatorios/", "../../output/relatorios/"};
-    
+
     for (int i = 0; i < 3; i++) {
+        const char* diretorios[] = {"output/relatorios/", "../output/relatorios/", "../../output/relatorios/"};
         snprintf(caminho_completo, sizeof(caminho_completo), "%s%s", diretorios[i], nome_arquivo);
         FILE* arquivo = fopen(caminho_completo, "w");
         if (arquivo) {

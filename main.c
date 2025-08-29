@@ -1,30 +1,25 @@
 /**
- * ================================================================
- * TRABALHO DE ALGORITMOS DE ORDENAÇÃO - MÓDULO PRINCIPAL
- * ================================================================
+ * ==============================================================
+ * SISTEMA DE ANÁLISE DE ALGORITMOS DE ORDENAÇÃO - MÓDULO PRINCIPAL
+ * ==============================================================
  *
  * @file main.c
  * @brief Programa principal para análise comparativa de algoritmos de ordenação
  * @version 2.1
  * @date 2025-08-24
- * @author Sistema de Análise de Algoritmos
  *
- * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
- * - Agora usa arquitetura modular com headers específicos
- * - Interface simplificada e focada na funcionalidade principal
- * - Sistema robusto de análise comparativa
- * - Organização automática de resultados
+ * Este é o ponto de entrada do programa que gerencia:
+ * - Interface com o usuário através de menus
+ * - Execução dos diferentes algoritmos de ordenação
+ * - Coleta e exibição de métricas de performance
  *
- * EXPLICAÇÃO DIDÁTICA:
- * Este é o "coração" do programa - onde tudo começa!
+ * O sistema implementa 7 algoritmos clássicos de ordenação com:
+ * - Versões otimizadas e não otimizadas para comparação
+ * - Medição precisa de tempo de execução (nanossegundos)
+ * - Contagem de comparações e trocas realizadas
+ * - Relatórios detalhados para análise comparativa
  *
- * Imagine que este programa é como um laboratório de testes para algoritmos
- * de ordenação. O main.c é como o "controlador principal" que:
- * 1. Mostra um menu para o usuário escolher o que fazer
- * 2. Chama as funções certas baseado na escolha
- * 3. Organiza tudo de forma limpa e fácil de usar
- *
- * ================================================================
+ * ==============================================================
  */
 
 #include "include/sorts.h"  // Inclui toda a estrutura modular
@@ -32,8 +27,8 @@
 /**
  * @brief Função principal do programa
  *
- * Coordena a execução geral do sistema, apresentando interface
- * amigável ao usuário e gerenciando o fluxo principal da aplicação.
+ * Coordena toda a execução do sistema, apresentando interface
+ * ao usuário e gerenciando o fluxo de execução da aplicação.
  */
 int main(void) {
     // Inicialização do sistema
