@@ -261,4 +261,4 @@ Os resultados são organizados em:
 
 ---
 
-> **Nota Acadêmica**: Este projeto foi desenvolvido integralmente seguindo as especificações do trabalho acadêmico da disciplina de Pesquisa e Ordenação. Todos os algoritmos foram implementados, sem uso de bibliotecas prontas de ordenação, conforme exigido.
+> **Nota**: Este projeto foi desenvolvido integralmente para fins academicos, seguindo as especificações do trabalho acadêmico da disciplina de Pesquisa e Ordenação. Todos os algoritmos foram implementados, sem uso de bibliotecas prontas de ordenação.
