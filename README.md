@@ -1,13 +1,12 @@
 # Sistema de Análise de Algoritmos de Ordenação
 
-![Badge Status](https://img.shields.io/badge/status-concluído-brightgreen)
-![Badge Versão](https://img.shields.io/badge/versão-2.1-blue)
-![Badge Data](https://img.shields.io/badge/data-Agosto%202025-orange)
 ![Badge Linguagem](https://img.shields.io/badge/linguagem-C-blue)
 
 ## 📝 Sumário
 - [Descrição](#-descrição)
+- [Objetivos do Trabalho](#-objetivos-do-trabalho)
 - [Algoritmos Implementados](#-algoritmos-implementados)
+- [Conjuntos de Dados](#-conjuntos-de-dados)
 - [Funcionalidades](#-funcionalidades)
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Requisitos de Sistema](#-requisitos-de-sistema)
@@ -15,94 +14,118 @@
 - [Arquivos de Entrada](#-arquivos-de-entrada)
 - [Arquivos de Saída](#-arquivos-de-saída)
 - [Análises Realizadas](#-análises-realizadas)
-- [Arquitetura do Sistema](#-arquitetura-do-sistema)
+- [Análise de Estabilidade](#-análise-de-estabilidade)
+- [Metodologia](#-metodologia)
 - [Resultados](#-resultados)
 - [Contribuidores](#-contribuidores)
 
 ## 📋 Descrição
 
-Este sistema foi desenvolvido como parte de um trabalho acadêmico para a disciplina de Pesquisa Operacional, focado na análise comparativa de algoritmos clássicos de ordenação. O projeto implementa, analisa e documenta o comportamento de 7 algoritmos diferentes, medindo com precisão suas performances em termos de tempo de execução, número de comparações e trocas realizadas.
+Este sistema foi desenvolvido como trabalho acadêmico para a **Disciplina: Pesquisa e Ordenação**, focado na **Implementação e Análise Comparativa de Algoritmos de Ordenação**. O projeto implementa, analisa e documenta o comportamento de 7 algoritmos clássicos de ordenação, conforme especificado no enunciado do trabalho.
 
-Cada algoritmo é implementado em duas versões:
-- **Versão não otimizada**: Implementação didática e clara para fins educacionais
-- **Versão otimizada**: Implementação com foco em performance e eficiência
+## 🎯 Objetivos do Trabalho
+
+O objetivo principal é implementar os algoritmos de ordenação especificados e realizar uma análise comparativa dos tempos de execução entre eles, considerando diferentes conjuntos de dados de entrada. 
+
+### Objetivos Específicos:
+- **Medição precisa de tempo**: Contabilizar exclusivamente o tempo de execução da ordenação, desconsiderando o tempo de leitura dos arquivos
+- **Análise comparativa**: Comparar o desempenho dos algoritmos em diferentes cenários de entrada
+- **Avaliação de estabilidade**: Analisar o conceito de estabilidade dos algoritmos, especialmente na ordenação de registros de alunos
+- **Geração de relatórios**: Produzir gráficos comparativos e análises detalhadas
 
 ## 🔄 Algoritmos Implementados
 
-O sistema implementa os seguintes algoritmos de ordenação:
+Conforme especificação do trabalho, foram implementados os seguintes algoritmos de ordenação:
 
-| Algoritmo | Estabilidade | Complexidade Média | Ideal para |
-|-----------|-------------|-------------------|-----------|
-| **Insertion Sort** | Estável | O(n²) | Conjuntos pequenos ou quase ordenados |
-| **Bubble Sort** | Estável | O(n²) | Fins didáticos, conjuntos pequenos |
-| **Selection Sort** | Não-estável | O(n²) | Minimizar número de trocas |
-| **Shaker Sort** | Estável | O(n²) | Melhoria do Bubble Sort para certos casos |
-| **Shell Sort** | Não-estável | O(n log² n) | Melhoria do Insertion Sort |
-| **Quick Sort** | Não-estável | O(n log n) | Grande volume de dados aleatórios |
-| **Heap Sort** | Não-estável | O(n log n) | Garantia de performance no pior caso |
+| Algoritmo          | Nome Técnico        | Estabilidade | Complexidade Média | Características                                      |
+|--------------------|---------------------|--------------|--------------------|------------------------------------------------------|
+| **Insertion Sort** | Inserção Direta     | Estável      | O(n²)              | Eficiente para conjuntos pequenos ou quase ordenados |
+| **Bubble Sort**    | Ordenação por Bolha | Estável      | O(n²)              | Algoritmo didático, simples de compreender           |
+| **Selection Sort** | Seleção Direta      | Não-estável  | O(n²)              | Minimiza número de trocas                            |
+| **Shaker Sort**    | Ordenação Coquetel  | Estável      | O(n²)              | Melhoria bidirecional do Bubble Sort                 |
+| **Shell Sort**     | Ordenação Shell     | Não-estável  | O(n log² n)        | Melhoria do Insertion Sort com gaps                  |
+| **Quick Sort**     | Ordenação Rápida    | Não-estável  | O(n log n)         | Eficiente para grandes volumes de dados              |
+| **Heap Sort**      | Ordenação por Heap  | Não-estável  | O(n log n)         | Garante performance no pior caso                     |
+
+### Implementação
+Cada algoritmo foi **implementado integralmente pelo desenvolvedor**, sem uso de bibliotecas prontas de ordenação, conforme exigido nas especificações do trabalho.
+
+## 📊 Conjuntos de Dados
+
+Os conjuntos de dados utilizados seguem exatamente a especificação do trabalho:
+
+### Arquivos 1 a 12: Listas Numéricas
+- **500, 5000, 10000 e 50000 números** em três configurações:
+  - **Aleatórios**: `numeros_aleatorios_[tamanho].txt`
+  - **Ordenados crescente**: `numeros_crescentes_[tamanho].txt`
+  - **Ordenados decrescente**: `numeros_decrescentes_[tamanho].txt`
+
+### Arquivo 13: Cadastro de Alunos
+- **1000 registros** com campos: Nome, Sexo, Data de nascimento, Cidade
+- **Critério de ordenação**: Por cidade e, dentro de cada cidade, por nome
+- **Formato**: Campos separados por vírgulas
 
 ## ⚙️ Funcionalidades
 
-- **Análise precisa de tempo**: Medição em nanossegundos usando funções específicas para cada sistema operacional
-- **Métricas detalhadas**: Contagem exata de comparações e trocas realizadas por cada algoritmo
-- **Testes com diferentes conjuntos de dados**: 
-  - Números ordenados, reversos, aleatórios, duplicados
-  - Conjuntos de diferentes tamanhos (pequeno, médio, grande)
-  - Dados de alunos (estruturas complexas)
-- **Relatórios comparativos**: Geração automática de relatórios de análise
-- **Verificação de estabilidade**: Análise da propriedade de estabilidade dos algoritmos
-- **Interface de usuário**: Menu simples para execução e visualização dos resultados
+- **Medição precisa de tempo**: Utilização da função `clock()` da biblioteca `<time.h>` para medir exclusivamente o tempo de ordenação
+- **Análise detalhada**: Contagem de comparações e trocas realizadas por cada algoritmo
+- **Testes abrangentes**: Execução em todos os conjuntos de dados especificados
+- **Geração de arquivos de saída**: Criação automática de arquivos com dados ordenados
+- **Análise de estabilidade**: Verificação e demonstração da propriedade de estabilidade
+- **Relatórios comparativos**: Geração de dados para criação de gráficos comparativos
 
 ## 📁 Estrutura do Projeto
 
 ```
 trabalho-po-1/
-├── CMakeLists.txt          # Configuração de compilação CMake
-├── main.c                  # Ponto de entrada do programa
-├── include/                # Arquivos de cabeçalho
-│   ├── algoritmos.h        # Declaração dos algoritmos
-│   ├── analise.h           # Sistema de análise e relatórios
-│   ├── io.h                # Entrada/Saída de dados
-│   ├── sorts.h             # Header principal unificado
-│   ├── tipos.h             # Definições de tipos e estruturas
-│   └── utils.h             # Funções utilitárias
-├── src/                    # Código fonte
-│   ├── algoritmos.c        # Implementação dos algoritmos
-│   ├── analise.c           # Funções de análise e relatórios
-│   ├── io.c                # Implementação de E/S
-│   └── utils.c             # Implementação de utilitários
-├── data/                   # Dados de entrada
-│   ├── alunos.txt          # Dados de alunos para teste
-│   ├── numeros_pequeno.txt # Conjunto pequeno de números
-│   ├── numeros_medio.txt   # Conjunto médio de números
-│   ├── numeros_grande.txt  # Conjunto grande de números
-│   ├── numeros_ordenados.txt # Números já ordenados
-│   ├── numeros_reversos.txt  # Números em ordem reversa
-│   └── numeros_duplicados.txt # Números com valores repetidos
-└── output/                 # Resultados gerados
-    ├── analise_estabilidade.txt # Análise de estabilidade
-    ├── alunos/             # Resultados para dados de alunos
-    ├── numeros/            # Resultados para dados numéricos
-    └── relatorios/         # Relatórios consolidados
+├── CMakeLists.txt              # Configuração de compilação
+├── main.c                      # Programa principal
+├── include/                    # Arquivos de cabeçalho
+│   ├── algoritmos.h            # Declaração dos algoritmos de ordenação
+│   ├── analise.h               # Sistema de análise e medição
+│   ├── io.h                    # Entrada/Saída de dados
+│   ├── sorts.h                 # Header principal unificado
+│   ├── tipos.h                 # Definições de tipos e estruturas
+│   └── utils.h                 # Funções utilitárias
+├── src/                        # Código fonte
+│   ├── algoritmos.c            # Implementação dos algoritmos
+│   ├── analise.c               # Funções de análise e relatórios
+│   ├── io.c                    # Implementação de E/S
+│   └── utils.c                 # Implementação de utilitários
+├── data/                       # Dados de entrada (conforme especificação)
+│   ├── numeros_aleatorios_500.txt        # 500 números aleatórios
+│   ├── numeros_aleatorios_5000.txt       # 5.000 números aleatórios
+│   ├── numeros_aleatorios_10000.txt      # 10.000 números aleatórios
+│   ├── numeros_aleatorios_50000.txt      # 50.000 números aleatórios
+│   ├── numeros_crescentes_500.txt        # 500 números crescentes
+│   ├── numeros_crescentes_5000.txt       # 5.000 números crescentes
+│   ├── numeros_crescentes_10000.txt      # 10.000 números crescentes
+│   ├── numeros_crescentes_50000.txt      # 50.000 números crescentes
+│   ├── numeros_decrescentes_500.txt      # 500 números decrescentes
+│   ├── numeros_decrescentes_5000.txt     # 5.000 números decrescentes
+│   ├── numeros_decrescentes_10000.txt    # 10.000 números decrescentes
+│   ├── numeros_decrescentes_50000.txt    # 50.000 números decrescentes
+│   └── registros_pessoas_1000.txt        # 1.000 registros de alunos
+└── output/                     # Resultados gerados
+    ├── alunos/                 # Resultados para cadastro de alunos
+    ├── numeros/                # Resultados para dados numéricos
+    └── relatorios/             # Relatórios consolidados e dados para gráficos
 ```
 
 ## 💻 Requisitos de Sistema
 
-- Compilador C compatível com C99 ou superior
-- Sistema operacional: Windows, Linux ou macOS
-- CMake 3.10 ou superior (para compilação)
-- 2GB de RAM (mínimo)
-- Espaço em disco: 50MB para o projeto e dados de teste
+- **Linguagem**: C (conforme especificação do trabalho)
+- **Compilador**: GCC ou equivalente compatível com C99+
+- **Sistema Operacional**: Windows, Linux ou macOS
+- **CMake**: 3.10 ou superior (opcional para compilação)
+- **Memória**: 2GB de RAM (mínimo)
+- **Espaço em disco**: 100MB para o projeto e resultados
 
 ## 🚀 Como Compilar e Executar
 
-### Usando CMake (recomendado)
+### Usando CMake (Recomendado)
 
 ```bash
-# Clone o repositório (se aplicável)
-git clone https://github.com/seu-usuario/trabalho-po-1.git
-cd trabalho-po-1
-
 # Configure o CMake
 mkdir -p build && cd build
 cmake ..
@@ -114,7 +137,7 @@ cmake --build .
 ./trabalho_po_1
 ```
 
-### Compilação manual
+### Compilação Manual
 
 ```bash
 # Compile todos os arquivos fonte
@@ -124,50 +147,118 @@ gcc -o trabalho_po_1 main.c src/*.c -I./include -std=c99 -O2
 ./trabalho_po_1
 ```
 
+## 📄 Arquivos de Entrada
+
+### Formato dos Arquivos Numéricos
+```
+[número_de_elementos]
+[elemento_1]
+[elemento_2]
+...
+[elemento_n]
+```
+
+### Formato do Arquivo de Alunos
+```
+[número_de_registros]
+Nome,Sexo,Data_nascimento,Cidade
+Nome,Sexo,Data_nascimento,Cidade
+...
+```
+
+## 📤 Arquivos de Saída
+
+O programa gera automaticamente:
+- **Dados ordenados**: Arquivos com os resultados da ordenação
+- **Métricas de performance**: Tempo de execução, comparações e trocas
+- **Dados para gráficos**: Informações estruturadas para análise comparativa
+- **Análise de estabilidade**: Exemplos demonstrando estabilidade/não-estabilidade
+
 ## 📊 Análises Realizadas
 
-O sistema realiza diversas análises para cada algoritmo de ordenação:
+### 1. Medição de Tempo
+- Uso exclusivo da função `clock()` da biblioteca `<time.h>`
+- Medição apenas do tempo de ordenação (excluindo leitura de arquivos)
+- Precisão em microssegundos
 
-1. **Tempo de execução**: Medição precisa em nanossegundos
-2. **Operações realizadas**: Contagem de comparações e trocas
-3. **Comportamento com diferentes entradas**:
-   - Dados já ordenados
-   - Dados em ordem reversa
-   - Dados aleatórios
-   - Dados com valores duplicados
-   - Dados de diferentes tamanhos
-4. **Estabilidade**: Verificação da manutenção da ordem relativa de elementos com valores iguais
-5. **Comportamento com tipos de dados complexos**: Estruturas de dados de alunos
+### 2. Análise de Performance
+- **Comparações realizadas**: Contagem exata de operações de comparação
+- **Trocas realizadas**: Número de movimentações de elementos
+- **Comportamento por tipo de entrada**: Análise diferenciada para dados aleatórios, ordenados e reversos
 
-## 🏗️ Arquitetura do Sistema
+### 3. Análise por Tamanho de Entrada
+- Comportamento com 500, 5000, 10000 e 50000 elementos
+- Geração de dados para gráficos comparativos (tempo × tamanho da entrada)
 
-O projeto segue uma arquitetura modular, com separação clara de responsabilidades:
+## 🔄 Análise de Estabilidade
 
-- **Módulo de Algoritmos**: Implementação dos métodos de ordenação
-- **Módulo de Análise**: Medição de performance e geração de relatórios
-- **Módulo de E/S**: Leitura de dados e escrita de resultados
-- **Módulo de Tipos**: Definição das estruturas de dados utilizadas
-- **Módulo de Utilitários**: Funções auxiliares para o sistema
+### Conceito de Estabilidade
+Um algoritmo é **estável** se mantém a ordem relativa de elementos com valores iguais após a ordenação.
 
-Esta arquitetura permite:
-- Fácil manutenção e extensão do código
-- Adição de novos algoritmos ou métricas
-- Reutilização de componentes em outros projetos
+### Algoritmos Estáveis Implementados:
+- Insertion Sort
+- Bubble Sort
+- Shaker Sort
+
+### Algoritmos Não-Estáveis Implementados:
+- Selection Sort
+- Shell Sort
+- Quick Sort
+- Heap Sort
+
+### Demonstração Prática
+Para o arquivo de cadastro de alunos, o sistema:
+- Identifica casos onde a não-estabilidade é relevante
+- Gera exemplos de saída mostrando a diferença entre algoritmos estáveis e não-estáveis
+- Documenta o impacto da estabilidade na ordenação por cidade e nome
+
+## 🔬 Metodologia
+
+### Processo de Teste
+1. **Leitura dos dados**: Carregamento dos arquivos de entrada
+2. **Cópia dos dados**: Criação de cópias idênticas para cada algoritmo
+3. **Medição isolada**: Execução de cada algoritmo com medição de tempo exclusiva da ordenação
+4. **Coleta de métricas**: Registro de comparações, trocas e tempo de execução
+5. **Geração de saídas**: Criação de arquivos ordenados e relatórios
+
+### Precisão das Medições
+- Uso da função `clock()` para medição de tempo
+- Execução isolada de cada algoritmo
+- Desconsideração do tempo de I/O conforme especificado
 
 ## 📈 Resultados
 
-Os resultados detalhados das análises são salvos na pasta `output/`:
+Os resultados são organizados em:
 
-- **Arquivos individuais**: Mostram o desempenho de cada algoritmo para cada conjunto de dados
-- **Relatórios comparativos**: Apresentam tabelas e gráficos comparando os diferentes algoritmos
-- **Análise de estabilidade**: Documenta quais algoritmos preservam a ordem relativa dos elementos
+### Arquivos de Saída Individual
+- Dados ordenados para cada combinação algoritmo × conjunto de dados
+- Métricas detalhadas de performance
 
-## 👥 Contribuidores
+### Dados para Gráficos Comparativos
+- Tempo de execução × tamanho da entrada
+- Comparações × tipo de entrada
+- Análise de escalabilidade
 
-- [Seu Nome] - Desenvolvimento e documentação
-- [Professor] - Orientação e especificações do projeto
+### Relatórios de Estabilidade
+- Exemplos práticos de diferenças entre algoritmos estáveis e não-estáveis
+- Casos específicos do arquivo de cadastro de alunos
+
+## 📋 Entregáveis
+
+### 1. Código Fonte ✅
+- ✅ Implementação completa de todos os 7 algoritmos especificados
+- ✅ Código bem estruturado e comentado
+- ✅ Todos os arquivos necessários para execução
+
+### 2. Funcionalidades Implementadas ✅
+- ✅ Leitura de todos os arquivos de entrada especificados
+- ✅ Execução isolada de cada algoritmo com medição de tempo
+- ✅ Geração de arquivos de saída com dados ordenados
+- ✅ Análise de estabilidade com exemplos práticos
+
+- **Disciplina**: Pesquisa e Ordenação
+- **Tema**: Implementação e Análise Comparativa de Algoritmos de Ordenação
 
 ---
 
-> Este projeto foi desenvolvido para fins acadêmicos como parte da disciplina de Pesquisa Operacional da [Nome da sua Instituição], sob orientação do Prof. [Nome do Professor].
-
+> **Nota Acadêmica**: Este projeto foi desenvolvido integralmente seguindo as especificações do trabalho acadêmico da disciplina de Pesquisa e Ordenação. Todos os algoritmos foram implementados, sem uso de bibliotecas prontas de ordenação, conforme exigido.
