@@ -77,6 +77,7 @@ typedef struct {
     char tipo_dados[20];     // Tipo de dados ("numeros" ou "alunos")
     long long comparacoes;   // Número de comparações realizadas
     long long trocas;        // Número de trocas realizadas
+    long long movimentacoes; // Número de movimentações realizadas
 } ResultadoTempo;
 
 /**
@@ -118,12 +119,13 @@ extern int usar_versao_otimizada;
  * @brief Contadores globais para métricas de desempenho
  *
  * Estas variáveis são usadas para contar o número de operações realizadas
- * durante a execução dos algoritmos, como comparações e trocas. Os valores
+ * durante a execução dos algoritmos, como comparações, trocas e movimentações. Os valores
  * são armazenados globalmente para permitir o acesso e análise posterior
  * após a execução dos algoritmos.
  */
 extern long long contador_comparacoes;
 extern long long contador_trocas;
+extern long long contador_movimentacoes;
 
 /* ==============================================================
  * FUNÇÕES DE CONFIGURAÇÃO

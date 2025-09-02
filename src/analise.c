@@ -592,32 +592,42 @@ void escrever_relatorio_callback(FILE* arquivo, void* dados, int tamanho) {
     fprintf(arquivo, "================================================================\n\n");
     fprintf(arquivo, "Dados analisados: %d conjuntos de teste\n\n", tamanho);
 
-    // Tabela de resultados com mais precisão nos tempos
-    fprintf(arquivo, "+----------------+----------------+-------------+----------+--------+\n");
-    fprintf(arquivo, "| Algoritmo      | Tipo Dados     | Tempo (s)   | Compar.  | Trocas |\n");
-    fprintf(arquivo, "+----------------+----------------+-------------+----------+--------+\n");
+    // Tabela de resultados com nova coluna de movimentações
+    fprintf(arquivo, "+----------------+----------------+-------------+----------+--------+-------------+\n");
+    fprintf(arquivo, "| Algoritmo      | Tipo Dados     | Tempo (s)   | Compar.  | Trocas | Movimentac. |\n");
+    fprintf(arquivo, "+----------------+----------------+-------------+----------+--------+-------------+\n");
 
     for (int i = 0; i < tamanho; i++) {
-        fprintf(arquivo, "| %-14s | %-14s | %9.6f | %8lld | %6lld |\n",
+        fprintf(arquivo, "| %-14s | %-14s | %9.6f | %8lld | %6lld | %11lld |\n",
                resultados[i].algoritmo,
                resultados[i].tipo_dados,
                resultados[i].tempo_execucao,
                resultados[i].comparacoes,
-               resultados[i].trocas);
+               resultados[i].trocas,
+               resultados[i].movimentacoes);  // Nova coluna
     }
 
-    fprintf(arquivo, "+----------------+----------------+-------------+----------+--------+\n\n");
+    fprintf(arquivo, "+----------------+----------------+-------------+----------+--------+-------------+\n\n");
 
-    // Análises adicionais
+    // Análises adicionais atualizadas
     fprintf(arquivo, "OBSERVACOES:\n");
     fprintf(arquivo, "- Tempos em segundos (precisao: microssegundos - 6 casas decimais)\n");
     fprintf(arquivo, "- Para algoritmos muito rapidos, foram executadas multiplas medicoes\n");
-    fprintf(arquivo, "- Conjuntos < 1000 elementos: 100 execucoes para maior precisao\n");
-    fprintf(arquivo, "- Conjuntos < 5000 elementos: 10 execucoes para maior precisao\n");
+    fprintf(arquivo, "- Conjuntos < 100 elementos: 10 execucoes para maior precisao\n");
+    fprintf(arquivo, "- Conjuntos < 1000 elementos: 5 execucoes para maior precisao\n");
     fprintf(arquivo, "- Conjuntos < 10000 elementos: 3 execucoes para maior precisao\n");
     fprintf(arquivo, "- Conjuntos >= 10000 elementos: 1 execucao (suficientemente lenta)\n");
-    fprintf(arquivo, "- Comparacoes e Trocas: valores absolutos\n");
+    fprintf(arquivo, "- Comparacoes, Trocas e Movimentacoes: valores absolutos\n");
+    fprintf(arquivo, "- Movimentacoes: operacoes de memoria (memcpy) realizadas\n");
+    fprintf(arquivo, "- Uma troca equivale a 3 movimentacoes de memoria\n");
     fprintf(arquivo, "- Dados ordenados por algoritmo\n\n");
+
+    fprintf(arquivo, "METRICAS EXPLICADAS:\n");
+    fprintf(arquivo, "- COMPARACOES: Numero de comparacoes entre elementos\n");
+    fprintf(arquivo, "- TROCAS: Numero de operacoes de alto nivel de troca\n");
+    fprintf(arquivo, "- MOVIMENTACOES: Numero real de operacoes de memoria (memcpy)\n");
+    fprintf(arquivo, "  * Algoritmos baseados em swap: 3 movimentacoes por troca\n");
+    fprintf(arquivo, "  * Insertion/Shell Sort: 1 movimentacao por deslocamento\n\n");
 
     fprintf(arquivo, "COMPLEXIDADES TEORICAS:\n");
     fprintf(arquivo, "Bubble Sort:    O(n²) medio, O(n) melhor, O(n²) pior\n");
@@ -751,9 +761,9 @@ void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, si
     if (num_execucoes > 1) {
         printf("(Usando %d execucoes por algoritmo para maior precisao)\n", num_execucoes);
     }
-    printf("+--------------------+-------------+-------------+-------------+-------------+\n");
-    printf("| Algoritmo          | Tempo (s)   | Comparacoes | Trocas      |Estabilidade|\n");
-    printf("+--------------------+-------------+-------------+-------------+-------------+\n");
+    printf("+--------------------+-------------+-------------+-------------+---------------+-------------+\n");
+    printf("| Algoritmo          | Tempo (s)   | Comparacoes | Trocas      | Movimentacoes |Estabilidade |\n");
+    printf("+--------------------+-------------+-------------+-------------+---------------+-------------+\n");
 
     void *dados_copia = malloc(tamanho * elem_size);
     if (!dados_copia) {
@@ -765,6 +775,7 @@ void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, si
         double tempo_total = 0.0;
         long long comparacoes_total = 0;
         long long trocas_total = 0;
+        long long movimentacoes_total = 0;  // Nova variável para acumular movimentações
 
         // Executa múltiplas medições para maior precisão
         for (int exec = 0; exec < num_execucoes; exec++) {
@@ -774,6 +785,7 @@ void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, si
             // Zera contadores para esta execução
             contador_comparacoes = 0;
             contador_trocas = 0;
+            contador_movimentacoes = 0;  // Zere o novo contador
 
             double tempo_execucao;
             if (algoritmos[i].eh_quick) {
@@ -786,12 +798,14 @@ void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, si
             tempo_total += tempo_execucao;
             comparacoes_total += contador_comparacoes;
             trocas_total += contador_trocas;
+            movimentacoes_total += contador_movimentacoes;  // Acumule as movimentações
         }
 
         // Calcula médias
         double tempo_medio = tempo_total / num_execucoes;
         long long comparacoes_media = comparacoes_total / num_execucoes;
         long long trocas_media = trocas_total / num_execucoes;
+        long long movimentacoes_media = movimentacoes_total / num_execucoes;  // Calcule a média
 
         // Armazena resultado com médias
         strcpy(resultados[i].algoritmo, algoritmos[i].nome);
@@ -800,14 +814,16 @@ void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, si
         strcpy(resultados[i].tipo_dados, tipo_dados);
         resultados[i].comparacoes = comparacoes_media;
         resultados[i].trocas = trocas_media;
+        resultados[i].movimentacoes = movimentacoes_media;  // Armazene no struct de resultados
 
-        // Exibe resultado na tabela
-        printf("| %-18s | %8.6f s | %11lld | %11lld | %-10s |\n",
+        // Exibe resultado na tabela com nova coluna
+        printf("| %-18s | %8.6f s | %11lld | %11lld | %13lld | %-10s  |\n",
                algoritmos[i].nome,
                tempo_medio,
                comparacoes_media,
                trocas_media,
-               algoritmos[i].eh_estavel ? "Estavel" : "Nao Est.");
+               movimentacoes_media,  // Nova coluna
+               algoritmos[i].eh_estavel ? "Estavel" : "Nao Estavel");
 
         // Salva o array ordenado final (usando a última execução)
         copiar_array(dados, dados_copia, tamanho, elem_size);
@@ -848,7 +864,7 @@ void executar_todos_algoritmos_com_salvamento(const void *dados, int tamanho, si
         }
     }
 
-    printf("+--------------------+-------------+-------------+-------------+-------------+\n");
+    printf("+--------------------+-------------+-------------+-------------+---------------+-------------+\n");
 
     // Gera relatório de performance
     char nome_relatorio[MAX_PATH];

@@ -75,6 +75,14 @@ long long contador_comparacoes = 0;
 long long contador_trocas = 0;
 
 /**
+ * @brief Contador global de movimentações realizadas
+ *
+ * Registra o número total de movimentações de memória (memcpy) durante
+ * a execução de um algoritmo de ordenação.
+ */
+long long contador_movimentacoes = 0;
+
+/**
  * @brief Armazena a função de comparação atualmente em uso
  *
  * Utilizada para registrar comparações sem modificar a função original.
@@ -104,7 +112,7 @@ int comparar_e_contar(const void *a, const void *b) {
  * @brief Troca dois elementos de lugar na memória
  *
  * Realiza a troca dos valores de dois elementos, atualizando o
- * contador de trocas.
+ * contador de trocas e movimentações.
  *
  * @param a Ponteiro para o primeiro elemento
  * @param b Ponteiro para o segundo elemento
@@ -118,8 +126,49 @@ void swap_elements(void *a, void *b, size_t elem_size) {
     memcpy(a, b, elem_size);
     memcpy(b, temp, elem_size);
 
-    contador_trocas++;
+    contador_trocas++;          // Conta +1 para a operação de alto nível "troca"
+    contador_movimentacoes += 3;  // Conta +3 para as operações de escrita reais
     free(temp);
+}
+
+/**
+ * @brief Implementa a estratégia "Mediana de Três" para otimização do Quick Sort
+ *
+ * Esta função pega os elementos do início, meio e fim do array, os ordena
+ * e coloca o pivô (mediana) na penúltima posição. Isso evita o pior caso
+ * O(n²) para arrays já ordenados.
+ *
+ * @param arr Ponteiro para o array
+ * @param inicio Índice inicial
+ * @param fim Índice final
+ * @param elem_size Tamanho de cada elemento
+ * @param cmp Função de comparação
+ */
+void mediana_de_tres(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
+    char *base = (char*)arr;
+    int meio = inicio + (fim - inicio) / 2;
+
+    // Usar a função de comparação global já configurada
+    (void)cmp; // Suppresses unused parameter warning
+
+    // Ordenar os três elementos: inicio, meio, fim
+    // Após a ordenação: menor no início, mediana no meio, maior no fim
+
+    if (comparar_e_contar(base + meio * elem_size, base + inicio * elem_size) < 0) {
+        swap_elements(base + inicio * elem_size, base + meio * elem_size, elem_size);
+    }
+
+    if (comparar_e_contar(base + fim * elem_size, base + inicio * elem_size) < 0) {
+        swap_elements(base + inicio * elem_size, base + fim * elem_size, elem_size);
+    }
+
+    if (comparar_e_contar(base + fim * elem_size, base + meio * elem_size) < 0) {
+        swap_elements(base + meio * elem_size, base + fim * elem_size, elem_size);
+    }
+
+    // Agora temos: menor em inicio, mediana em meio, maior em fim
+    // Colocamos a mediana (pivô) na penúltima posição
+    swap_elements(base + meio * elem_size, base + (fim - 1) * elem_size, elem_size);
 }
 
 /* ==============================================================
@@ -318,17 +367,21 @@ void insertion_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp)
     if (!key) return;
 
     for (int i = 1; i < n; i++) {
+        // 1. Movimentação para salvar a chave
         memcpy(key, base + i * elem_size, elem_size);
+        contador_movimentacoes++;
         int j = i - 1;
 
         while (j >= 0 && comparar_e_contar(base + j * elem_size, key) > 0) {
+            // 2. Movimentação de deslocamento
             memcpy(base + (j + 1) * elem_size, base + j * elem_size, elem_size);
-            contador_trocas++;
+            contador_movimentacoes++;
             j--;
         }
 
+        // 3. Movimentação para inserir a chave
         memcpy(base + (j + 1) * elem_size, key, elem_size);
-        contador_trocas++;
+        contador_movimentacoes++;
     }
     free(key);
 }
@@ -403,16 +456,20 @@ void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
 
     for (int gap = n / 2; gap > 0; gap /= 2) {
         for (int i = gap; i < n; i++) {
+            // 1. Movimentação para salvar o elemento
             memcpy(temp, base + i * elem_size, elem_size);
+            contador_movimentacoes++;
             int j;
 
             for (j = i; j >= gap && comparar_e_contar(base + (j - gap) * elem_size, temp) > 0; j -= gap) {
+                // 2. Movimentação de deslocamento
                 memcpy(base + j * elem_size, base + (j - gap) * elem_size, elem_size);
-                contador_trocas++;
+                contador_movimentacoes++;
             }
 
+            // 3. Movimentação para inserir o elemento
             memcpy(base + j * elem_size, temp, elem_size);
-            contador_trocas++;
+            contador_movimentacoes++;
         }
     }
     free(temp);
@@ -421,6 +478,12 @@ void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
 void quick_sort_optimized(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
     if (inicio < fim) {
         funcao_comparacao_atual = cmp;
+
+        // OTIMIZAÇÃO: Aplicar estratégia "Mediana de Três" para evitar pior caso O(n²)
+        if (fim - inicio >= 3) {
+            mediana_de_tres(arr, inicio, fim, elem_size, cmp);
+        }
+
         int pi = partition_optimized(arr, inicio, fim, elem_size, cmp);
         quick_sort_optimized(arr, inicio, pi - 1, elem_size, cmp);
         quick_sort_optimized(arr, pi + 1, fim, elem_size, cmp);
@@ -451,12 +514,16 @@ int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, Compar
 void heap_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
 
+    // Fase 1: Construção do heap (bottom-up)
     for (int i = n / 2 - 1; i >= 0; i--)
         heapify_optimized(arr, n, i, elem_size, cmp);
 
+    // Fase 2: Extração
     for (int i = n - 1; i >= 0; i--) {
         swap_elements(arr, (char*)arr + i * elem_size, elem_size);
-        heapify_optimized(arr, n, 0, elem_size, cmp);
+
+        // CORREÇÃO CRÍTICA: O tamanho do heap agora é 'i', não 'n'
+        heapify_optimized(arr, i, 0, elem_size, cmp);
     }
 }
 
