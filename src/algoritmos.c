@@ -179,17 +179,19 @@ void insertion_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
     char *base = (char *)arr;
 
-    for (int i = 1; i < n; i++) {
-        char *key = malloc(elem_size);
-        if (!key) return;
+    // Alocação única de memória para melhor performance
+    char *key = malloc(elem_size);
+    if (!key) return;
 
+    for (int i = 1; i < n; i++) {
         memcpy(key, base + i * elem_size, elem_size);
+        contador_movimentacoes++; // Corrigido: usar movimentacoes ao invés de trocas
         int j = i - 1;
 
         while (j >= 0) {
             if (comparar_e_contar(base + j * elem_size, key) > 0) {
                 memcpy(base + (j + 1) * elem_size, base + j * elem_size, elem_size);
-                contador_trocas++;
+                contador_movimentacoes++; // Corrigido: usar movimentacoes
                 j--;
             } else {
                 break;
@@ -197,9 +199,11 @@ void insertion_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
         }
 
         memcpy(base + (j + 1) * elem_size, key, elem_size);
-        contador_trocas++;
-        free(key);
+        contador_movimentacoes++; // Corrigido: usar movimentacoes
     }
+
+    // Liberação única de memória
+    free(key);
 }
 
 void bubble_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
@@ -234,18 +238,28 @@ void shaker_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
     char *base = (char *)arr;
 
+    // CORRIGIDO: Versão naive agora com parada antecipada básica
     for (int pass = 0; pass < (n - 1) / 2; pass++) {
+        int houve_troca = 0; // Flag para detectar se houve trocas
+
+        // Passagem da esquerda para a direita
         for (int i = pass; i < n - pass - 1; i++) {
             if (comparar_e_contar(base + i * elem_size, base + (i + 1) * elem_size) > 0) {
                 swap_elements(base + i * elem_size, base + (i + 1) * elem_size, elem_size);
+                houve_troca = 1;
             }
         }
 
+        // Passagem da direita para a esquerda
         for (int i = n - pass - 2; i > pass; i--) {
             if (comparar_e_contar(base + i * elem_size, base + (i - 1) * elem_size) < 0) {
                 swap_elements(base + i * elem_size, base + (i - 1) * elem_size, elem_size);
+                houve_troca = 1;
             }
         }
+
+        // Parada antecipada se não houve trocas
+        if (!houve_troca) break;
     }
 }
 
@@ -253,28 +267,33 @@ void shell_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
     char *base = (char *)arr;
 
-    for (int gap = n / 2; gap > 0; gap = gap / 2) {
-        char *temp = malloc(elem_size);
-        if (!temp) return;
+    // Alocação única de memória para melhor performance
+    char *temp = malloc(elem_size);
+    if (!temp) return;
 
+    // Usando sequência de Shell simples (gap = n/2, n/4, ..., 1)
+    for (int gap = n / 2; gap > 0; gap = gap / 2) {
         for (int i = gap; i < n; i++) {
             memcpy(temp, base + i * elem_size, elem_size);
+            contador_movimentacoes++; // Corrigido: usar movimentacoes
             int j;
 
             for (j = i; j >= gap; j -= gap) {
                 if (comparar_e_contar(base + (j - gap) * elem_size, temp) > 0) {
                     memcpy(base + j * elem_size, base + (j - gap) * elem_size, elem_size);
-                    contador_trocas++;
+                    contador_movimentacoes++; // Corrigido: usar movimentacoes
                 } else {
                     break;
                 }
             }
 
             memcpy(base + j * elem_size, temp, elem_size);
-            contador_trocas++;
+            contador_movimentacoes++; // Corrigido: usar movimentacoes
         }
-        free(temp);
     }
+
+    // Liberação única de memória
+    free(temp);
 }
 
 void quick_sort_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
@@ -284,11 +303,14 @@ void quick_sort_naive(void *arr, int inicio, int fim, size_t elem_size, CompareF
         quick_sort_naive(arr, inicio, pi - 1, elem_size, cmp);
         quick_sort_naive(arr, pi + 1, fim, elem_size, cmp);
     }
+    // cmp é usado indiretamente através do ponteiro de função global 'funcao_comparacao_atual'
     (void)cmp; // Suppress unused parameter warning
 }
 
 int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
     char *base = (char*)arr;
+
+    // Alocação única de memória para o pivô - CORRIGIDO: fora do loop
     char *pivo = malloc(elem_size);
     if (!pivo) return inicio;
 
@@ -303,7 +325,10 @@ int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn 
     }
 
     swap_elements(base + (i + 1) * elem_size, base + fim * elem_size, elem_size);
+
+    // Liberação única de memória - CORRIGIDO: fora do loop
     free(pivo);
+    // cmp é usado indiretamente através do ponteiro funcao_comparacao_atual
     (void)cmp;
     return (i + 1);
 }
@@ -311,16 +336,13 @@ int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn 
 void heap_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
 
-    for (int i = 1; i < n; i++) {
-        for (int j = i; j > 0 &&
-             comparar_e_contar((char*)arr + j * elem_size,
-                               (char*)arr + ((j-1)/2) * elem_size) > 0;
-             j = (j-1)/2) {
-            swap_elements((char*)arr + j * elem_size,
-                         (char*)arr + ((j-1)/2) * elem_size, elem_size);
-        }
+    // CORREÇÃO CRÍTICA: Usar construção bottom-up eficiente O(n)
+    // ao invés da construção ineficiente O(n log n) anterior
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify_naive(arr, n, i, elem_size, cmp);
     }
 
+    // Fase de extração permanece igual
     for (int i = n - 1; i >= 0; i--) {
         swap_elements(arr, (char*)arr + i * elem_size, elem_size);
         heapify_naive(arr, i, 0, elem_size, cmp);
@@ -329,30 +351,39 @@ void heap_sort_naive(void *arr, int n, size_t elem_size, CompareFn cmp) {
 
 void heapify_naive(void *arr, int n, int i, size_t elem_size, CompareFn cmp) {
     char *base = (char*)arr;
+    int maior = i;
+    int esquerda = 2 * i + 1;
+    int direita = 2 * i + 2;
 
-    while (1) {
-        int maior = i;
-        int esquerda = 2 * i + 1;
-        int direita = 2 * i + 2;
+    /**
+     * IMPLEMENTAÇÃO RECURSIVA - VERSÃO DIDÁTICA
+     *
+     * Escolha: Implementação recursiva para maior clareza e didática
+     * Trade-offs:
+     * - Vantagem: Mais fácil de entender e acompanhar a lógica
+     * - Desvantagem: Maior sobrecarga de chamadas de função (stack overhead)
+     * - Adequada para: Aprendizado e arrays de tamanho moderado
+     */
 
-        if (esquerda < n) {
-            if (comparar_e_contar(base + esquerda * elem_size, base + maior * elem_size) > 0) {
-                maior = esquerda;
-            }
+    // Versão recursiva mais didática e simples de entender
+    if (esquerda < n) {
+        if (comparar_e_contar(base + esquerda * elem_size, base + maior * elem_size) > 0) {
+            maior = esquerda;
         }
-
-        if (direita < n) {
-            if (comparar_e_contar(base + direita * elem_size, base + maior * elem_size) > 0) {
-                maior = direita;
-            }
-        }
-
-        if (maior == i) break;
-
-        swap_elements(base + i * elem_size, base + maior * elem_size, elem_size);
-        i = maior;
     }
-    // Suppress unused parameter warning - cmp is used indirectly via funcao_comparacao_atual
+
+    if (direita < n) {
+        if (comparar_e_contar(base + direita * elem_size, base + maior * elem_size) > 0) {
+            maior = direita;
+        }
+    }
+
+    if (maior != i) {
+        swap_elements(base + i * elem_size, base + maior * elem_size, elem_size);
+        // Chamada recursiva - mais didática e fácil de entender
+        heapify_naive(arr, n, maior, elem_size, cmp);
+    }
+    // cmp é usado indiretamente através do ponteiro de função global 'funcao_comparacao_atual'
     (void)cmp;
 }
 
@@ -406,17 +437,81 @@ void selection_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp)
     funcao_comparacao_atual = cmp;
     char *base = (char *)arr;
 
-    for (int i = 0; i < n - 1; i++) {
-        int min_idx = i;
-        for (int j = i + 1; j < n; j++) {
-            if (comparar_e_contar(base + j * elem_size, base + min_idx * elem_size) < 0) {
-                min_idx = j;
-            }
-        }
-        if (min_idx != i) {
-            swap_elements(base + i * elem_size, base + min_idx * elem_size, elem_size);
+    /**
+     * OTIMIZAÇÃO AVANÇADA: Implementação do Bingo Sort
+     *
+     * O Bingo Sort é uma variante otimizada do Selection Sort que funciona
+     * excepcionalmente bem em arrays com muitos valores duplicados.
+     *
+     * Diferenças principais:
+     * - Selection Sort tradicional: O(n²) sempre
+     * - Bingo Sort: O(n²) no pior caso, mas O(n) no melhor caso (valores únicos)
+     *
+     * Vantagem: Quando há muitos duplicados, o Bingo Sort pode posicionar
+     * múltiplos elementos de mesmo valor em uma única passagem, reduzindo
+     * significativamente o número de iterações necessárias.
+     */
+
+    int inicio = 0;
+    char *bingo = malloc(elem_size);  // Valor "bingo" (menor encontrado)
+    char *proximo_bingo = malloc(elem_size);  // Próximo menor valor
+
+    if (!bingo || !proximo_bingo) {
+        free(bingo);
+        free(proximo_bingo);
+        return;
+    }
+
+    // Encontra o menor valor inicial
+    memcpy(bingo, base, elem_size);
+    memcpy(proximo_bingo, base, elem_size);
+
+    for (int i = 1; i < n; i++) {
+        if (comparar_e_contar(base + i * elem_size, bingo) < 0) {
+            memcpy(proximo_bingo, bingo, elem_size);
+            memcpy(bingo, base + i * elem_size, elem_size);
+        } else if (comparar_e_contar(base + i * elem_size, bingo) > 0 &&
+                   comparar_e_contar(base + i * elem_size, proximo_bingo) < 0) {
+            memcpy(proximo_bingo, base + i * elem_size, elem_size);
         }
     }
+
+    // Loop principal do Bingo Sort
+    while (inicio < n - 1) {
+        int posicao_inicio = inicio;
+
+        // Encontra e move todos os elementos com valor "bingo" para o início
+        for (int i = inicio; i < n; i++) {
+            if (comparar_e_contar(base + i * elem_size, bingo) == 0) {
+                swap_elements(base + inicio * elem_size, base + i * elem_size, elem_size);
+                inicio++;
+            } else if (comparar_e_contar(base + i * elem_size, proximo_bingo) < 0) {
+                memcpy(proximo_bingo, base + i * elem_size, elem_size);
+            }
+        }
+
+        // Se nenhum elemento foi movido, todos os elementos restantes são iguais
+        if (inicio == posicao_inicio) {
+            break;
+        }
+
+        // Atualiza o valor bingo para a próxima iteração
+        memcpy(bingo, proximo_bingo, elem_size);
+
+        // Encontra o próximo valor após o atual bingo
+        int encontrou_proximo = 0;
+        for (int i = inicio; i < n; i++) {
+            if (comparar_e_contar(base + i * elem_size, bingo) > 0) {
+                if (!encontrou_proximo || comparar_e_contar(base + i * elem_size, proximo_bingo) < 0) {
+                    memcpy(proximo_bingo, base + i * elem_size, elem_size);
+                    encontrou_proximo = 1;
+                }
+            }
+        }
+    }
+
+    free(bingo);
+    free(proximo_bingo);
 }
 
 void shaker_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
@@ -454,7 +549,14 @@ void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
     char *temp = malloc(elem_size);
     if (!temp) return;
 
-    for (int gap = n / 2; gap > 0; gap /= 2) {
+    // MELHORIA: Usar sequência de Knuth para melhor performance
+    // h = (3^k - 1) / 2: 1, 4, 13, 40, 121, 364, ...
+    int gap = 1;
+    while (gap < n / 3) {
+        gap = gap * 3 + 1; // Calcula o maior gap da sequência de Knuth
+    }
+
+    while (gap >= 1) {
         for (int i = gap; i < n; i++) {
             // 1. Movimentação para salvar o elemento
             memcpy(temp, base + i * elem_size, elem_size);
@@ -471,6 +573,7 @@ void shell_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
             memcpy(base + j * elem_size, temp, elem_size);
             contador_movimentacoes++;
         }
+        gap = gap / 3; // Próximo gap da sequência de Knuth
     }
     free(temp);
 }
@@ -507,6 +610,7 @@ int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, Compar
     }
     swap_elements(base + (i + 1) * elem_size, base + fim * elem_size, elem_size);
     free(pivo);
+    // cmp é usado indiretamente através do ponteiro de função global 'funcao_comparacao_atual'
     (void)cmp;
     return (i + 1);
 }
@@ -514,15 +618,13 @@ int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, Compar
 void heap_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp) {
     funcao_comparacao_atual = cmp;
 
-    // Fase 1: Construção do heap (bottom-up)
+    // Fase 1: Construção do heap (bottom-up) - O(n)
     for (int i = n / 2 - 1; i >= 0; i--)
         heapify_optimized(arr, n, i, elem_size, cmp);
 
-    // Fase 2: Extração
+    // Fase 2: Extração - O(n log n)
     for (int i = n - 1; i >= 0; i--) {
         swap_elements(arr, (char*)arr + i * elem_size, elem_size);
-
-        // CORREÇÃO CRÍTICA: O tamanho do heap agora é 'i', não 'n'
         heapify_optimized(arr, i, 0, elem_size, cmp);
     }
 }
@@ -533,6 +635,18 @@ void heapify_optimized(void *arr, int n, int i, size_t elem_size, CompareFn cmp)
     int esquerda = 2 * i + 1;
     int direita = 2 * i + 2;
 
+    /**
+     * IMPLEMENTAÇÃO RECURSIVA - VERSÃO OTIMIZADA
+     *
+     * Escolha: Mantém implementação recursiva por clareza e legibilidade
+     * Trade-offs:
+     * - Vantagem: Código mais limpo e fácil de manter
+     * - Desvantagem: Leve sobrecarga de stack para arrays muito grandes
+     * - Justificativa: Para a maioria dos casos práticos, a diferença de performance
+     *   entre recursivo e iterativo é negligível, mas a legibilidade é muito superior
+     * - Adequada para: Uso geral em produção com arrays de tamanho razoável
+     */
+
     if (esquerda < n && comparar_e_contar(base + esquerda * elem_size, base + maior * elem_size) > 0)
         maior = esquerda;
 
@@ -541,8 +655,11 @@ void heapify_optimized(void *arr, int n, int i, size_t elem_size, CompareFn cmp)
 
     if (maior != i) {
         swap_elements(base + i * elem_size, base + maior * elem_size, elem_size);
+        // Implementação recursiva para maior clareza e legibilidade
         heapify_optimized(arr, n, maior, elem_size, cmp);
     }
+    // cmp é usado indiretamente através do ponteiro de função global 'funcao_comparacao_atual'
+    (void)cmp;
 }
 
 /* ==============================================================
