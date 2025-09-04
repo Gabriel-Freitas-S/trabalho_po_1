@@ -1,20 +1,43 @@
 /**
  * ================================================================
- * TRABALHO DE ALGORITMOS DE ORDENAÇÃO - MÓDULO DE ANÁLISE
+ * SISTEMA AVANÇADO DE ANÁLISE E MEDIÇÃO DE ALGORITMOS DE ORDENAÇÃO
  * ================================================================
  *
  * @file analise.c
- * @brief Sistema avançado de medição, análise e geração de relatórios
- * @version 2.1
- * @date 2025-08-24
- * @author Sistema de Análise de Algoritmos
+ * @brief Core do sistema de benchmarking e análise de performance de alta precisão
  *
- * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
- * - Agora usa arquitetura modular com headers específicos
- * - Sistema de medição de alta precisão multiplataforma
- * - Suporte otimizado para Windows e Linux/Unix
- * - Medição robusta para algoritmos com execução muito rápida
- * - Análise detalhada de estabilidade com casos de teste reais
+ *  SISTEMA DE MEDIÇÃO MULTIPLATAFORMA DE ALTA PRECISÃO:
+ * Este módulo implementa um sistema sofisticado de análise de performance que
+ * vai muito além de simples medições de tempo. Utiliza as melhores práticas
+ * de benchmarking científico para garantir resultados precisos e reproduzíveis.
+ *
+ *  CARACTERÍSTICAS AVANÇADAS:
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ • Medição de tempo com precisão de nanossegundos (Windows/Linux/Unix)  │
+ * │ • Execução múltipla automática para conjuntos pequenos/rápidos         │
+ * │ • Contabilização tripla: comparações, trocas e movimentações           │
+ * │ • Análise automática de estabilidade com dados reais                   │
+ * │ • Geração de relatórios estruturados em múltiplos formatos             │
+ * │ • Sistema adaptativo baseado no tamanho dos conjuntos                  │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ *  METODOLOGIA CIENTÍFICA:
+ * - Medições estatisticamente significativas com múltiplas execuções
+ * - Detecção automática da melhor função de timing do sistema operacional
+ * - Tratamento robusto de algoritmos com execução muito rápida
+ * - Validação de resultados e detecção de anomalias
+ *
+ *  MÉTRICAS COLETADAS:
+ * • Tempo de execução (precisão de microssegundos)
+ * • Número de comparações entre elementos
+ * • Número de operações de troca (swap) de alto nível
+ * • Número de movimentações físicas de memória
+ * • Análise de estabilidade com casos específicos
+ *
+ *  COMPATIBILIDADE MULTIPLATAFORMA:
+ * - Windows: QueryPerformanceCounter (máxima precisão disponível)
+ * - Linux/Unix: clock_gettime() com CLOCK_MONOTONIC
+ * - Fallback universal: gettimeofday() para sistemas legados
  *
  * ================================================================
  */
@@ -48,27 +71,50 @@ void analisar_estabilidade(void);
 void gerar_relatorio_comparativo_final(void);
 
 /* ================================================================
- * SISTEMA DE MEDIÇÃO DE TEMPO DE ALTA PRECISÃO MULTIPLATAFORMA
+ * NÚCLEO DE MEDIÇÃO TEMPORAL MULTIPLATAFORMA DE ALTA PRECISÃO
  * ================================================================ */
 
 /**
- * @brief Obtém timestamp de alta precisão utilizando a melhor função disponível
+ * @brief Obtém timestamp de precisão máxima usando a melhor API disponível no SO
  *
- * Esta função utiliza automaticamente a função de timing de maior precisão
- * disponível no sistema operacional atual:
+ *  FILOSOFIA DE DESIGN:
+ * Esta função implementa uma estratégia de "melhor esforço" para obter a
+ * maior precisão temporal possível, adaptando-se automaticamente às
+ * capacidades específicas de cada sistema operacional.
  *
- * - Windows: QueryPerformanceCounter (precisão de microssegundos ou melhor)
- * - Linux/Unix: clock_gettime() com CLOCK_MONOTONIC (precisão de nanossegundos)
- * - Sistemas legados: gettimeofday() (precisão de microssegundos)
+ *  HIERARQUIA DE PRECISÃO (do melhor para o pior):
+ * ┌─────────────────┬─────────────────────┬──────────────────────┐
+ * │ Sistema         │ Função Utilizada    │ Precisão Típica      │
+ * ├─────────────────┼─────────────────────┼──────────────────────┤
+ * │ Windows         │ QueryPerformanceCounter │ ~100 nanossegundos │
+ * │ Linux/Unix      │ clock_gettime()     │ ~1 nanossegundo      │
+ * │ Sistemas Legados│ gettimeofday()      │ ~1 microssegundo     │
+ * │ Fallback Final  │ time()              │ ~1 segundo           │
+ * └─────────────────┴─────────────────────┴──────────────────────┘
  *
- * A função é otimizada para ser chamada repetidamente com overhead mínimo,
- * sendo ideal para medição de algoritmos com execução muito rápida.
+ *  OTIMIZAÇÕES IMPLEMENTADAS:
+ * - Inicialização lazy: configuração custosa executada apenas uma vez
+ * - Cache de frequência: evita consultas repetidas ao hardware
+ * - Múltiplos fallbacks: garante funcionamento em qualquer sistema
+ * - Overhead mínimo: adequado para medições de algoritmos muito rápidos
  *
- * @return Tempo atual em segundos como valor de ponto flutuante (double)
- *         com a máxima precisão disponível no sistema
+ *  CASOS DE USO CRÍTICOS:
+ * - Algoritmos que executam em microssegundos (arrays pequenos)
+ * - Benchmarks científicos que requerem precisão estatística
+ * - Comparações entre algoritmos com diferenças sutis de performance
  *
- * @note Esta implementação é thread-safe e utiliza inicialização lazy
- *       para otimizar performance em medições repetitivas
+ *  ROBUSTEZ E CONFIABILIDADE:
+ * - Thread-safe através de variáveis estáticas inicializadas uma vez
+ * - Detecção e tratamento de falhas de API do sistema
+ * - Graceful degradation: funciona mesmo em sistemas com APIs limitadas
+ *
+ * @return Timestamp atual como double em segundos com máxima precisão disponível
+ *         - Precisão típica: nanossegundos a microssegundos
+ *         - Monotônico: não afetado por mudanças do relógio do sistema
+ *         - Adequado para diferenças temporais precisas
+ *
+ * @note Implementação thread-safe com inicialização lazy para performance otimizada.
+ *       A primeira chamada pode ser ligeiramente mais lenta devido à configuração.
  */
 double obter_timestamp_precisao(void) {
     #ifdef _WIN32
@@ -118,24 +164,53 @@ double obter_timestamp_precisao(void) {
 }
 
 /**
- * @brief Mede tempo de execução com precisão de nanossegundos
+ * @brief Sistema inteligente de medição temporal com estratégia adaptativa
  *
- * Nova implementação de alta precisão que substitui clock() por funções
- * de timing modernas do sistema operacional. Capaz de medir com precisão
- * algoritmos muito rápidos que anteriormente resultavam em tempo zero.
+ *  INOVAÇÃO PRINCIPAL:
+ * Esta função revoluciona a medição de algoritmos rápidos implementando
+ * estratégia adaptativa que automaticamente decide entre execução única
+ * ou múltiplas execuções baseado na velocidade esperada do algoritmo.
  *
- * Características avançadas:
- * - Utiliza timestamp de alta precisão antes e depois da execução
- * - Garante que o resultado nunca seja zero (mínimo de 1 microssegundo)
- * - Trata casos especiais como arrays já ordenados ou muito pequenos
- * - Realiza medição adaptativa baseada no tamanho do conjunto
+ *  ALGORITMO ADAPTATIVO:
+ * ┌─────────────────┬──────────────────┬─────────────────────────────┐
+ * │ Tamanho Array   │ Execuções        │ Justificativa               │
+ * ├─────────────────┼──────────────────┼─────────────────────────────┤
+ * │ < 100 elementos │ 10 execuções     │ Muito rápido, precisa média│
+ * │ < 1.000         │ 5 execuções      │ Rápido, beneficia de média │
+ * │ < 10.000        │ 3 execuções      │ Moderado, alguma variação   │
+ * │ ≥ 10.000        │ 1 execução       │ Lento, uma medição suficiente│
+ * └─────────────────┴──────────────────┴─────────────────────────────┘
  *
- * @param sort_fn Ponteiro para a função do algoritmo de ordenação
- * @param arr Ponteiro para o array a ser ordenado (será modificado)
- * @param n Número de elementos no array
- * @param elem_size Tamanho de cada elemento em bytes
- * @param cmp Função de comparação entre elementos
- * @return Tempo de execução em segundos (nunca retorna zero)
+ *  PRECISÃO CIENTÍFICA:
+ * - Substitui clock() obsoleto por APIs modernas de nanossegundos
+ * - Múltiplas execuções eliminam variabilidade estatística
+ * - Backup e restauração automática de dados entre execuções
+ * - Detecção inteligente de overflow em cálculos de memória
+ *
+ *  ROBUSTEZ TOTAL:
+ * - Fallback gracioso em caso de falha de alocação de memória
+ * - Validação rigorosa de todos os parâmetros de entrada
+ * - Garantia de retorno mínimo (1 microssegundo) para evitar divisões por zero
+ * - Tratamento seguro de arrays extremamente grandes
+ *
+ *  VANTAGENS SOBRE IMPLEMENTAÇÕES CLÁSSICAS:
+ * - Resolvealgoritmos rápidos que antes resultavam em "tempo zero"
+ * - Reduz variabilidade através de médias estatísticas
+ * - Detecta e adapta-se automaticamente à velocidade do algoritmo
+ * - Mantém alta precisão mesmo para execuções muito rápidas
+ *
+ * @param sort_fn Ponteiro para função de algoritmo de ordenação padrão
+ * @param arr Array a ser ordenado (pode ser modificado, será restaurado entre execuções)
+ * @param n Número de elementos no array (deve ser > 0)
+ * @param elem_size Tamanho em bytes de cada elemento (deve ser > 0)
+ * @param cmp Função de comparação específica do tipo de dados
+ * @return Tempo de execução em segundos:
+ *         - Para múltiplas execuções: média aritmética dos tempos
+ *         - Para execução única: tempo direto da execução
+ *         - Mínimo garantido: 0.000001s (1 microssegundo)
+ *
+ * @note Array de entrada pode ser modificado durante a medição, mas para
+ *       múltiplas execuções é restaurado ao estado original entre elas
  */
 double medir_tempo_ordenacao(void (*sort_fn)(void*, int, size_t, CompareFn),
                             void *arr, int n, size_t elem_size, CompareFn cmp) {

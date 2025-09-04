@@ -1,107 +1,235 @@
 /**
- * ==============================================================
+ * ================================================================
  * SISTEMA DE ANÁLISE DE ALGORITMOS DE ORDENAÇÃO - IMPLEMENTAÇÕES
- * ==============================================================
+ * ================================================================
  *
  * @file algoritmos.c
- * @brief Implementação dos 7 algoritmos de ordenação com medição de performance
- * @version 2.1
- * @date 2025-08-24
+ * @brief Implementação completa dos 7 algoritmos de ordenação com sistema dual de versões
  *
- * Este arquivo contém a implementação completa dos algoritmos de ordenação
- * utilizados no sistema. Cada algoritmo possui duas versões:
+ * Este arquivo contém o núcleo do sistema de ordenação, implementando cada
+ * algoritmo em duas versões distintas para fins educacionais e comparativos:
  *
- * 1. Versão não otimizada: Implementação didática e mais clara
- * 2. Versão otimizada: Implementação com foco em performance
+ * VERSÃO DIDÁTICA (não otimizada):
+ * - Implementação clara e fácil de entender
+ * - Código mais verboso para facilitar aprendizado
+ * - Ideal para estudar o funcionamento interno dos algoritmos
+ * - Pode realizar mais operações que o necessário para demonstração
  *
- * Algoritmos implementados:
- * - Insertion Sort: Ordenação por inserção (estável)
- * - Bubble Sort: Ordenação por bolha (estável)
- * - Selection Sort: Ordenação por seleção (não-estável)
- * - Shaker Sort: Ordenação cocktail (estável)
- * - Shell Sort: Ordenação por incrementos (não-estável)
- * - Quick Sort: Ordenação por particionamento (não-estável)
- * - Heap Sort: Ordenação por heap (não-estável)
+ * VERSÃO OTIMIZADA (alta performance):
+ * - Implementação focada em eficiência máxima
+ * - Uso de técnicas avançadas de otimização
+ * - Paradas antecipadas quando possível
+ * - Minimização de operações desnecessárias
  *
- * O sistema de contadores globais permite a análise precisa do número
- * de comparações e trocas realizadas por cada algoritmo.
+ * ALGORITMOS IMPLEMENTADOS:
+ * ┌─────────────────┬──────────────────┬─────────────────┬─────────────────┐
+ * │ Algoritmo       │ Complexidade     │ Estabilidade    │ Uso Recomendado │
+ * ├─────────────────┼──────────────────┼─────────────────┼─────────────────┤
+ * │ Insertion Sort  │ O(n) ~ O(n²)     │ Estável         │ Pequenos arrays │
+ * │ Bubble Sort     │ O(n) ~ O(n²)     │ Estável         │ Educacional     │
+ * │ Selection Sort  │ O(n²)            │ Não estável     │ Memória limitada│
+ * │ Shaker Sort     │ O(n) ~ O(n²)     │ Estável         │ Melhorias do Bubble│
+ * │ Shell Sort      │ O(n log n) ~ O(n²)│ Não estável     │ Arrays médios   │
+ * │ Quick Sort      │ O(n log n) ~ O(n²)│ Não estável     │ Uso geral       │
+ * │ Heap Sort       │ O(n log n)       │ Não estável     │ Performance garantida│
+ * └─────────────────┴──────────────────┴─────────────────┴─────────────────┘
  *
- * ==============================================================
+ * SISTEMA DE MÉTRICAS INTEGRADO:
+ * - Contadores globais para análise precisa de performance
+ * - Medição de comparações, trocas e movimentações
+ * - Compatível com medição de tempo de alta precisão
+ * - Interface unificada que alterna entre versões automaticamente
+ *
+ * ================================================================
  */
 
 #include <string.h>  // Para memcpy
 #include <stdlib.h>  // Para malloc e free
 #include "../include/sorts.h"  // Inclui toda a estrutura modular
 
-/* ==============================================================
- * VARIÁVEIS DE CONTROLE E CONFIGURAÇÃO
- * ============================================================== */
+/* ================================================================
+ * SISTEMA DE CONTROLE DE VERSÕES DOS ALGORITMOS
+ * ================================================================ */
 
 /**
- * @brief Controla qual versão dos algoritmos será utilizada
+ * @brief Seletor global da versão de algoritmos a ser utilizada
  *
- * Quando definida como 1, o sistema usa as versões otimizadas.
- * Quando definida como 0, usa as versões não otimizadas (didáticas).
+ * Esta variável atua como um "interruptor" que determina qual implementação
+ * será executada quando os algoritmos forem chamados através das interfaces
+ * unificadas (functions wrappers) no final deste arquivo.
+ *
+ * FUNCIONAMENTO:
+ * - Valor 1 (padrão): Executa versões otimizadas para máxima performance
+ * - Valor 0: Executa versões didáticas para fins educacionais
+ *
+ *  ALTERNAÇÃO DINÂMICA:
+ * O sistema permite trocar entre versões durante a execução, possibilitando
+ * comparações diretas de performance entre as duas implementações usando
+ * exatamente os mesmos dados de entrada.
+ *
+ *  ANALOGIA: É como ter duas engrenagens diferentes em uma máquina - você
+ * pode alternar entre a "engrenagem de precisão" (didática) e a "engrenagem
+ * turbo" (otimizada) conforme a necessidade.
  */
 int usar_versao_otimizada = 1;
 
 /**
- * @brief Configura o uso de versões otimizadas ou didáticas
+ * @brief Configura dinamicamente a versão dos algoritmos que será executada
  *
- * @param otimizada 1 para ativar otimizações, 0 para versão didática
+ * Esta função permite alternar entre as implementações didática e otimizada
+ * durante a execução do programa, facilitando análises comparativas e
+ * demonstrações educacionais.
+ *
+ *  CONTROLE CENTRALIZADO:
+ * - Todas as chamadas futuras aos algoritmos respeitarão esta configuração
+ * - Mudança imediata e global para todos os algoritmos
+ * - Não afeta execuções já em andamento
+ *
+ *  CASOS DE USO:
+ * - Análise comparativa de performance entre versões
+ * - Demonstrações educacionais das diferenças de implementação
+ * - Testes de validação de correção dos algoritmos
+ * - Benchmark de otimizações aplicadas
+ *
+ * @param otimizada Seletor de versão:
+ *                  - 1: Ativa versões otimizadas (foco em performance)
+ *                  - 0: Ativa versões didáticas (foco em clareza)
+ *
+ * @note A alteração é global e afeta todas as chamadas subsequentes.
+ *       Para isolar testes, salve a configuração atual antes de alterá-la.
  */
 void configurar_otimizacao(int otimizada) {
     usar_versao_otimizada = otimizada;
 }
 
-/* ==============================================================
- * CONTADORES GLOBAIS PARA MÉTRICAS DE PERFORMANCE
- * ============================================================== */
+/* ================================================================
+ * SISTEMA DE MÉTRICAS E ANÁLISE DE PERFORMANCE DOS ALGORITMOS
+ * ================================================================ */
 
 /**
- * @brief Contador global de comparações realizadas
+ * @brief Contador global de comparações entre elementos
  *
- * Registra o número total de comparações entre elementos durante
- * a execução de um algoritmo de ordenação.
+ * FINALIDADE:
+ * Este contador registra o número total de comparações realizadas durante
+ * a execução de qualquer algoritmo de ordenação. É fundamental para análise
+ * teórica vs. prática da complexidade dos algoritmos.
+ *
+ * IMPORTÂNCIA ACADÊMICA:
+ * - Permite verificar se a complexidade teórica condiz com a prática
+ * - Essencial para comparar eficiência entre diferentes algoritmos
+ * - Usado em análises de melhor/pior caso dos algoritmos
+ *
+ *  EXEMPLO PRÁTICO:
+ * Se ordenarmos [3,1,2] com Bubble Sort, este contador registrará todas
+ * as vezes que o algoritmo compara elementos (ex: "3 > 1?", "3 > 2?", etc.)
+ *
+ * @note Resetado a zero antes de cada execução de algoritmo
  */
 long long contador_comparacoes = 0;
 
 /**
- * @brief Contador global de trocas realizadas
+ * @brief Contador global de operações de troca (swap) de elementos
  *
- * Registra o número total de trocas (swaps) entre elementos durante
- * a execução de um algoritmo de ordenação.
+ *  FINALIDADE:
+ * Registra o número de operações de alto nível onde dois elementos trocam
+ * de posição no array. Fundamental para análise de performance prática.
+ *
+ *  DIFERENÇA CONCEITUAL:
+ * - TROCA: Operação lógica "trocar elemento A com elemento B"
+ * - MOVIMENTAÇÃO: Operação física de memória (memcpy individual)
+ *
+ *  RELAÇÃO COM MOVIMENTAÇÕES:
+ * Cada troca tradicionalmente requer 3 movimentações de memória:
+ * 1. temp = a; 2. a = b; 3. b = temp;
+ *
+ *  USO EM ANÁLISE:
+ * Algoritmos com muitas trocas tendem a ser mais lentos devido ao overhead
+ * de movimentação de dados na memória.
+ *
+ * @note Incrementado pela função [`swap_elements()`](src/algoritmos.c:122)
  */
 long long contador_trocas = 0;
 
 /**
- * @brief Contador global de movimentações realizadas
+ * @brief Contador global de movimentações físicas de memória
  *
- * Registra o número total de movimentações de memória (memcpy) durante
- * a execução de um algoritmo de ordenação.
+ *  FINALIDADE:
+ * Registra o número real de operações [`memcpy()`](src/algoritmos.c:143) realizadas,
+ * oferecendo visão precisa do custo real de movimentação de dados.
+ *
+ *  GRANULARIDADE DETALHADA:
+ * Enquanto contador_trocas mede operações lógicas, este contador mede
+ * as operações físicas reais de cópia de memória.
+ *
+ *  PADRÕES TÍPICOS:
+ * - Algoritmos baseados em swap: 3 movimentações por troca
+ * - Insertion/Shell Sort: 1 movimentação por deslocamento
+ * - Selection Sort: Comparações muitas, movimentações poucas
+ *
+ *  EXEMPLO ILUSTRATIVO:
+ * Uma única chamada swap_elements(a, b) resulta em:
+ * - contador_trocas += 1 (uma operação lógica)
+ * - contador_movimentacoes += 3 (três operações físicas)
+ *
+ * @note Crítico para análise de performance em sistemas com memória limitada
  */
 long long contador_movimentacoes = 0;
 
 /**
- * @brief Armazena a função de comparação atualmente em uso
+ * @brief Ponteiro para função de comparação em uso pelo sistema de métricas
  *
- * Utilizada para registrar comparações sem modificar a função original.
+ *  FINALIDADE:
+ * Armazena temporariamente a função de comparação para que a função wrapper
+ * [`comparar_e_contar()`](src/algoritmos.c:106) possa incrementar os contadores automaticamente
+ * sem modificar as chamadas originais dos algoritmos.
+ *
+ *  MECANISMO TÉCNICO:
+ * Implementa o padrão "Decorator" - intercepta chamadas de comparação
+ * para adicionar funcionalidade de contagem sem alterar a lógica original.
+ *
+ *  ESCOPO:
+ * Variável estática (privada deste arquivo) para evitar conflitos externos
+ * e garantir encapsulamento adequado do sistema de métricas.
+ *
+ * @note Configurada automaticamente no início de cada algoritmo
  */
 static CompareFn funcao_comparacao_atual = NULL;
 
-/* ==============================================================
- * FUNÇÕES AUXILIARES
- * ============================================================== */
+/* ================================================================
+ * FUNÇÕES AUXILIARES E INFRAESTRUTURA DO SISTEMA DE MÉTRICAS
+ * ================================================================ */
 
 /**
- * @brief Compara dois elementos e conta a comparação
+ * @brief Wrapper inteligente para comparações com contagem automática
  *
- * Esta função é uma camada sobre a função de comparação original,
- * responsável por incrementar o contador de comparações.
+ *  PADRÃO DE DESIGN: Decorator Pattern
+ * Esta função implementa o padrão Decorator, "decorando" a função original
+ * de comparação com funcionalidade adicional de contagem, sem modificar
+ * seu comportamento ou interface.
  *
- * @param a Primeiro elemento a ser comparado
- * @param b Segundo elemento a ser comparado
- * @return Resultado da comparação entre a e b
+ *  FUNCIONAMENTO DETALHADO:
+ * 1. Recebe dois elementos para comparação (mesmo que função original)
+ * 2. Incrementa automaticamente o contador global de comparações
+ * 3. Delega a comparação real para a função específica do tipo de dados
+ * 4. Retorna exatamente o mesmo resultado que a função original
+ *
+ *  TRANSPARÊNCIA TOTAL:
+ * Para os algoritmos, esta função é invisível - eles "pensam" que estão
+ * chamando diretamente a função de comparação original, mas na verdade
+ * estão passando por este interceptador que coleta métricas.
+ *
+ *  IMPORTÂNCIA PARA ANÁLISE:
+ * Permite coletar estatísticas precisas sem modificar uma linha sequer
+ * dos algoritmos implementados, mantendo a pureza das implementações.
+ *
+ * @param a Ponteiro para o primeiro elemento a ser comparado
+ * @param b Ponteiro para o segundo elemento a ser comparado
+ * @return Resultado idêntico à função de comparação original:
+ *         - Negativo se a < b
+ *         - Zero se a == b
+ *         - Positivo se a > b
+ *
+ * @note Depende da variável global funcao_comparacao_atual estar configurada
  */
 int comparar_e_contar(const void *a, const void *b) {
     contador_comparacoes++;
@@ -109,30 +237,55 @@ int comparar_e_contar(const void *a, const void *b) {
 }
 
 /**
- * @brief Troca dois elementos de lugar na memória com buffer reutilizável
+ * @brief Sistema otimizado de troca de elementos com buffer reutilizável
  *
- * Realiza a troca dos valores de dois elementos, atualizando o
- * contador de trocas e movimentações. Usa um buffer estático
- * reutilizável para maior eficiência em algoritmos com muitas trocas.
+ *  OTIMIZAÇÃO AVANÇADA: Buffer Estático Reutilizável
+ * Esta implementação utiliza um buffer temporário estático que cresce
+ * conforme necessário, evitando alocações/desalocações repetitivas que
+ * degradariam a performance em algoritmos com muitas trocas.
  *
- * @param a Ponteiro para o primeiro elemento
- * @param b Ponteiro para o segundo elemento
+ *  ALGORITMO DE TROCA CLÁSSICO:
+ * Implementa a sequência tradicional de 3 passos para troca segura:
+ * 1. temp = a    (backup do primeiro elemento)
+ * 2. a = b       (primeiro recebe valor do segundo)
+ * 3. b = temp    (segundo recebe backup do primeiro)
+ *
+ *  GESTÃO INTELIGENTE DE MEMÓRIA:
+ * - Buffer cresce automaticamente para acomodar elementos maiores
+ * - Nunca shrink - mantém o maior tamanho já usado (evita realocações)
+ * - Fallback seguro em caso de falha de alocação
+ * - Memória liberada automaticamente no fim do programa
+ *
+ *  CONTABILIZAÇÃO DUPLA:
+ * - contador_trocas += 1: Registra a operação lógica de troca
+ * - contador_movimentacoes += 3: Registra as 3 operações físicas memcpy
+ *
+ *  ROBUSTEZ:
+ * - Detecta e trata falhas de alocação graciosamente
+ * - Funciona com elementos de qualquer tamanho
+ * - Thread-safe para buffer estático (sem concorrência real no projeto)
+ *
+ * @param a Ponteiro para o primeiro elemento (será modificado)
+ * @param b Ponteiro para o segundo elemento (será modificado)
  * @param elem_size Tamanho em bytes de cada elemento
+ *
+ * @note Em caso de falha na alocação de memória, a função retorna sem
+ *       realizar a troca, mantendo os dados originais intactos
  */
 void swap_elements(void *a, void *b, size_t elem_size) {
     static char* temp = NULL;
     static size_t temp_size = 0;
 
-    // Realoca buffer apenas se necessário (elemento maior)
+    // Realoca buffer apenas se necessário (elemento maior que o buffer atual)
     if (temp_size < elem_size) {
         char* new_temp = realloc(temp, elem_size);
         if (!new_temp) {
-            // Se falhar realocar, tenta alocar novo buffer
+            // Estratégia de fallback: tenta alocação nova em caso de falha
             free(temp);
             temp = malloc(elem_size);
             if (!temp) {
                 temp_size = 0;
-                return; // Falha na alocação
+                return; // Falha crítica: abort da operação
             }
         } else {
             temp = new_temp;
@@ -140,12 +293,13 @@ void swap_elements(void *a, void *b, size_t elem_size) {
         temp_size = elem_size;
     }
 
-    memcpy(temp, a, elem_size);
-    memcpy(a, b, elem_size);
-    memcpy(b, temp, elem_size);
+    // Sequência clássica de troca em 3 passos com contabilização
+    memcpy(temp, a, elem_size);      // Passo 1: backup do elemento A
+    memcpy(a, b, elem_size);         // Passo 2: A recebe valor de B
+    memcpy(b, temp, elem_size);      // Passo 3: B recebe backup de A
 
-    contador_trocas++;          // Conta +1 para a operação de alto nível "troca"
-    contador_movimentacoes += 3;  // Conta +3 para as operações de escrita reais
+    contador_trocas++;               // Contabiliza 1 operação lógica de troca
+    contador_movimentacoes += 3;     // Contabiliza 3 operações físicas de memória
 }
 
 /**

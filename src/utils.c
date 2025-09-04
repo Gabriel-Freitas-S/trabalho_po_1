@@ -1,19 +1,53 @@
 /**
  * ================================================================
- * TRABALHO DE ALGORITMOS DE ORDENAÇÃO - MÓDULO UTILITÁRIO
+ * CENTRAL DE UTILIDADES E INTERFACE COM USUÁRIO DO SISTEMA
  * ================================================================
  *
  * @file utils.c
- * @brief Funções utilitárias e informações dos algoritmos
- * @version 2.1
- * @date 2025-08-24
- * @author Sistema de Análise de Algoritmos
+ * @brief Conjunto abrangente de funções utilitárias, interface e automação
  *
- * VERSÃO 2.1 MODULAR: Estrutura Reorganizada
- * - Agora usa arquitetura modular com headers específicos
- * - Funções utilitárias centralizadas e organizadas
- * - Sistema de informações dos algoritmos
- * - Funções de exibição e documentação
+ * PAPEL ESTRATÉGICO NO SISTEMA:
+ * Este módulo atua como a "cola" que conecta todos os componentes do sistema,
+ * oferecendo desde funcionalidades básicas de utilidade até a interface
+ * completa com o usuário e automação de testes em larga escala.
+ *
+ * ARQUITETURA FUNCIONAL:
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ CAMADA DE UTILIDADES BÁSICAS:                                           │
+ * │ ├─ Gestão inteligente de diretórios multiplataforma                     │
+ * │ ├─ Sistema de callbacks especializados por tipo de dados                │
+ * │ ├─ Salvamento em múltiplos locais com tolerância a falhas               │
+ * │ └─ Funções auxiliares para manipulação de arrays                        │
+ * │                                                                         │
+ * │ CAMADA DE INTERFACE COM USUÁRIO:                                        │
+ * │ ├─ Menus interativos elegantes e informativos                           │
+ * │ ├─ Validação robusta de entrada do usuário                              │
+ * │ ├─ Sistema de pausas e controle de fluxo                                │
+ * │ └─ Formatação visual atraente para resultados                           │
+ * │                                                                         │
+ * │ CAMADA DE AUTOMAÇÃO E RELATÓRIOS:                                       │
+ * │ ├─ Execução automatizada de baterias completas de testes                │
+ * │ ├─ Processamento de múltiplos conjuntos de dados                        │
+ * │ ├─ Comparação automática entre versões otimizada/didática               │
+ * │ └─ Geração de relatórios consolidados                                   │
+ * └─────────────────────────────────────────────────────────────────────────┘
+ *
+ *  FUNCIONALIDADES DESTACADAS:
+ * • Sistema de diretórios auto-adaptativo para diferentes estruturas de projeto
+ * • Interface de usuário tolerante a erros com validação inteligente
+ * • Automação completa que testa 12+ conjuntos de dados automaticamente
+ * • Compatibilidade multiplataforma (Windows, Linux, macOS)
+ * • Documentação integrada e help contextual
+ *
+ *  DESIGN DE EXPERIÊNCIA:
+ * Todas as funções de interface foram projetadas para oferecer uma experiência
+ * fluida e educativa, com feedback claro e informações contextuais que ajudam
+ * tanto usuários iniciantes quanto avançados.
+ *
+ *  ESCALABILIDADE:
+ * O sistema de automação é capaz de processar grandes volumes de dados e
+ * múltiplas configurações sem intervenção manual, ideal para pesquisa e
+ * demonstrações acadêmicas.
  *
  * ================================================================
  */
@@ -37,26 +71,54 @@
  * ================================================================ */
 
 /**
- * @brief Cria estrutura completa de diretórios para organização de resultados
+ * @brief Sistema inteligente de criação de estrutura organizacional de arquivos
  *
- * Esta função implementa um sistema robusto de criação de diretórios que
- * garante que todos os arquivos de saída sejam organizados adequadamente,
- * independentemente de onde o programa foi executado.
+ * Este sistema resolve o problema comum onde
+ * Em projetos acadêmicos e profissionais, é comum executar programas de diferentes
+ * locais (IDE, terminal, build systems), cada um com seu próprio "working directory".
+ * Esta função resolve este problema criando estruturas organizadas em múltiplos
+ * locais simultaneamente.
  *
- * Estratégia de criação:
- * 1. Tenta criar estrutura em múltiplos locais simultaneamente
- * 2. Ignora erros de diretórios já existentes (comportamento normal)
- * 3. Cria hierarquia completa: base -> subdiretórios especializados
+ *  ESTRATÉGIA DE ESTRUTURAÇÃO INTELIGENTE:
+ * ┌─────────────────────────────────────────────────────────────────────────┐
+ * │ HIERARQUIA ORGANIZACIONAL CRIADA:                                      │
+ * │                                                                         │
+ * │ output/                    (Diretório raiz dos resultados)             │
+ * │ ├── numeros/              (Arrays de inteiros ordenados)               │
+ * │ │   ├── Insertion_Sort_otimizada_dados.txt                             │
+ * │ │   ├── Bubble_Sort_nao_otimizada_dados.txt                            │
+ * │ │   └── [demais algoritmos...]                                         │
+ * │ │                                                                       │
+ * │ ├── alunos/               (Estruturas de alunos ordenadas)             │
+ * │ │   ├── Quick_Sort_otimizada_alunos.txt                                │
+ * │ │   └── [demais algoritmos...]                                         │
+ * │ │                                                                       │
+ * │ └── relatorios/           (Análises e comparações)                     │
+ * │     ├── relatorio_numeros_otimizada.txt                                │
+ * │     ├── relatorio_alunos_nao_otimizada.txt                             │
+ * │     └── relatorio_comparativo_final.txt                                │
+ * └─────────────────────────────────────────────────────────────────────────┘
  *
- * Estrutura criada:
- * - output/ (diretório raiz dos resultados)
- *   ├── numeros/ (arrays de números ordenados)
- *   ├── alunos/ (dados de alunos ordenados)
- *   └── relatorios/ (análises e relatórios de performance)
- * - Réplicas em ../output/ e ../../output/ para compatibilidade
+ *  ESTRATÉGIA DE MÚLTIPLOS LOCAIS:
+ * Para garantir funcionamento independente do local de execução:
+ * • ./output/           (executado no diretório raiz do projeto)
+ * • ../output/          (executado em build/ ou cmake-build-debug/)
+ * • ../../output/       (executado em estruturas mais profundas)
  *
- * @note Esta função é chamada automaticamente no início do programa
- *       e falha silenciosamente se os diretórios já existem (comportamento desejado)
+ *  TRATAMENTO ROBUSTO DE ERROS:
+ * - Falha silenciosa se diretórios já existem (comportamento desejado)
+ * - Continua criação mesmo se alguns locais falharem
+ * - Compatível com sistemas de arquivos somente-leitura (degrada graciosamente)
+ * - Multiplataforma: Windows (_mkdir) e Unix/Linux (mkdir)
+ *
+ *  BENEFÍCIOS DA ORGANIZAÇÃO:
+ * - Facilita localização de resultados por pesquisadores
+ * - Evita poluição do diretório principal com centenas de arquivos
+ * - Permite análise comparativa visual entre algoritmos
+ * - Estrutura profissional adequada para apresentações acadêmicas
+ *
+ * @note Esta função é idempotente - pode ser chamada múltiplas vezes sem efeitos
+ *       colaterais, tornando-a segura para uso em inicializações automáticas.
  */
 void criar_diretorios_output(void) {
     // Múltiplos caminhos base para máxima compatibilidade

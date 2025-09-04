@@ -1,24 +1,31 @@
 /**
  * ==============================================================
- * ALGORITMOS DE ORDENAÇÃO - DECLARAÇÕES DE INTERFACES
+ * ALGORITMOS DE ORDENAÇÃO - INTERFACES E DECLARAÇÕES PÚBLICAS
  * ==============================================================
  *
  * @file algoritmos.h
- * @brief Declaração de todos os algoritmos de ordenação implementados
- * @version 2.1
- * @date 2025-08-24
+ * @brief Declarações completas de todos os algoritmos de ordenação implementados
+ * @author Sistema de Análise de Performance de Algoritmos de Ordenação
  *
- * Este arquivo contém as declarações (protótipos) de todas as funções
- * de ordenação disponíveis no sistema. As implementações completas
- * estão localizadas no arquivo algoritmos.c correspondente.
+ * Este módulo contém as interfaces públicas (protótipos) de todos os algoritmos
+ * de ordenação disponíveis no sistema. As implementações detalhadas encontram-se
+ * no arquivo [`algoritmos.c`](src/algoritmos.c:1) correspondente, seguindo o princípio
+ * de separação entre interface e implementação.
  *
- * Cada algoritmo possui duas versões:
- * - Versão otimizada: Implementação com foco em performance
- * - Versão não otimizada: Implementação didática e mais simples
+ * **Arquitetura de versões duais:**
+ * Cada algoritmo é implementado em duas variantes distintas:
+ * - **Versão otimizada**: Foco em máxima performance e eficiência
+ * - **Versão didática**: Foco em clareza, legibilidade e ensino
  *
- * A separação entre declaração e implementação segue o princípio
- * de modularidade e encapsulamento, permitindo o uso das funções
- * sem necessariamente conhecer seus detalhes internos.
+ * **Vantagens da modularização:**
+ * - Encapsulamento: clientes usam funções sem conhecer implementação
+ * - Flexibilidade: múltiplas implementações para a mesma interface
+ * - Manutenibilidade: mudanças na implementação não afetam clientes
+ * - Testabilidade: interfaces bem definidas facilitam testes unitários
+ *
+ * **Padrão de nomenclatura:**
+ * - Funções principais: `algoritmo_sort()` (selecionam versão automaticamente)
+ * - Versões específicas: `algoritmo_sort_optimized()` e `algoritmo_sort_naive()`
  *
  * ==============================================================
  */
@@ -29,13 +36,26 @@
 #include "tipos.h"
 
 /* ==============================================================
- * ALGORITMOS PRINCIPAIS - VERSÕES ADAPTÁVEIS
+ * ALGORITMOS PRINCIPAIS - INTERFACES ADAPTÁVEIS DE ALTO NÍVEL
  * ==============================================================
  *
- * O QUE SÃO ESTES ALGORITMOS?
- * São diferentes métodos para organizar dados em uma determinada ordem.
- * Cada um tem vantagens e desvantagens dependendo do tipo e quantidade
- * de dados que você precisa ordenar.
+ * **CONCEITO FUNDAMENTAL:**
+ * Esta seção contém as interfaces principais dos algoritmos de ordenação,
+ * que funcionam como "fachadas" inteligentes. Cada função automaticamente
+ * seleciona entre a versão otimizada ou didática baseada na configuração
+ * global do sistema, proporcionando flexibilidade sem complexidade.
+ *
+ * **CATEGORIAS DE ALGORITMOS IMPLEMENTADOS:**
+ * - **Simples (O(n²))**: Bubble, Selection, Insertion - ideais para ensino
+ * - **Avançados (O(n log n))**: Quick, Heap - ideais para produção
+ * - **Híbridos**: Shell, Shaker - balanceiam simplicidade e eficiência
+ *
+ * **CRITÉRIOS DE SELEÇÃO DE ALGORITMOS:**
+ * - Tamanho do dataset (pequeno vs. grande)
+ * - Características dos dados (ordenados, aleatórios, inversos)
+ * - Requisitos de estabilidade (preservar ordem de elementos iguais)
+ * - Restrições de memória (in-place vs. auxiliar)
+ * - Necessidade de previsibilidade temporal (worst-case garantido)
  */
 
 /**
@@ -217,19 +237,34 @@ void quick_sort(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp)
 void heap_sort(void *arr, int n, size_t elem_size, CompareFn cmp);
 
 /* ==============================================================
- * VERSÕES ESPECÍFICAS - OTIMIZADAS E NÃO OTIMIZADAS
+ * VERSÕES ESPECÍFICAS - IMPLEMENTAÇÕES ESPECIALIZADAS
  * ==============================================================
  *
- * O QUE SÃO ESTAS VERSÕES?
+ * **FILOSOFIA DE DESIGN DUAL:**
+ * O sistema implementa cada algoritmo em duas variantes distintas,
+ * cada uma otimizada para objetivos específicos. Esta abordagem
+ * atende tanto necessidades pedagógicas quanto requisitos de produção.
  *
- * VERSÕES NÃO OTIMIZADAS:
- * São implementações simples e claras, feitas para serem fáceis
- * de entender e estudar. Priorizam clareza em vez de velocidade.
+ * **VERSÕES DIDÁTICAS (NAIVE):**
+ * - **Objetivo**: Máxima clareza e compreensibilidade
+ * - **Características**: Código linear, estruturas simples, sem otimizações
+ * - **Público-alvo**: Estudantes, ensino de algoritmos, depuração
+ * - **Trade-off**: Sacrifica performance em favor da legibilidade
+ * - **Exemplo**: Loops explícitos, variáveis com nomes descritivos
  *
- * VERSÕES OTIMIZADAS:
- * São versões mais eficientes que usam técnicas avançadas para
- * executar mais rapidamente. Podem ser mais difíceis de entender,
- * mas são melhores para uso real.
+ * **VERSÕES OTIMIZADAS (OPTIMIZED):**
+ * - **Objetivo**: Máxima performance e eficiência
+ * - **Características**: Técnicas avançadas, minimização de operações
+ * - **Público-alvo**: Produção, benchmarks, análise de performance
+ * - **Trade-off**: Pode sacrificar legibilidade em favor da velocidade
+ * - **Exemplo**: Loop unrolling, otimizações de branch prediction
+ *
+ * **CRITÉRIOS DE OTIMIZAÇÃO APLICADOS:**
+ * - Redução de comparações redundantes
+ * - Detecção precoce de arrays já ordenados
+ * - Otimização de acesso à memória (cache-friendly)
+ * - Minimização de operações de troca/movimento
+ * - Uso de técnicas específicas por algoritmo (ex: median-of-three no Quick Sort)
  */
 
 // Versões não otimizadas (didáticas) - mais simples de entender
@@ -251,44 +286,64 @@ void quick_sort_optimized(void *arr, int inicio, int fim, size_t elem_size, Comp
 void heap_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
 
 /* ==============================================================
- * INTERFACES UNIFICADAS - ALTERNAM ENTRE VERSÕES
+ * PADRÃO STRATEGY - SELEÇÃO DINÂMICA DE IMPLEMENTAÇÕES
  * ==============================================================
  *
- * NOTA DE ARQUITETURA E SUGESTÃO DE MELHORIA:
+ * **DESIGN PATTERN IMPLEMENTADO:**
+ * As funções principais (ex: [`insertion_sort()`](include/algoritmos.h:65), [`bubble_sort()`](include/algoritmos.h:91))
+ * implementam o padrão Strategy, permitindo alternar entre diferentes
+ * implementações em runtime baseado em configuração global.
  *
- * As funções abaixo (ex: insertion_sort, bubble_sort, etc.) funcionam
- * como interfaces unificadas que alternam entre versões otimizadas e
- * não otimizadas baseado em uma flag global.
+ * **ARQUITETURA DA SELEÇÃO:**
+ * ```c
+ * void insertion_sort(void *arr, int n, size_t elem_size, CompareFn cmp) {
+ *     if (usar_versao_otimizada) {
+ *         insertion_sort_optimized(arr, n, elem_size, cmp);
+ *     } else {
+ *         insertion_sort_naive(arr, n, elem_size, cmp);
+ *     }
+ * }
+ * ```
  *
- * SUGESTÃO DE SIMPLIFICAÇÃO:
- * Uma abordagem alternativa seria remover estas funções "unificadas"
- * e no módulo de análise chamar diretamente as versões específicas:
- * - insertion_sort_optimized() ou insertion_sort_naive()
- * - bubble_sort_optimized() ou bubble_sort_naive()
- * - etc.
+ * **VANTAGENS DA ABORDAGEM UNIFICADA:**
+ * - **Transparência**: Cliente não precisa decidir qual versão usar
+ * - **Flexibilidade**: Mudança de estratégia sem alterar código cliente
+ * - **Configurabilidade**: Uma única flag controla todo o sistema
+ * - **Compatibilidade**: Interface consistente independente da implementação
+ * - **Facilidade de teste**: Comparação direta entre versões
  *
- * VANTAGENS da simplificação:
- * - Remove camada de indireção desnecessária
- * - Torna o código mais explícito sobre qual versão está sendo usada
- * - Simplifica o header e reduz complexidade
- * - Melhora ligeiramente a performance (evita if/else em runtime)
+ * **ALTERNATIVA ARQUITETURAL:**
+ * Chamadas diretas às versões específicas (ex: `insertion_sort_optimized()`)
+ * seriam mais explícitas mas menos flexíveis, exigindo decisões
+ * distribuídas pelo código cliente.
  *
- * DESVANTAGENS da simplificação:
- * - Código cliente precisa decidir explicitamente qual versão usar
- * - Duplicação de lógica de decisão no código que chama as funções
- *
- * A implementação atual mantém compatibilidade e flexibilidade,
- * mas a versão simplificada seria mais direta e eficiente.
+ * **OVERHEAD DE PERFORMANCE:**
+ * O custo adicional de uma decisão `if/else` por chamada é negligível
+ * comparado ao custo de execução dos algoritmos de ordenação.
  */
 
 /* ==============================================================
- * FUNÇÕES AUXILIARES
+ * FUNÇÕES AUXILIARES E PRIMITIVAS DE ORDENAÇÃO
  * ==============================================================
  *
- * O QUE SÃO FUNÇÕES AUXILIARES?
- * São funções que ajudam os algoritmos principais a funcionarem.
- * Elas executam tarefas específicas que são necessárias dentro
- * dos algoritmos de ordenação.
+ * **CONCEITO DE FUNÇÕES AUXILIARES:**
+ * Estas funções implementam operações fundamentais e específicas
+ * que são utilizadas como blocos de construção pelos algoritmos
+ * principais. Seguem o princípio de responsabilidade única,
+ * focando em tarefas bem definidas e reutilizáveis.
+ *
+ * **CATEGORIAS DE FUNÇÕES AUXILIARES:**
+ * - **Primitivas de heap**: [`heapify()`](include/algoritmos.h:313) para manutenção da propriedade de montículo
+ * - **Primitivas de particionamento**: [`partition()`](include/algoritmos.h:324) para divisão no Quick Sort
+ * - **Utilitários de comparação**: Abstraem lógica de comparação específica
+ * - **Manipuladores de dados**: Operações de troca e movimentação
+ *
+ * **VANTAGENS DA MODULARIZAÇÃO:**
+ * - **Reutilização**: Uma função auxiliar pode servir múltiplos algoritmos
+ * - **Testabilidade**: Cada função pode ser testada independentemente
+ * - **Clareza**: Algoritmos principais ficam mais legíveis
+ * - **Manutenibilidade**: Correções em um local beneficiam todo o sistema
+ * - **Especialização**: Cada função tem responsabilidade bem definida
  */
 
 /**
