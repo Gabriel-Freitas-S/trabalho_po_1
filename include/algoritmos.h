@@ -251,6 +251,37 @@ void quick_sort_optimized(void *arr, int inicio, int fim, size_t elem_size, Comp
 void heap_sort_optimized(void *arr, int n, size_t elem_size, CompareFn cmp);
 
 /* ==============================================================
+ * INTERFACES UNIFICADAS - ALTERNAM ENTRE VERSÕES
+ * ==============================================================
+ *
+ * NOTA DE ARQUITETURA E SUGESTÃO DE MELHORIA:
+ *
+ * As funções abaixo (ex: insertion_sort, bubble_sort, etc.) funcionam
+ * como interfaces unificadas que alternam entre versões otimizadas e
+ * não otimizadas baseado em uma flag global.
+ *
+ * SUGESTÃO DE SIMPLIFICAÇÃO:
+ * Uma abordagem alternativa seria remover estas funções "unificadas"
+ * e no módulo de análise chamar diretamente as versões específicas:
+ * - insertion_sort_optimized() ou insertion_sort_naive()
+ * - bubble_sort_optimized() ou bubble_sort_naive()
+ * - etc.
+ *
+ * VANTAGENS da simplificação:
+ * - Remove camada de indireção desnecessária
+ * - Torna o código mais explícito sobre qual versão está sendo usada
+ * - Simplifica o header e reduz complexidade
+ * - Melhora ligeiramente a performance (evita if/else em runtime)
+ *
+ * DESVANTAGENS da simplificação:
+ * - Código cliente precisa decidir explicitamente qual versão usar
+ * - Duplicação de lógica de decisão no código que chama as funções
+ *
+ * A implementação atual mantém compatibilidade e flexibilidade,
+ * mas a versão simplificada seria mais direta e eficiente.
+ */
+
+/* ==============================================================
  * FUNÇÕES AUXILIARES
  * ==============================================================
  *

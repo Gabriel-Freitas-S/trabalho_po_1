@@ -38,7 +38,6 @@
  * CONSTANTES DO SISTEMA
  * ================================================================ */
 
-#define NUM_ALGORITMOS 7
 #define MAX_PATH 260
 
 #endif // SORTS_H

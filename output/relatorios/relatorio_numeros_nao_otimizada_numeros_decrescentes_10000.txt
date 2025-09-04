@@ -1,0 +1,45 @@
+================================================================
+              RELATORIO DE DESEMPENHO - ALGORITMOS             
+================================================================
+
+Dados analisados: 7 conjuntos de teste
+
++----------------+----------------+-------------+----------+--------+-------------+
+| Algoritmo      | Tipo Dados     | Tempo (s)   | Compar.  | Trocas | Movimentac. |
++----------------+----------------+-------------+----------+--------+-------------+
+| Insertion Sort | numeros        |  0.367159 | 49995000 |      0 |    50014949 |
+| Bubble Sort    | numeros        |  0.940010 | 49995000 | 49994951 |   149984853 |
+| Selection Sort | numeros        |  0.222571 | 49995000 |   9999 |       29997 |
+| Shaker Sort    | numeros        |  0.904460 | 49994999 | 49994950 |   149984850 |
+| Shell Sort     | numeros        |  0.002268 |   172566 |      0 |      302558 |
+| Quick Sort     | numeros        |  0.572459 | 49894827 | 24954874 |    74864622 |
+| Heap Sort      | numeros        |  0.003762 |   226681 | 116682 |      350046 |
++----------------+----------------+-------------+----------+--------+-------------+
+
+OBSERVACOES:
+- Tempos em segundos (precisao: microssegundos - 6 casas decimais)
+- Para algoritmos muito rapidos, foram executadas multiplas medicoes
+- Conjuntos < 100 elementos: 10 execucoes para maior precisao
+- Conjuntos < 1000 elementos: 5 execucoes para maior precisao
+- Conjuntos < 10000 elementos: 3 execucoes para maior precisao
+- Conjuntos >= 10000 elementos: 1 execucao (suficientemente lenta)
+- Comparacoes, Trocas e Movimentacoes: valores absolutos
+- Movimentacoes: operacoes de memoria (memcpy) realizadas
+- Uma troca equivale a 3 movimentacoes de memoria
+- Dados ordenados por algoritmo
+
+METRICAS EXPLICADAS:
+- COMPARACOES: Numero de comparacoes entre elementos
+- TROCAS: Numero de operacoes de alto nivel de troca
+- MOVIMENTACOES: Numero real de operacoes de memoria (memcpy)
+  * Algoritmos baseados em swap: 3 movimentacoes por troca
+  * Insertion/Shell Sort: 1 movimentacao por deslocamento
+
+COMPLEXIDADES TEORICAS:
+Bubble Sort:    O(n²) medio, O(n) melhor, O(n²) pior
+Insertion Sort: O(n²) medio, O(n) melhor, O(n²) pior
+Selection Sort: O(n²) todos os casos
+Quick Sort:     O(n log n) medio, O(n log n) melhor, O(n²) pior
+Heap Sort:      O(n log n) todos os casos
+Shell Sort:     O(n^1.25) medio (varia com incrementos)
+Shaker Sort:    O(n²) medio, O(n) melhor, O(n²) pior

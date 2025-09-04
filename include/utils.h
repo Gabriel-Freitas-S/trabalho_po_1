@@ -78,30 +78,12 @@ int comparar_alunos_por_cidade(const void *a, const void *b);
  * ================================================================ */
 
 /**
- * @brief Troca dois elementos de posição em um array genérico
- * @param arr Ponteiro para o array
- * @param i Índice do primeiro elemento
- * @param j Índice do segundo elemento
- * @param elem_size Tamanho de cada elemento em bytes
- */
-void trocar_elementos(void *arr, int i, int j, size_t elem_size);
-
-/**
  * @brief Copia um elemento de uma posição para outra
  * @param destino Ponteiro para posição de destino
  * @param origem Ponteiro para posição de origem
  * @param elem_size Tamanho do elemento em bytes
  */
 void copiar_elemento(void *destino, const void *origem, size_t elem_size);
-
-/**
- * @brief Obtém ponteiro para elemento em posição específica
- * @param arr Ponteiro para o array
- * @param indice Índice do elemento desejado
- * @param elem_size Tamanho de cada elemento
- * @return Ponteiro para o elemento na posição especificada
- */
-void* obter_elemento(void *arr, int indice, size_t elem_size);
 
 /**
  * @brief Copia um array completo para outro local de memória
@@ -113,8 +95,38 @@ void* obter_elemento(void *arr, int indice, size_t elem_size);
 void copiar_array(const void *origem, void *destino, int tamanho, size_t elem_size);
 
 /* ================================================================
+ * FUNÇÕES DE INTERFACE DE USUÁRIO E CONTROLE
+ * ================================================================ */
+
+/**
+ * @brief Limpa a tela do terminal de forma multiplataforma
+ */
+void limpar_terminal(void);
+
+/**
+ * @brief Pausa execução aguardando interação do usuário
+ */
+void pausar(void);
+
+/**
+ * @brief Obtém opção do usuário com validação robusta
+ * @return Número válido escolhido pelo usuário, ou -1 se entrada inválida
+ */
+int obter_opcao_usuario(void);
+
+/* ================================================================
  * FUNÇÕES DE INFORMAÇÃO E DOCUMENTAÇÃO
  * ================================================================ */
+
+/**
+ * @brief Exibe cabeçalho informativo do programa
+ */
+void imprimir_cabecalho(void);
+
+/**
+ * @brief Exibe menu principal do sistema
+ */
+void imprimir_menu(void);
 
 /**
  * @brief Exibe informações sobre todos os algoritmos implementados
@@ -124,224 +136,51 @@ void copiar_array(const void *origem, void *destino, int tamanho, size_t elem_si
  */
 void exibir_info_algoritmos(void);
 
-/**
- * @brief Exibe menu principal do sistema
- */
-void exibir_menu_principal(void);
-
-/**
- * @brief Exibe menu de seleção de algoritmos
- */
-void exibir_menu_algoritmos(void);
-
-/**
- * @brief Exibe menu de seleção de datasets
- */
-void exibir_menu_datasets(void);
-
-/**
- * @brief Exibe informações sobre um algoritmo específico
- * @param algoritmo_info Ponteiro para estrutura com informações do algoritmo
- */
-void exibir_info_algoritmo(const AlgoritmoInfo *algoritmo_info);
-
 /* ================================================================
- * FUNÇÕES DE INICIALIZAÇÃO E CONFIGURAÇÃO
+ * FUNÇÕES DE SISTEMA DE ARQUIVOS E SALVAMENTO
  * ================================================================ */
 
 /**
- * @brief Inicializa array de informações dos algoritmos
- * @return Ponteiro para array de AlgoritmoInfo inicializado
+ * @brief Cria estrutura completa de diretórios para organização de resultados
  */
-AlgoritmoInfo* inicializar_algoritmos(void);
+void criar_diretorios_output(void);
 
 /**
- * @brief Obtém número total de algoritmos implementados
- * @return Número de algoritmos disponíveis
- */
-int obter_numero_algoritmos(void);
-
-/**
- * @brief Inicializa contadores de métricas
- */
-void inicializar_contadores(void);
-
-/**
- * @brief Reseta contadores de métricas para zero
- */
-void resetar_contadores(void);
-
-/* ================================================================
- * FUNÇÕES DE VALIDAÇÃO E VERIFICAÇÃO
- * ================================================================ */
-
-/**
- * @brief Verifica se uma string é válida (não nula e não vazia)
- * @param str String a ser verificada
- * @return 1 se válida, 0 caso contrário
- */
-int string_valida(const char *str);
-
-/**
- * @brief Verifica se um ponteiro é válido (não nulo)
- * @param ptr Ponteiro a ser verificado
- * @return 1 se válido, 0 caso contrário
- */
-int ponteiro_valido(const void *ptr);
-
-/**
- * @brief Verifica se um tamanho de array é válido
- * @param tamanho Tamanho a ser verificado
- * @return 1 se válido (> 0), 0 caso contrário
- */
-int tamanho_valido(int tamanho);
-
-/* ================================================================
- * FUNÇÕES DE FORMATAÇÃO E CONVERSÃO
- * ================================================================ */
-
-/**
- * @brief Remove espaços em branco do início e fim de uma string
- * @param str String a ser processada (modificada in-place)
- */
-void remover_espacos(char *str);
-
-/**
- * @brief Converte string para minúsculas
- * @param str String a ser convertida (modificada in-place)
- */
-void para_minusculas(char *str);
-
-/**
- * @brief Converte data do formato DD/MM/AAAA para timestamp comparável
- * @param data_str String com data no formato DD/MM/AAAA
- * @return Timestamp para comparação ou -1 se data inválida
- */
-long long converter_data_para_timestamp(const char *data_str);
-
-/**
- * @brief Valida formato de data DD/MM/AAAA
- * @param data_str String com data a ser validada
- * @return 1 se formato válido, 0 caso contrário
- */
-int validar_formato_data(const char *data_str);
-
-/* ================================================================
- * FUNÇÕES DE DEBUG E LOGGING
- * ================================================================ */
-
-/**
- * @brief Ativa ou desativa modo debug
- * @param ativar 1 para ativar, 0 para desativar
- */
-void configurar_modo_debug(int ativar);
-
-/**
- * @brief Imprime mensagem de debug se modo debug estiver ativo
- * @param formato String de formato (como printf)
- * @param ... Argumentos adicionais
- */
-void debug_print(const char *formato, ...);
-
-/**
- * @brief Exibe estado atual dos contadores de métricas
- */
-void exibir_contadores_debug(void);
-
-/* ================================================================
- * FUNÇÕES DE PERFORMANCE E OTIMIZAÇÃO
- * ================================================================ */
-
-/**
- * @brief Aquece o cache executando operações simples
- *
- * Realiza operações básicas para preparar o sistema para
- * medições de performance mais precisas.
- */
-void aquecer_cache(void);
-
-/**
- * @brief Executa múltiplas iterações de uma função e retorna tempo médio
- * @param funcao Função a ser executada
- * @param dados Dados para a função
- * @param tamanho Tamanho dos dados
- * @param elem_size Tamanho de cada elemento
- * @param cmp Função de comparação
- * @param iteracoes Número de iterações a executar
- * @return Tempo médio de execução
- */
-double medir_tempo_medio(void (*funcao)(void*, int, size_t, CompareFn),
-                        void *dados, int tamanho, size_t elem_size,
-                        CompareFn cmp, int iteracoes);
-
-/* ================================================================
- * FUNÇÕES DE INTERFACE DE USUÁRIO
- * ================================================================ */
-
-/**
- * @brief Limpa a tela do terminal de forma multiplataforma
- */
-void limpar_terminal(void);
-
-/**
- * @brief Exibe cabeçalho informativo do programa
- */
-void imprimir_cabecalho(void);
-
-/**
- * @brief Exibe menu principal com opções disponíveis
- */
-void imprimir_menu(void);
-
-/**
- * @brief Obtém e valida entrada do usuário
- * @return Número válido escolhido pelo usuário, ou -1 se entrada inválida
- */
-int obter_opcao_usuario(void);
-
-/**
- * @brief Pausa a execução aguardando interação do usuário
- */
-void pausar(void);
-
-/**
- * @brief Executa bateria completa de testes com ambas as versões dos algoritmos
- */
-void executar_relatorio_completo(void);
-
-/**
- * @brief Função de comparação genérica para alunos
- * @param a Ponteiro para primeiro aluno
- * @param b Ponteiro para segundo aluno
- * @return Resultado da comparação
- */
-int comparar_alunos(const void *a, const void *b);
-
-/**
- * @brief Salva arquivo em múltiplos locais com callback personalizado
- * @param subdir Subdiretório onde salvar
- * @param nome_arquivo Nome do arquivo
- * @param callback Função callback para escrita
- * @param dados Dados a serem salvos
- * @param tamanho Número de elementos
- */
-void salvar_arquivo_multiplos_locais(const char* subdir, const char* nome_arquivo,
-                                   void (*callback)(FILE*, void*, int), void* dados, int tamanho);
-
-/**
- * @brief Callback para escrever números em arquivo
- * @param arquivo Ponteiro para arquivo
- * @param dados Dados a serem escritos
- * @param tamanho Número de elementos
+ * @brief Callback para escrita de arrays de números inteiros
  */
 void escrever_numeros_callback(FILE* arquivo, void* dados, int tamanho);
 
 /**
- * @brief Callback para escrever alunos em arquivo
- * @param arquivo Ponteiro para arquivo
- * @param dados Dados a serem escritos
- * @param tamanho Número de elementos
+ * @brief Callback para escrita de estruturas de alunos
  */
 void escrever_alunos_callback(FILE* arquivo, void* dados, int tamanho);
+
+/**
+ * @brief Sistema unificado de salvamento em múltiplos locais
+ */
+void salvar_arquivo_multiplos_locais(const char* subdir, const char* nome_arquivo,
+                                   void (*conteudo_callback)(FILE*, void*, int),
+                                   void* dados, int tamanho);
+
+/* ================================================================
+ * FUNÇÕES DE EXECUÇÃO E ORQUESTRAÇÃO
+ * ================================================================ */
+
+/**
+ * @brief Executa bateria completa de testes com ambas versões dos algoritmos
+ */
+void executar_relatorio_completo(void);
+
+/* ================================================================
+ * FUNÇÃO DE COMPARAÇÃO PRINCIPAL PARA ALUNOS
+ * ================================================================ */
+
+/**
+ * @brief Compara dois alunos usando critério padrão (nome)
+ * @param a Ponteiro para primeiro aluno
+ * @param b Ponteiro para segundo aluno
+ * @return Resultado da comparação lexicográfica dos nomes
+ */
+int comparar_alunos(const void *a, const void *b);
 
 #endif // UTILS_H

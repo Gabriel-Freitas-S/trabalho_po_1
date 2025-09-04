@@ -34,12 +34,28 @@
 int* carregar_dados_numericos(const char *nome_arquivo, int *tamanho);
 
 /**
+ * @brief Lê números inteiros de um arquivo (implementação simplificada)
+ * @param caminho_arquivo Caminho para o arquivo de dados
+ * @param tamanho Ponteiro para armazenar o número de elementos lidos
+ * @return Ponteiro para array de inteiros ou NULL em caso de erro
+ */
+int* ler_numeros(const char* caminho_arquivo, int* tamanho);
+
+/**
  * @brief Carrega dados de alunos de um arquivo
  * @param nome_arquivo Nome do arquivo a ser lido
  * @param tamanho Ponteiro para armazenar o número de elementos lidos
  * @return Ponteiro para array de estruturas Aluno ou NULL em caso de erro
  */
 Aluno* carregar_dados_alunos(const char *nome_arquivo, int *tamanho);
+
+/**
+ * @brief Lê dados de alunos de um arquivo (implementação simplificada)
+ * @param caminho_arquivo Caminho para o arquivo de dados
+ * @param tamanho Ponteiro para armazenar o número de elementos lidos
+ * @return Ponteiro para array de estruturas Aluno ou NULL em caso de erro
+ */
+Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho);
 
 /**
  * @brief Verifica se um arquivo existe e pode ser lido

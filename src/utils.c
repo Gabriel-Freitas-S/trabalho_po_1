@@ -19,6 +19,7 @@
  */
 
 #include "../include/sorts.h"  // Inclui toda a estrutura modular
+#include "../include/io.h"     // Para funções de I/O (ler_numeros, ler_alunos)
 #include <stdio.h>   // Para printf e funções de I/O
 #include <string.h>  // Para manipulação de strings
 
@@ -255,13 +256,8 @@ void copiar_array(const void *origem, void *destino, int tamanho, size_t elem_si
  * DECLARAÇÕES ANTECIPADAS DAS FUNÇÕES AUXILIARES
  * ================================================================ */
 
-// Funções de I/O que serão usadas
-int* ler_numeros(const char* caminho_arquivo, int* tamanho);
-Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho);
-
-// Funções de análise que serão usadas
+// Funções de análise que serão usadas (declaradas em analise.h via sorts.h)
 AlgoritmoInfo* obter_info_algoritmos(void);
-
 void analisar_estabilidade(void);
 void gerar_relatorio_comparativo_final(void);
 

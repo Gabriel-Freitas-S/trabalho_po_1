@@ -8,8 +8,18 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0 -DDEBUG")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2 -DNDEBUG")
 
-# Diretórios de include
-include_directories(include)
+# Configuração para aumentar tamanho da stack no Windows (corrige stack overflow)
+if(WIN32)
+    if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        # Para GCC/MinGW, usa -Wl,--stack
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--stack,16777216")
+        message(STATUS "Stack size aumentada para 16MB no Windows (GCC/MinGW)")
+    elseif(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+        # Para MSVC, usa /STACK:
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:16777216")
+        message(STATUS "Stack size aumentada para 16MB no Windows (MSVC)")
+    endif()
+endif()
 
 # Coleta todos os arquivos fonte da pasta src
 file(GLOB SOURCES
@@ -20,8 +30,8 @@ file(GLOB SOURCES
 # Cria o executável principal
 add_executable(trabalho_po_1 ${SOURCES})
 
-# Link com bibliotecas matemáticas
-target_link_libraries(trabalho_po_1 m)
+# Diretórios de include (prática moderna do CMake)
+target_include_directories(trabalho_po_1 PRIVATE include)
 
 # Configurações específicas por compilador
 if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")

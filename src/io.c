@@ -23,12 +23,28 @@
 #include <string.h>  // Para manipulação de strings
 #include <stdio.h>   // Para operações de arquivo
 #include <stdlib.h>  // Para alocação de memória
+#include <limits.h>  // Para INT_MAX, INT_MIN
+
+// Definições de constantes se não estiverem definidas
+#ifndef MAX_PATH
+    #ifdef _WIN32
+        #define MAX_PATH 260
+    #else
+        #define MAX_PATH 4096
+    #endif
+#endif
 
 #ifdef _WIN32
     #include <direct.h>  // Para _mkdir no Windows
 #else
     #include <sys/stat.h> // Para mkdir no Unix/Linux
 #endif
+
+// Removendo definição local conflitante da estrutura Aluno
+// A definição correta está em tipos.h como typedef
+
+// Declaração da função auxiliar
+static void criar_diretorio_se_necessario(const char* caminho);
 
 /* ================================================================
  * FUNÇÕES DE COMPARAÇÃO OTIMIZADAS PARA DIFERENTES TIPOS
@@ -146,13 +162,13 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
 
     // Tentativa de abertura em múltiplos caminhos
     for (int i = 0; i < 4; i++) {
-        const char* caminhos[] = {
+        const char* formato_caminhos[] = {
             "data/%s",           // Diretório padrão de dados
             "../data/%s",        // Um nível acima (cmake-build-debug)
             "../../data/%s",     // Dois níveis acima
             "%s"                 // Arquivo no diretório atual
         };
-        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], caminho_arquivo);
+        snprintf(caminho_completo, sizeof(caminho_completo), formato_caminhos[i], caminho_arquivo);
         arquivo = fopen(caminho_completo, "r");
         if (arquivo) {
             printf("Arquivo encontrado: %s\n", caminho_completo);
@@ -175,11 +191,10 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
 
     // Converte a primeira linha para obter a contagem de elementos
     char *endptr;
-    errno = 0;
     long count_from_file = strtol(linha, &endptr, 10);
 
     // Verifica se a conversão foi bem-sucedida
-    if (endptr == linha || errno != 0 || count_from_file < 0 || count_from_file > INT_MAX) {
+    if (endptr == linha || count_from_file < 0 || count_from_file > INT_MAX) {
         printf("ERRO: Formato de cabecalho invalido\n");
         fclose(arquivo);
         return NULL;
@@ -199,12 +214,11 @@ int* ler_numeros(const char* caminho_arquivo, int* tamanho) {
     int indice_valido = 0;
 
     while (fgets(linha, sizeof(linha), arquivo) && indice_valido < count) {
-        char *endptr;
-        errno = 0;
-        long val = strtol(linha, &endptr, 10);
+        char *endptr_inner;
+        long val = strtol(linha, &endptr_inner, 10);
 
         // Verifica se a conversão foi bem-sucedida e está dentro dos limites
-        if (endptr != linha && errno == 0 && val >= INT_MIN && val <= INT_MAX) {
+        if (endptr_inner != linha && val >= INT_MIN && val <= INT_MAX) {
             numeros[indice_valido] = (int)val;
             indice_valido++;
         }
@@ -253,13 +267,13 @@ Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho) {
     FILE* arquivo = NULL;
 
     for (int i = 0; i < 4; i++) {
-        const char* caminhos[] = {
+        const char* formato_caminhos[] = {
             "data/%s",
             "../data/%s",
             "../../data/%s",
             "%s"
         };
-        snprintf(caminho_completo, sizeof(caminho_completo), caminhos[i], caminho_arquivo);
+        snprintf(caminho_completo, sizeof(caminho_completo), formato_caminhos[i], caminho_arquivo);
         arquivo = fopen(caminho_completo, "r");
         if (arquivo) {
             printf("Arquivo de alunos encontrado: %s\n", caminho_completo);
@@ -348,19 +362,63 @@ Aluno* ler_alunos(const char* caminho_arquivo, int* tamanho) {
  * @brief Salva array de números inteiros em arquivo
  *
  * Escreve os números ordenados em arquivo texto, organizando automaticamente
- * na estrutura de diretórios apropriada. Agora salva em múltiplos locais.
+ * na estrutura de diretórios apropriada. Tenta salvar em múltiplos locais.
  *
  * Formato de saída:
  * - Um número por linha
  * - Sem formatação especial
  * - Encoding padrão do sistema
  *
- * @param caminho_arquivo Nome base do arquivo (será prefixado com caminho)
+ * @param caminho_arquivo Nome base do arquivo
  * @param arr Array de números inteiros a ser salvo
  * @param tamanho Número de elementos no array
  */
 void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho) {
-    salvar_arquivo_multiplos_locais("numeros", caminho_arquivo, escrever_numeros_callback, arr, tamanho);
+    // Lista de caminhos possíveis para salvar o arquivo
+    const char* formato_caminhos[] = {
+        "output/numeros/%s",     // Diretório padrão de saída
+        "../output/numeros/%s",  // Um nível acima
+        "numeros/%s",           // Diretório local
+        "%s"                    // Arquivo no diretório atual
+    };
+
+    char caminho_completo[MAX_PATH];
+    FILE* arquivo = NULL;
+
+    // Tenta criar os diretórios necessários e salvar o arquivo
+    for (int i = 0; i < 4; i++) {
+        snprintf(caminho_completo, sizeof(caminho_completo), formato_caminhos[i], caminho_arquivo);
+
+        // Tenta criar diretório se necessário
+        if (i == 0) {
+            criar_diretorio_se_necessario("output");
+            criar_diretorio_se_necessario("output/numeros");
+        } else if (i == 1) {
+            criar_diretorio_se_necessario("../output");
+            criar_diretorio_se_necessario("../output/numeros");
+        } else if (i == 2) {
+            criar_diretorio_se_necessario("numeros");
+        }
+
+        arquivo = fopen(caminho_completo, "w");
+        if (arquivo) {
+            printf("Salvando numeros em: %s\n", caminho_completo);
+            break;
+        }
+    }
+
+    if (!arquivo) {
+        printf("ERRO: Nao foi possivel criar arquivo para salvar numeros: %s\n", caminho_arquivo);
+        return;
+    }
+
+    // Escreve os números no arquivo
+    for (int i = 0; i < tamanho; i++) {
+        fprintf(arquivo, "%d\n", arr[i]);
+    }
+
+    fclose(arquivo);
+    printf("Arquivo de numeros salvo com sucesso: %d elementos\n", tamanho);
 }
 
 /**
@@ -368,27 +426,71 @@ void salvar_numeros(const char* caminho_arquivo, int arr[], int tamanho) {
  *
  * Escreve os dados de alunos ordenados em formato CSV, mantendo
  * o mesmo formato do arquivo de entrada para facilitar análise.
- * Agora salva em múltiplos locais.
+ * Tenta salvar em múltiplos locais.
  *
  * Formato de saída:
  * nome,data_nascimento,bairro,cidade
  *
- * @param caminho_arquivo Nome base do arquivo (será prefixado com caminho)
+ * @param caminho_arquivo Nome base do arquivo
  * @param arr Array de estruturas Aluno a ser salvo
  * @param tamanho Número de elementos no array
  */
 void salvar_alunos(const char* caminho_arquivo, Aluno arr[], int tamanho) {
-    salvar_arquivo_multiplos_locais("alunos", caminho_arquivo, escrever_alunos_callback, arr, tamanho);
+    // Lista de caminhos possíveis para salvar o arquivo
+    const char* formato_caminhos[] = {
+        "output/alunos/%s",      // Diretório padrão de saída
+        "../output/alunos/%s",   // Um nível acima
+        "alunos/%s",            // Diretório local
+        "%s"                    // Arquivo no diretório atual
+    };
+
+    char caminho_completo[MAX_PATH];
+    FILE* arquivo = NULL;
+
+    // Tenta criar os diretórios necessários e salvar o arquivo
+    for (int i = 0; i < 4; i++) {
+        snprintf(caminho_completo, sizeof(caminho_completo), formato_caminhos[i], caminho_arquivo);
+
+        // Tenta criar diretório se necessário
+        if (i == 0) {
+            criar_diretorio_se_necessario("output");
+            criar_diretorio_se_necessario("output/alunos");
+        } else if (i == 1) {
+            criar_diretorio_se_necessario("../output");
+            criar_diretorio_se_necessario("../output/alunos");
+        } else if (i == 2) {
+            criar_diretorio_se_necessario("alunos");
+        }
+
+        arquivo = fopen(caminho_completo, "w");
+        if (arquivo) {
+            printf("Salvando alunos em: %s\n", caminho_completo);
+            break;
+        }
+    }
+
+    if (!arquivo) {
+        printf("ERRO: Nao foi possivel criar arquivo para salvar alunos: %s\n", caminho_arquivo);
+        return;
+    }
+
+    // Escreve os dados dos alunos no formato CSV
+    for (int i = 0; i < tamanho; i++) {
+        fprintf(arquivo, "%s,%s,%s,%s\n",
+                arr[i].nome,
+                arr[i].data_nascimento,
+                arr[i].bairro,
+                arr[i].cidade);
+    }
+
+    fclose(arquivo);
+    printf("Arquivo de alunos salvo com sucesso: %d elementos\n", tamanho);
 }
 
-/* ================================================================
- * FUNÇÕES AUXILIARES E CALLBACKS
- * ================================================================ */
-
 /**
- * @brief Cria diretório se não existir
+ * @brief Cria diretório se não existir (função auxiliar)
  */
-void criar_diretorio_se_necessario(const char* caminho) {
+static void criar_diretorio_se_necessario(const char* caminho) {
     #ifdef _WIN32
         _mkdir(caminho);
     #else

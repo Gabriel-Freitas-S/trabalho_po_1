@@ -106,6 +106,15 @@ typedef struct {
  * ============================================================== */
 
 /**
+ * @brief Número de algoritmos de ordenação disponíveis no sistema
+ *
+ * Esta constante define quantos algoritmos de ordenação estão implementados
+ * e disponíveis para análise. É usada para dimensionar arrays da estrutura
+ * AlgoritmoInfo e controlar loops de iteração pelos algoritmos.
+ */
+#define NUM_ALGORITMOS 7
+
+/**
  * @brief Flag global para controlar otimizações
  *
  * Esta variável controla se o programa deve usar versões otimizadas (1) ou

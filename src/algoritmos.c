@@ -109,18 +109,36 @@ int comparar_e_contar(const void *a, const void *b) {
 }
 
 /**
- * @brief Troca dois elementos de lugar na memória
+ * @brief Troca dois elementos de lugar na memória com buffer reutilizável
  *
  * Realiza a troca dos valores de dois elementos, atualizando o
- * contador de trocas e movimentações.
+ * contador de trocas e movimentações. Usa um buffer estático
+ * reutilizável para maior eficiência em algoritmos com muitas trocas.
  *
  * @param a Ponteiro para o primeiro elemento
  * @param b Ponteiro para o segundo elemento
  * @param elem_size Tamanho em bytes de cada elemento
  */
 void swap_elements(void *a, void *b, size_t elem_size) {
-    char *temp = malloc(elem_size);
-    if (!temp) return;
+    static char* temp = NULL;
+    static size_t temp_size = 0;
+
+    // Realoca buffer apenas se necessário (elemento maior)
+    if (temp_size < elem_size) {
+        char* new_temp = realloc(temp, elem_size);
+        if (!new_temp) {
+            // Se falhar realocar, tenta alocar novo buffer
+            free(temp);
+            temp = malloc(elem_size);
+            if (!temp) {
+                temp_size = 0;
+                return; // Falha na alocação
+            }
+        } else {
+            temp = new_temp;
+        }
+        temp_size = elem_size;
+    }
 
     memcpy(temp, a, elem_size);
     memcpy(a, b, elem_size);
@@ -128,7 +146,6 @@ void swap_elements(void *a, void *b, size_t elem_size) {
 
     contador_trocas++;          // Conta +1 para a operação de alto nível "troca"
     contador_movimentacoes += 3;  // Conta +3 para as operações de escrita reais
-    free(temp);
 }
 
 /**
@@ -312,7 +329,12 @@ int partition_naive(void *arr, int inicio, int fim, size_t elem_size, CompareFn 
 
     // Alocação única de memória para o pivô - CORRIGIDO: fora do loop
     char *pivo = malloc(elem_size);
-    if (!pivo) return inicio;
+    if (!pivo) {
+        // MELHORIA: Tratamento mais robusto de erro de alocação
+        fprintf(stderr, "ERRO CRÍTICO: Falha na alocação de memória para pivô no Quick Sort\n");
+        fprintf(stderr, "Tentativa de alocar %zu bytes falhou. Programa será encerrado.\n", elem_size);
+        exit(EXIT_FAILURE);
+    }
 
     memcpy(pivo, base + fim * elem_size, elem_size);
     int i = inicio - 1;
@@ -597,7 +619,12 @@ void quick_sort_optimized(void *arr, int inicio, int fim, size_t elem_size, Comp
 int partition_optimized(void *arr, int inicio, int fim, size_t elem_size, CompareFn cmp) {
     char *base = (char*)arr;
     char *pivo = malloc(elem_size);
-    if (!pivo) return inicio;
+    if (!pivo) {
+        // MELHORIA: Tratamento mais robusto de erro de alocação
+        fprintf(stderr, "ERRO CRÍTICO: Falha na alocação de memória para pivô no Quick Sort otimizado\n");
+        fprintf(stderr, "Tentativa de alocar %zu bytes falhou. Programa será encerrado.\n", elem_size);
+        exit(EXIT_FAILURE);
+    }
 
     memcpy(pivo, base + fim * elem_size, elem_size);
     int i = inicio - 1;

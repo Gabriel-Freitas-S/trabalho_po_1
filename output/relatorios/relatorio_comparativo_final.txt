@@ -1,0 +1,36 @@
+====================================================
+         RELATORIO COMPARATIVO FINAL               
+====================================================
+
+Este relatorio foi gerado apos a execucao completa
+de AMBAS as versoes dos algoritmos de ordenacao:
+
+VERSAO OTIMIZADA:
+- Algoritmos com otimizacoes de performance
+- Paradas antecipadas quando possivel
+- Menor numero de operacoes desnecessarias
+- Tempo de execucao otimizado
+
+VERSAO NAO OTIMIZADA:
+- Algoritmos em versao didatica
+- Sem otimizacoes (para fins educacionais)
+- Mais operacoes para demonstracao
+- Tempo de execucao maior
+
+ARQUIVOS GERADOS:
+
+1. Arrays Ordenados:
+   output/numeros/*_otimizada_*.txt
+   output/numeros/*_nao_otimizada_*.txt
+   output/alunos/*_otimizada_*.txt
+   output/alunos/*_nao_otimizada_*.txt
+
+2. Relatorios de Performance:
+   output/relatorios/relatorio_*_otimizada.txt
+   output/relatorios/relatorio_*_nao_otimizada.txt
+
+3. Analise de Estabilidade:
+   output/analise_estabilidade.txt
+
+Relatorio gerado em: 2025-09-03 21:12:56
+Sistema: Trabalho de Algoritmos de Ordenacao
